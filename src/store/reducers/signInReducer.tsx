@@ -14,8 +14,6 @@ const signInReducer = (state = initState, action:any) => {
             console.log('error during user login');
             return state;
         default :
-            console.log('login default case');
-            console.log(state);
             return state;
     }
 }

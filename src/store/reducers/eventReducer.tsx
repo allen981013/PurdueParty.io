@@ -16,8 +16,6 @@ const eventReducer = (state = initState, action:any) => {
             console.log('error retrieving events list');
             return state;
         default :
-            console.log('events default case');
-            console.log(state);
             return state;
     }
 }
