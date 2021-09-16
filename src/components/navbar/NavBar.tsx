@@ -26,11 +26,11 @@ class NavBar extends Component<NavBarProps, NavBarState> {
           <div id="topbar__nav">
             <div>
               <a href="/">Home</a>
-              <a href="/events">Events</a>
+              <a href="/events">Event</a>
               <a href="/market">Market</a>
               <a href="/life">Life</a>
-              <a href="/classes">Classes</a>
-              <a href="/club">Clubs</a>
+              <a href="/classes">Class</a>
+              <a href="/clubs">Club</a>
             </div>
          </div>
       </div>
