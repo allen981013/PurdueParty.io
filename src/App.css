@@ -1,3 +1,10 @@
+:root {
+  --black: #000;
+  --white: #fff;
+  --dull-gold: #CFB991;
+  --light-grey: #D1D5DB;
+}
+
 .App {
   text-align: center;
 }
@@ -35,4 +42,18 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Custom CSS classes for Purdue Party */
+
+.bg-dull-gold {
+  background: var(--dull-gold);
+}
+
+.bg-black {
+  background: var(--black);
+}
+
+.bg-white {
+  background: var(--white);
 }
