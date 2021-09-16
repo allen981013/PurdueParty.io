@@ -1,5 +1,8 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
+import { Dispatch, Action, compose } from 'redux';
+import { addEvent } from '../../store/actions/eventActions'
 import { connect } from 'react-redux';
+import { firestoreConnect } from 'react-redux-firebase';
 
 // Interface/type for Events State
 interface EventState {
@@ -14,6 +17,11 @@ interface EventProps {
 
 class Events extends Component<EventProps, EventState> {
   render() {
+    /*
+        querySnapshot.forEach((doc) => {
+      console.log(`${doc.id} => ${doc.data().title}`);
+    });
+    */
     console.log(this.props.events);
     return (
       <div>
@@ -25,20 +33,21 @@ class Events extends Component<EventProps, EventState> {
 
 const mapStateToProps = (state:any) => {
   return {
-    events: state.event.events
-    //events: state.firestore.ordered.events
+    //events: state.event.events
+    events: state.firestore.ordered.events
   }
 }
 
-/*
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch:Dispatch<Action>) => {
   // Return functions from actions folder
   return {
-    loadEvents : =
+    addEvent: (event:any) => dispatch(addEvent(event))
   }
 }
 
-export default connect(mapState)
-*/
-
-export default connect(mapStateToProps)(Events);
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  firestoreConnect([
+    { collection: 'events'}
+  ])
+)(Events);

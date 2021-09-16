@@ -1,4 +1,4 @@
-// Dummy Data for testing, this gets replaced by Firebase call
+// Initial state/dummy data, this gets replaced by Firebase info
 const initState = {
     events: [
         {id: '1', title: 'Purdue Rowing Callout'},
@@ -9,11 +9,11 @@ const initState = {
 
 const eventReducer = (state = initState, action:any) => {
     switch (action.type) {
-        case 'RETRIEVE_EVENTS':
-            console.log('retrieved events list');
+        case 'ADD_EVENT':
+            console.log('added new event');
             return state;
-        case 'RETRIEVE_EVENTS_ERR':
-            console.log('error retrieving events list');
+        case 'ADD_EVENT_ERR':
+            console.log('error adding new event');
             return state;
         default :
             console.log('events default case');
