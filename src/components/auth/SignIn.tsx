@@ -13,21 +13,19 @@ interface SignInProps {
 }
 
 class SignIn extends Component<SignInProps, SignInState> {
-  
-  
   userInput = (e: { target: { value: any; }; }) => {
     this.setState({
-      
+      email: e.target.value
     });
   }
-  
   passInput = (e: { target: { value: any; }; }) => {
     this.setState({
-      
+      password: e.target.value
     });
   }
   checkInputs = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
+    mapStateToProps(this.state);
   }
 
   render() {
@@ -37,7 +35,7 @@ class SignIn extends Component<SignInProps, SignInState> {
       <h1>If you like to party, enter your login info</h1>
       <form onSubmit={this.checkInputs}>
         <p>
-          Username:
+          Email:
         </p>
         <input type="text" onChange={this.userInput}/>
         <p>
