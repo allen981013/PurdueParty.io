@@ -8,7 +8,7 @@ export const addEvent = (newEvent:any) => {
         docref.add({
             title: newEvent.title
         }).then((newDocRef:any) => {
-            dispatch({ type: 'ADD_EVENT', newDocRef });
+            dispatch({ type: 'ADD_EVENT_SUCCESS', newDocRef });
         }).catch((err:any) => {
             dispatch({ type: 'ADD_EVENT_ERR', err});
         });
