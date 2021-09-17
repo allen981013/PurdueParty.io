@@ -1,5 +1,6 @@
 import './App.css';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import Landing from './components/landing/Landing';
 import SignIn from './components/auth/SignIn';
 import Events from './components/events/Events';
 import NavBar from './components/navbar/NavBar'
@@ -13,10 +14,13 @@ function App() {
       <div className="App">
         <NavBar/>
         <Switch>
-          <Route exact path = '/' component = {Events} />
+          <Route exact path = '/' component = {Landing} />
           <Route path = '/events' component = {Events} />
           <Route path = '/signin' component = {SignIn} />
         </Switch>
+        {/* <div id="footer" className="w-100 bg-black" style={{position: "absolute", bottom: 0, width: "100%", color: "#fff", padding: "20px 0px"}}>
+          Purdue University, 100 North University Street, West Lafayette, IN, 47907
+        </div> */}
       </div>
     </BrowserRouter>
   );
