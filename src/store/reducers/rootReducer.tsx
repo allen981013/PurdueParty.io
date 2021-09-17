@@ -1,12 +1,16 @@
 // Import each page's reducer here
 import eventReducer from './eventReducer';
-import signInReducer from './signInReducer';
+import authReducer from './authReducer';
+import { firebaseReducer } from 'react-redux-firebase';
+import { firestoreReducer } from 'redux-firestore';
 import { combineReducers } from 'redux';
 
 // Add it to this list
 const rootReducer = combineReducers({
-    signIn: signInReducer,
-    event: eventReducer
+    firebase: firebaseReducer,
+    firestore: firestoreReducer,
+    auth: authReducer,
+    event: eventReducer,
 });
 
 export default rootReducer;

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { signIn } from '../../store/actions/authActions';
 
 // Interface/type for Events State
 interface SignInState {
@@ -9,64 +10,78 @@ interface SignInState {
 
 // Interface/type for Events Props
 interface SignInProps {
-    auth: any
+    auth: any,
+    signIn: (state:SignInState) => void
 }
 
 class SignIn extends Component<SignInProps, SignInState> {
-  userInput = (e: { target: { value: any; }; }) => {
-    this.setState({
-      email: e.target.value
-    });
+  // Initialize state
+  constructor(props:SignInProps) {
+    super(props);
+    this.state = {
+      email: "",
+      password: ""
+    };
   }
-  passInput = (e: { target: { value: any; }; }) => {
+
+  // State updater during form modification
+  handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      password: e.target.value
-    });
+      email : e.target.value
+    })
   }
-  checkInputs = (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    mapStateToProps(this.state);
+
+  // State updater during form modification
+  handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      password : e.target.value
+    })
+  }
+
+  // Handle user submit
+  handleSubmit = (event:any) => {
+    event.preventDefault();
+    this.props.signIn(this.state);
+    this.setState({
+      email: "",
+      password: ""
+    })
   }
 
   render() {
-    console.log(this.props.auth);
+    //console.log(this.props.auth);
     return (
       <div className="login">
-      <h1>If you like to party, enter your login info</h1>
-      <form onSubmit={this.checkInputs}>
-        <p>
-          Email:
-        </p>
-        <input type="text" onChange={this.userInput}/>
-        <p>
-          Password: 
-        </p>
-        <input type="text" onChange={this.passInput}/>
-        <p></p>
-        <button>Login</button>
-      </form>
-    </div>
+        <h1>If you like to party, enter your login info</h1>
+        <form onSubmit={this.handleSubmit}>
+          <p>
+            Username:
+          </p>
+          <input type="text" value={this.state.email} id="email" onChange={this.handleEmailChange}/>
+          <p>
+            Password: 
+          </p>
+          <input type="text" value={this.state.password} id="password"  onChange={this.handlePasswordChange}/>
+          <p></p>
+          <button>Login</button>
+        </form>
+      </div>
     )
   }
 }
 
 const mapStateToProps = (state:any) => {
   return {
-    auth: state.signIn.auth
-    //authError: state.auth.authError,
-    //auth: state.firebase.auth
+    auth: state.firebase.auth,
+    authError: state.auth.authError
   }
 }
 
-/*
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: (action: any) => void) => {
   // Return functions for signIn
   return {
-    loadEvents : =
+    signIn: (creds:any) => dispatch(signIn(creds))
   }
 }
 
-export default connect(mapState)
-*/
-
-export default connect(mapStateToProps)(SignIn);
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);
