@@ -16,8 +16,6 @@ const eventReducer = (state = initState, action:any) => {
             console.log('error adding new event');
             return state;
         default :
-            console.log('events default case');
-            console.log(state);
             return state;
     }
 }

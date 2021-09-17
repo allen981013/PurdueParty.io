@@ -14,7 +14,7 @@ interface SignInProps {
 
 class SignIn extends Component<SignInProps, SignInState> {
   render() {
-    console.log(this.props.auth);
+    //console.log(this.props.auth);
     return (
       <div>
         <h1>Sign In Page</h1>
