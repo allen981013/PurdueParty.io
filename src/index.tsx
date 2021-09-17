@@ -3,13 +3,17 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { createStore } from 'redux';
+import thunk from 'redux-thunk';
+import { createStore, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './store/reducers/rootReducer'
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth';
+import { getFirebase, ReactReduxFirebaseProvider } from 'react-redux-firebase';
+import { getFirestore, createFirestoreInstance, reduxFirestore } from 'redux-firestore';
 
-const firebaseConfig = {
+const firebaseConfig: any = {
   apiKey: "AIzaSyAtGu2EAwCasekXH6yzYxy7NqqA3APpus0",
   authDomain: "purdueparty-44444.firebaseapp.com",
   projectId: "purdueparty-44444",
@@ -19,23 +23,38 @@ const firebaseConfig = {
   measurementId: "G-F5BYJVJC65"
 };
 
-const app = initializeApp(firebaseConfig);
-const firestore = getFirestore();
+const rrfConfig = {
+  userProfile: "users",
+  useFirestoreForProfile: true,
+  enableClaims: true
+};
 
-async function getEvents() {
-  const querySnapshot = await getDocs(collection(firestore, "events"));
-  querySnapshot.forEach((doc) => {
-    console.log(`${doc.id} => ${doc.data().title}`);
-  });
-}
-getEvents();
+firebase.initializeApp(firebaseConfig);
+firebase.firestore();
+console.log(firebase);
 
-const store = createStore(rootReducer);
+const store = createStore(
+  rootReducer,
+  compose(
+    applyMiddleware(thunk.withExtraArgument({ getFirebase, getFirestore })),
+    reduxFirestore(firebase, firebaseConfig)
+  ));
+
+
+const rrfProps = {
+  firebase,
+  config: rrfConfig,
+  dispatch: store.dispatch,
+  createFirestoreInstance
+};
+  
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <ReactReduxFirebaseProvider {...rrfProps}>
+        <App />
+      </ReactReduxFirebaseProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

@@ -13,41 +13,56 @@ interface SignInProps {
 }
 
 class SignIn extends Component<SignInProps, SignInState> {
-  
-  
-  userInput = (e: { target: { value: any; }; }) => {
-    this.setState({
-      
-    });
+  // Initialize state
+  constructor(props:SignInProps) {
+    super(props);
+    this.state = {
+      email: "",
+      password: ""
+    };
   }
-  
-  passInput = (e: { target: { value: any; }; }) => {
+
+  // State updater during form modification
+  handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      
-    });
+      email : e.target.value
+    })
   }
-  checkInputs = (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
+
+  // State updater during form modification
+  handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      password : e.target.value
+    })
+  }
+
+  // Handle user submit
+  handleSubmit = (event:any) => {
+    event.preventDefault();
+    this.setState({
+      email: "",
+      password: ""
+    })
   }
 
   render() {
-    console.log(this.props.auth);
+    //console.log(this.props.auth);
     return (
       <div className="login">
-      <h1>If you like to party, enter your login info</h1>
-      <form onSubmit={this.checkInputs}>
-        <p>
-          Username:
-        </p>
-        <input type="text" onChange={this.userInput}/>
-        <p>
-          Password: 
-        </p>
-        <input type="text" onChange={this.passInput}/>
-        <p></p>
-        <button>Login</button>
-      </form>
-    </div>
+        <h1>If you like to party, enter your login info</h1>
+        <form onSubmit={this.handleSubmit}>
+          <p>
+            Username:
+          </p>
+          <input type="text" value={this.state.email} id="email" onChange={this.handleEmailChange}/>
+          <p>
+            Password: 
+          </p>
+          <input type="text" value={this.state.password} id="password"  onChange={this.handlePasswordChange}/>
+          <p></p>
+          <button>Login</button>
+        </form>
+      </div>
     )
   }
 }
