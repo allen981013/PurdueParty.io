@@ -45,6 +45,7 @@
 }
 
 #topbar__nav a {
+  font-family: "Open Sans";
   height: 48px;
   width: 100%;
   line-height: 50px;

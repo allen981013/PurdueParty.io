@@ -36,7 +36,7 @@ class Landing extends Component<LandingProps, LandingStates> {
       <div className="section-card">
         <div className="section-card__top-stripe"/>
         <div className="section-card__body">
-          <div><h2 style={{fontWeight: "lighter"}}>{title}</h2></div>
+          <div><h3 style={{fontFamily: "Open Sans", fontWeight: "lighter"}}>{title}</h3></div>
           <div className="section-card__items">
             {items}
           </div>
