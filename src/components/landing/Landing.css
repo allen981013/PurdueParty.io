@@ -1,9 +1,11 @@
 @import '../../App.css';
 
+/* Cropped Purdue image */
+
 #cropped-purdue-img {
   width: 100%;
   height: 400px;
-  margin: 4px 0px;
+  margin: 4px 0px 0px 0px;
   background-position: center 60%;
   background-repeat: no-repeat;
   background-image: url(purdue.jpg);
@@ -13,21 +15,20 @@
   background-size: cover;
 }
 
+/* Sections */
+
 .sections {
-  padding: 32px 0px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  padding: 32px 0px 0px 0px; 
+  max-width: 1070px;
 }
 
+/* Section card */
+
 .section-card {
-  width: 380px;
   border: 1px solid var(--light-grey);
 }
 
-.section-card__top-stripe {
-  width: 100%;
+.section-card__stripe {
   height: 16px;
   background: var(--dull-gold);
 }
@@ -36,24 +37,28 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 0px 40px 40px 40px;
+  padding: 0px 32px 32px 32px;
 }
 
-.section-card__items {
+.section-card__body__items {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 308px;
+  width: 100%;
 }
+
+/* Item card */
 
 .item-card {
   display: flex;
   flex-direction: row;
   position: relative;
   height: 50px;
-  width: 300px;
+  width: 100%;
   border: 1px solid var(--light-grey);
   border-radius: 4px;
+  text-overflow: ellipsis;
 }
 
 .item-card > a {
@@ -65,13 +70,15 @@
   height: 100%;
 }
 
-.item-card > a:hover {
+.item-card > a:hover,
+.item-card > a:focus-visible {
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25), 0px 0px 10px rgba(0, 0, 0, 0.1);
+  outline: none;
 }
 
-.item-card__left-stripe {
+.item-card__stripe {
   height: 100%;
-  width: 12px;
+  width: 8px;
   background: var(--dull-gold);
 }
 
@@ -79,7 +86,26 @@
   padding: 8px 16px;
   display: flex;
   width: 100%;
+  min-width: 0;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
+  /* display: block; */
+}
+
+.item-card__body span:first-child {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+
+.item-card__body span:last-child {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  min-width: 60px; 
+  text-align: right;
+  display: block;
 }
