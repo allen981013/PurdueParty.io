@@ -6,6 +6,8 @@
 }
 
 .App {
+  display: flex;
+  flex-direction: column;
   position: relative;
   text-align: center;
   min-height: 100vh;

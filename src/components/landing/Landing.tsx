@@ -11,6 +11,10 @@ interface LandingProps {
 interface LandingStates {
 }
 
+// TODO: Integrate real data into section cards
+// TODO: Add a section for living 
+// TODO: Add a "navigate to" icon button in each section
+// TODO: Add a decoration icon in each section
 
 class Landing extends Component<LandingProps, LandingStates> {
 

@@ -18,9 +18,10 @@ function App() {
           <Route path = '/events' component = {Events} />
           <Route path = '/signin' component = {SignIn} />
         </Switch>
-        {/* <div id="footer" className="w-100 bg-black" style={{position: "absolute", bottom: 0, width: "100%", color: "#fff", padding: "20px 0px"}}>
+        <div style={{flexGrow:1}}/> {/* hack to make footer stays at the bottom of the page */}
+        <div className="w-100 bg-black" style={{width: "100%", color: "#fff", padding: "20px 0px"}}>
           Purdue University, 100 North University Street, West Lafayette, IN, 47907
-        </div> */}
+        </div>
       </div>
     </BrowserRouter>
   );

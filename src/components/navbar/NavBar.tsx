@@ -10,6 +10,9 @@ interface NavBarState {
     userName?: string;
 }
 
+// TODO: Check if user is logged in and update navbar accordingly
+// TODO: Collapsible menu for xs viewport
+
 class NavBar extends Component<NavBarProps, NavBarState> {
   render() {
     return (
