@@ -13,6 +13,7 @@
 
 #topbar__gold  a {
   color: black;
+  padding: 16px;
 }
 
 #topbar__gold > div {
@@ -46,6 +47,8 @@
 
 #topbar__nav a {
   font-family: "Open Sans";
+  font-weight: 300;
+  font-size: larger;
   height: 48px;
   width: 100%;
   line-height: 50px;
@@ -56,7 +59,8 @@
 }
 
 #topbar__nav a:active,
-#topbar__nav a:hover {
+#topbar__nav a:hover,
+#topbar__nav a:focus-visible {
   background: #f9fafb;
   border-bottom: 2px solid black;
 }
