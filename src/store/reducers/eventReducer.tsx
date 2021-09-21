@@ -7,7 +7,12 @@ const initState = {
     ]
 };
 
-const eventReducer = (state = initState, action:any) => {
+type Action = {
+    type: string,
+    payload?: any, // Annotate the payload with proper type, if there are any
+}
+
+const eventReducer = (state=initState, action: Action) => {
     switch (action.type) {
         case 'ADD_EVENT_SUCCESS':
             console.log('added new event');
