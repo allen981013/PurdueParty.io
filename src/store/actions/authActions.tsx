@@ -1,4 +1,5 @@
 import { Dispatch, Action } from 'redux';
+import {AppDispatch} from '../index'
 
 export const signIn = (credentials:any) => {
     return (dispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {
