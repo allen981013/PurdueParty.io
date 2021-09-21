@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import thunk from 'redux-thunk';
-import { createStore, compose, applyMiddleware } from 'redux';
+import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux';
 import rootReducer from './store/reducers/rootReducer'
 import firebase from 'firebase/compat/app';
@@ -33,13 +33,13 @@ firebase.initializeApp(firebaseConfig);
 firebase.firestore();
 console.log(firebase);
 
-const store = createStore(
-  rootReducer,
-  compose(
-    applyMiddleware(thunk.withExtraArgument({ getFirebase, getFirestore })),
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware: [thunk.withExtraArgument({ getFirebase, getFirestore })],
+  enhancers:  [
     reduxFirestore(firebase, firebaseConfig)
-  ));
-
+  ]
+})
 
 const rrfProps = {
   firebase,
