@@ -1,9 +1,13 @@
+import { Timestamp } from '@firebase/firestore';
+
 // Initial state/dummy data, this gets replaced by Firebase info
 const initState = {
     events: [
-        {id: '1', title: 'Purdue Rowing Callout'},
-        {id: '1', title: 'Bowling Night'},
-        {id: '1', title: 'Frisbee Game'}
+        {id: "1", owner: "owner", editors: ["editor"],
+         orgID: "", title: "", description: "", location: "",
+         dateTime: new Timestamp(0,0), 
+         postedDateTime: new Timestamp(0,0), attendees: [""], 
+         type: ""}
     ]
 };
 

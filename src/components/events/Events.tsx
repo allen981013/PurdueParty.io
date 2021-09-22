@@ -3,11 +3,21 @@ import { Dispatch, Action, compose } from 'redux';
 import { addEvent } from '../../store/actions/eventActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
+import { Timestamp } from '@firebase/firestore';
 
 // Interface/type for Events State
 interface EventState {
-  id: number,
+  id: string,
+  owner: string,
+  editors: string[],
+  orgID: string,
   title: string
+  description: string,
+  location: string,
+  dateTime: Timestamp,
+  postedDateTime: Timestamp,
+  attendees: string[],
+  type: string,
 }
 
 // Interface/type for Events Props
@@ -22,15 +32,42 @@ class Events extends Component<EventProps, EventState> {
   constructor(props:EventProps) {
     super(props);
     this.state = {
-      id: 0,
-      title: ""
+      id: "",
+      owner: "",
+      editors: [""],
+      orgID: "",
+      title: "",
+      description: "",
+      location: "",
+      dateTime: new Timestamp(0,0),
+      postedDateTime: new Timestamp(0,0),
+      attendees: [""],
+      type: ""
     };
   }
 
   // General purpose state updater during form modification
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       title : e.target.value
+    })
+  }
+
+  handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      description : e.target.value
+    })
+  }
+
+  handleChangeLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      location : e.target.value
+    })
+  }
+
+  handleChangeType = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      type : e.target.value
     })
   }
 
@@ -39,8 +76,17 @@ class Events extends Component<EventProps, EventState> {
     event.preventDefault();
     this.props.addEvent(this.state);
     this.setState({
-      id: 0,
-      title: ""
+      id: "",
+      owner: "",
+      editors: [""],
+      orgID: "",
+      title: "",
+      description: "",
+      location: "",
+      dateTime: new Timestamp(0,0),
+      postedDateTime: new Timestamp(0,0),
+      attendees: [""],
+      type: ""
     })
   }
 
@@ -53,8 +99,27 @@ class Events extends Component<EventProps, EventState> {
           <h1>Enter event title:</h1>
           <div className = "input-field">
             <label htmlFor="title">Event Title: </label>
-            <input type ="text" value={this.state.title} id="title" onChange={this.handleChange}/>
+            <input type ="text" value={this.state.title} id="title" onChange={this.handleChangeTitle}/>
           </div>
+
+          <h1>Enter event description:</h1>
+          <div className = "input-field">
+            <label htmlFor="description">Event description: </label>
+            <input type ="text" value={this.state.description} id="description" onChange={this.handleChangeDescription}/>
+          </div>
+
+          <h1>Enter event location:</h1>
+          <div className = "input-field">
+            <label htmlFor="location">Event location: </label>
+            <input type ="text" value={this.state.location} id="location" onChange={this.handleChangeLocation}/>
+          </div>
+
+          <h1>Enter event type:</h1>
+          <div className = "input-field">
+            <label htmlFor="type">Event type: </label>
+            <input type ="text" value={this.state.type} id="type" onChange={this.handleChangeType}/>
+          </div>
+
           <div className ="input-field">
             <button className = "button">Create New Event</button>
           </div>
