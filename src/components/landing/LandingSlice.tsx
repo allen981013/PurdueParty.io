@@ -33,36 +33,36 @@ const initState: LandingStatesRedux = {
 
 // create slice
 export const landing = createSlice({
-  name: 'landing',
-  initialState: initState, 
-  reducers: {
-    loadLandingPageContent: (state: LandingStatesRedux, action) => {
-        state.events = action.payload.events
-        state.classes = action.payload.classes
-        state.clubs = action.payload.clubs
-        state.saleItems = action.payload.saleItems
+    name: 'landing',
+    initialState: initState,
+    reducers: {
+        loadLandingPageContent: (state: LandingStatesRedux, action) => {
+            state.events = action.payload.events
+            state.classes = action.payload.classes
+            state.clubs = action.payload.clubs
+            state.saleItems = action.payload.saleItems
+        },
     },
-  },
 })
 
 // actions 
 export const loadLandingPageContent = () => {
-    return async (dispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {
+    return async (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore()
         const itemLimit = 5
-        var payload: LandingStatesRedux = {events: [], classes: [], clubs: [], saleItems: []}
+        var payload: LandingStatesRedux = { events: [], classes: [], clubs: [], saleItems: [] }
         var eventsQueryPromise = db.collection("events").orderBy("dateTime").limit(itemLimit).get().then((querySnapshot: any) => {
             querySnapshot.forEach((doc: any) => {
                 let rawTime = new Date(doc.data().dateTime.seconds * 1000)
                 let today = new Date()
-                let isToday = (rawTime.getDate() == today.getDate()) 
-                    && (rawTime.getMonth() == today.getMonth()) 
+                let isToday = (rawTime.getDate() == today.getDate())
+                    && (rawTime.getMonth() == today.getMonth())
                     && (rawTime.getFullYear() == today.getFullYear())
                 var time = ""
                 if (isToday) {
                     let localeTimeStr = rawTime.toLocaleTimeString()  // format: H?H:MM:SS A/PM
                     let meridiem = localeTimeStr.split(" ")[1].toLowerCase()
-                    let localeTimeArr = rawTime.toLocaleTimeString("en-US").split(":") 
+                    let localeTimeArr = rawTime.toLocaleTimeString("en-US").split(":")
                     let hours = localeTimeArr[0]
                     let minutes = localeTimeArr[1]
                     time = hours + ":" + minutes + meridiem
@@ -72,41 +72,41 @@ export const loadLandingPageContent = () => {
                     let localeDateArr = localeDateStr.split("/")
                     time = localeDateArr[0] + "/" + localeDateArr[1]
                 }
-                payload.events.push({ 
-                    title: doc.data().title, 
-                    href: "/events/" + doc.id, 
+                payload.events.push({
+                    title: doc.data().title,
+                    href: "/events/" + doc.id,
                     time: time,
                 })
             });
         });
         var saleItemsQueryPromise = db.collection("marketplace").limit(itemLimit).get().then((querySnapshot: any) => {
-             querySnapshot.forEach((doc: any) => {
-                payload.saleItems.push({ 
-                    title: doc.data().title, 
-                    href: "/marketplace/" + doc.id, 
+            querySnapshot.forEach((doc: any) => {
+                payload.saleItems.push({
+                    title: doc.data().title,
+                    href: "/marketplace/" + doc.id,
                     price: "$" + parseFloat(doc.data().price).toFixed(2),
                 })
             });
         });
         var clubsQueryPromise = db.collection("clubs").limit(itemLimit).get().then((querySnapshot: any) => {
             querySnapshot.forEach((doc: any) => {
-                payload.clubs.push({ 
-                    title: doc.data().title, 
-                    href: "/clubs/" + doc.id, 
+                payload.clubs.push({
+                    title: doc.data().title,
+                    href: "/clubs/" + doc.id,
                 })
             });
         });
         var classesQueryPromise = db.collection("classes").limit(itemLimit).get().then((querySnapshot: any) => {
-             querySnapshot.forEach((doc: any) => {
-                payload.classes.push({ 
-                    title: doc.data().title, 
-                    href: "/classes/" + doc.id, 
+            querySnapshot.forEach((doc: any) => {
+                payload.classes.push({
+                    title: doc.data().title,
+                    href: "/classes/" + doc.id,
                 })
             });
         });
         Promise.all([eventsQueryPromise, saleItemsQueryPromise, clubsQueryPromise, classesQueryPromise])
-        .then(() => {
-            dispatch(landing.actions.loadLandingPageContent(payload))
-        });
+            .then(() => {
+                dispatch(landing.actions.loadLandingPageContent(payload))
+            });
     }
 }
