@@ -4,6 +4,7 @@ import { addEvent } from '../../store/actions/eventActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
+import { Redirect } from 'react-router-dom'
 
 // Interface/type for Events State
 interface EventState {
@@ -13,6 +14,7 @@ interface EventState {
 
 // Interface/type for Events Props
 interface EventProps {
+    auth: any,
     events: any,
     addEvent: (state:EventState) => void
 }
@@ -48,6 +50,11 @@ class Events extends Component<EventProps, EventState> {
   render() {
     console.log(this.props.events);
     console.log(this.state);
+
+    const { auth } = this.props;
+    console.log(auth);
+    if (!auth.uid) return <Redirect to= '/signin'/>
+
     return (
       <div>
         <form onSubmit = {this.handleSubmit}>
@@ -69,6 +76,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     //events: state.event.events
     events: state.firestore.ordered.events,
+    auth: state.firebase.auth
   }
 }
 
