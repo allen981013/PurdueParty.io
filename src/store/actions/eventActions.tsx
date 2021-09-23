@@ -9,7 +9,7 @@ export const addEvent = (newEvent:any) => {
 
         docref.add({
             id: newEvent.id,
-            owner: newEvent.owner,
+            owner: getState().firebase.auth.uid,
             editors: newEvent.editors,
             orgID: newEvent.orgID,
             title: newEvent.title,

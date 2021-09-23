@@ -4,6 +4,7 @@ import { addEvent } from '../../store/actions/eventActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { Timestamp } from '@firebase/firestore';
+import {Redirect} from 'react-router-dom'
 
 // Interface/type for Events State
 interface EventState {
@@ -22,6 +23,7 @@ interface EventState {
 
 // Interface/type for Events Props
 interface EventProps {
+    auth: any,
     events: any,
     addEvent: (state:EventState) => void
 }
@@ -74,7 +76,9 @@ class Events extends Component<EventProps, EventState> {
   // Handle user submit
   handleSubmit = (event:any) => {
     event.preventDefault();
+
     this.props.addEvent(this.state);
+
     this.setState({
       id: "",
       owner: "",
@@ -91,8 +95,9 @@ class Events extends Component<EventProps, EventState> {
   }
 
   render() {
-    console.log(this.props.events);
-    console.log(this.state);
+    //const {auth} = this.props;
+    //if(!auth.uid) return <Redirect to= '/'/>
+
     return (
       <div>
         <form onSubmit = {this.handleSubmit}>
@@ -134,7 +139,8 @@ class Events extends Component<EventProps, EventState> {
 
 const mapStateToProps = (state:any) => {
   return {
-    //events: state.event.events
+    auth: state.firebase.auth,
+
     events: state.firestore.ordered.events
   }
 }

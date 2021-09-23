@@ -2,6 +2,7 @@ import './App.css';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import SignIn from './components/auth/SignIn';
 import Events from './components/events/Events';
+
 // import Navbar 
 
 
