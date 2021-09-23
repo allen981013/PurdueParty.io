@@ -3,6 +3,7 @@ import { Dispatch, Action, compose } from 'redux';
 import { addEvent } from '../../store/actions/eventActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
+import { AppDispatch, RootState } from '../../store';
 
 // Interface/type for Events State
 interface EventState {
@@ -64,14 +65,14 @@ class Events extends Component<EventProps, EventState> {
   }
 }
 
-const mapStateToProps = (state:any) => {
+const mapStateToProps = (state: RootState) => {
   return {
     //events: state.event.events
-    events: state.firestore.ordered.events
+    events: state.firestore.ordered.events,
   }
 }
 
-const mapDispatchToProps = (dispatch: (action: any) => void) => {
+const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
     addEvent: (event:any) => dispatch(addEvent(event))

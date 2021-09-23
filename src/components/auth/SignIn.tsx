@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { signIn } from '../../store/actions/authActions';
+import {RootState, AppDispatch} from '../../store'
 
 // Interface/type for Events State
 interface SignInState {
@@ -70,14 +71,14 @@ class SignIn extends Component<SignInProps, SignInState> {
   }
 }
 
-const mapStateToProps = (state:any) => {
+const mapStateToProps = (state: RootState) => {
   return {
     auth: state.firebase.auth,
     authError: state.auth.authError
   }
 }
 
-const mapDispatchToProps = (dispatch: (action: any) => void) => {
+const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Return functions for signIn
   return {
     signIn: (creds:any) => dispatch(signIn(creds))
