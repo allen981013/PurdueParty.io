@@ -43,9 +43,18 @@
 .section-card__body__items {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  /* justify-content: space-between; */
   height: 308px;
   width: 100%;
+}
+
+.section-card__body__items > .item-card {
+  margin-bottom: 12px;
+}
+
+.section-card__body__items > .item-card:last-child {
+  margin-bottom: 0px;
 }
 
 /* Item card */

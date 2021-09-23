@@ -4,6 +4,7 @@ import authReducer from './authReducer';
 import { firebaseReducer } from 'react-redux-firebase';
 import { firestoreReducer } from 'redux-firestore';
 import { combineReducers } from 'redux';
+import { landing } from '../../components/landing/LandingSlice';
 
 // Add it to this list
 const rootReducer = combineReducers({
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
     firestore: firestoreReducer,
     auth: authReducer,
     event: eventReducer,
+    landing: landing.reducer,
 });
 
 export default rootReducer;
