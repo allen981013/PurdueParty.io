@@ -1,9 +1,10 @@
 import './Landing.css'
-import React, {Component} from 'react'
-import { Box, Grid, Button } from '@mui/material'
+import React, { Component } from 'react'
+import { Box, Grid } from '@mui/material'
 import { LandingStatesRedux, loadLandingPageContent } from './LandingSlice'
 import { AppDispatch, RootState } from '../../store'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 interface LandingProps {
   events: LandingStatesRedux["events"];
@@ -31,24 +32,24 @@ class Landing extends Component<LandingProps, LandingStates> {
   getItemCard(title: string, href: string, detail?: string) {
     return (
       <div className="item-card">
-        <a href={href} title={title + ", " + detail} />
-        <div className="item-card__stripe"/>
+        <Link to={href} title={title + ", " + detail} />
+        <div className="item-card__stripe" />
         <div className="item-card__body">
           <span>{title}</span>
-          {detail && <span>{detail}</span>} 
+          {detail && <span>{detail}</span>}
         </div>
       </div>
     )
   }
-  
+
   getSectionCard(title: string, items?: JSX.Element[]) {
     return (
       <Grid item xs={12} sm={6} md={4}>
         <div className="section-card">
-          <div className="section-card__stripe"/>
+          <div className="section-card__stripe" />
           <div className="section-card__body">
             <div>
-              <h3 style={{fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "larger"}}>{title} </h3>
+              <h3 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "larger" }}>{title} </h3>
             </div>
             <div className="section-card__body__items">
               {items}
@@ -58,29 +59,29 @@ class Landing extends Component<LandingProps, LandingStates> {
       </Grid>
     )
   }
-    
+
   render() {
     return (
-      <Box sx={{display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1}}>
-          <Box id="cropped-purdue-img"/>
-          <Grid container className="sections" spacing={2} sx={{padding: "32px 16px"}}>
-            {
-              this.getSectionCard("Events", 
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
+        <Box id="cropped-purdue-img" />
+        <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
+          {
+            this.getSectionCard("Events",
               this.props.events.map((event) => this.getItemCard(event.title, event.href, event.time)))
-            }
-            {
-              this.getSectionCard("Marketplace", 
+          }
+          {
+            this.getSectionCard("Marketplace",
               this.props.saleItems.map((item) => this.getItemCard(item.title, item.href, item.price)))
-            }
-            {
-              this.getSectionCard("Classes", 
+          }
+          {
+            this.getSectionCard("Classes",
               this.props.classes.map((class_) => this.getItemCard(class_.title, class_.href)))
-            }
-            {
-              this.getSectionCard("Clubs", 
+          }
+          {
+            this.getSectionCard("Clubs",
               this.props.clubs.map((club) => this.getItemCard(club.title, club.href)))
-            }
-          </Grid>
+          }
+        </Grid>
       </Box>
     )
   }
