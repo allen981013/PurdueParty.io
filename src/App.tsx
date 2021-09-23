@@ -2,6 +2,7 @@ import './App.css';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Landing from './components/landing/Landing';
 import SignIn from './components/auth/SignIn';
+import Homepage from './components/homepage/Homepage';
 import Events from './components/events/Events';
 import NavBar from './components/navbar/NavBar'
 // import Navbar 
