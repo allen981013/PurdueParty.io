@@ -6,6 +6,7 @@ export const addEvent = (newEvent:any) => {
     return(dispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {
         const db = getFirestore();
         var docref = db.collection('events');
+
         docref.add({
             id: newEvent.id,
             owner: newEvent.owner,
