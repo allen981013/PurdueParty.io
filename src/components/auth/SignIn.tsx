@@ -62,7 +62,7 @@ class SignIn extends Component<SignInProps, SignInState> {
           <p>
             Password: 
           </p>
-          <input type="text" value={this.state.password} id="password"  onChange={this.handlePasswordChange}/>
+          <input type="password" value={this.state.password} id="password"  onChange={this.handlePasswordChange}/>
           <p></p>
           <button>Login</button>
         </form>
