@@ -1,15 +1,25 @@
-// Dummy Data for testing, this gets replaced by Firebase call
-const initState = {
-    authError: null
+
+type AuthState = {
+    authError?: string
+}
+
+const initState: AuthState = {  // NOTE: We need this type annotation so that the RootState type can be inferred properly. 
+    authError: undefined,       // Perhaps because initState prop, authError, can assume two types (string and undefined).
 };
 
-const authReducer = (state = initState, action:any) => {
+
+type Action = {
+    type: string,
+    payload?: any, // Annotate the payload with proper type, if there are any
+}
+
+const authReducer = (state = initState, action: Action): AuthState => {
     switch (action.type) {
         case 'LOGIN_SUCCESS':
             console.log('user logged in');
             return {
                 ...state,
-                authError: null
+                authError: undefined 
             }
         case 'LOGIN_ERROR':
             console.log('error during user login');
@@ -30,7 +40,7 @@ const authReducer = (state = initState, action:any) => {
             console.log('user signed up');
             return {
                 ...state,
-                authError: null
+                authError: undefined 
             }
         case 'SIGNUP_ERROR':
             console.log('err during user sign up');
@@ -39,7 +49,7 @@ const authReducer = (state = initState, action:any) => {
                 authError: "Signup failed"
             }
         default :
-            return state;
+            return initState;
     }
 }
 
