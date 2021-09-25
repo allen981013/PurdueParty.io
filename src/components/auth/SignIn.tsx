@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { signIn } from '../../store/actions/authActions';
 import {RootState, AppDispatch} from '../../store'
+import { Dispatch, Action } from 'redux';
 
 // Interface/type for Events State
 interface SignInState {
@@ -65,6 +66,9 @@ class SignIn extends Component<SignInProps, SignInState> {
           <input type="text" value={this.state.password} id="password"  onChange={this.handlePasswordChange}/>
           <p></p>
           <button>Login</button>
+          <p>
+            testerrormsg
+          </p>
         </form>
       </div>
     )

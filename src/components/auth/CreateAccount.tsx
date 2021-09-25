@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { signUp } from '../../store/actions/authActions';
+import {RootState, AppDispatch} from '../../store'
 
 // Interface/type for create account State
 interface CreateAccountState {
   email: string,
   password: string,
-  confirmpassword: string
+  confirmpassword: string,
+  bio: string
 }
 
 // Interface/type for create account Props
@@ -23,7 +25,8 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
     this.state = {
       email: "",
       password: "",
-      confirmpassword: ""
+      confirmpassword: "",
+      bio: ""
     };
   }
 
@@ -97,7 +100,7 @@ const mapStateToProps = (state:any) => {
   }
 }
 
-const mapDispatchToProps = (dispatch: (action: any) => void) => {
+const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Return functions for signUp
   return {
     signUp: (creds:any) => dispatch(signUp(creds))
