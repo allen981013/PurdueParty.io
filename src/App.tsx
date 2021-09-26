@@ -2,6 +2,8 @@ import './App.css';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import SignIn from './components/auth/SignIn';
 import Events from './components/events/Events';
+import CreateEvent from './components/events/CreateEvent';
+
 
 // import Navbar 
 
@@ -14,6 +16,8 @@ function App() {
         <Switch>
           <Route exact path = '/' component = {SignIn} />
           <Route path = '/events' component = {Events} />
+          <Route path = '/create-event' component = {CreateEvent} />
+
         </Switch>
       </div>
     </BrowserRouter>

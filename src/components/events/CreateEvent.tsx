@@ -28,7 +28,7 @@ interface EventProps {
     addEvent: (state:EventState) => void
 }
 
-class Events extends Component<EventProps, EventState> {
+class CreateEvent extends Component<EventProps, EventState> {
 
   // Initialize state
   constructor(props:EventProps) {
@@ -55,6 +55,24 @@ class Events extends Component<EventProps, EventState> {
     })
   }
 
+  handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      description : e.target.value
+    })
+  }
+
+  handleChangeLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      location : e.target.value
+    })
+  }
+
+  handleChangeType = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      type : e.target.value
+    })
+  }
+
   // Handle user submit
   handleSubmit = (event:any) => {
     event.preventDefault();
@@ -77,14 +95,43 @@ class Events extends Component<EventProps, EventState> {
   }
 
   render() {
+    //const {auth} = this.props;
+    //if(!auth.uid) return <Redirect to= '/'/>
+
     return (
       <div>
-        <div>
-           <h1> Purdue Events </h1>
-        </div>
-        <div>
-            <a href="/create-event">Create a new event</a>
-        </div>
+        <form onSubmit = {this.handleSubmit}>
+          <h1>Enter event title:</h1>
+          <div className = "input-field">
+            <label htmlFor="title">Event Title: </label>
+            <input type ="text" value={this.state.title} placeholder="What do you want your event to be called?" 
+                   id="title" onChange={this.handleChangeTitle}/>
+          </div>
+
+          <h1>Enter event description:</h1>
+          <div className = "input-field">
+            <label htmlFor="description">Event description: </label>
+            <input type ="text" value={this.state.description} placeholder="What's your event about?" id="description" 
+                   onChange={this.handleChangeDescription}/>
+          </div>
+
+          <h1>Enter event location:</h1>
+          <div className = "input-field">
+            <label htmlFor="location">Event location: </label>
+            <input type ="text" value={this.state.location} placeholder="Where's this going down?" id="location" 
+                   onChange={this.handleChangeLocation}/>
+          </div>
+
+          <h1>Enter event type:</h1>
+          <div className = "input-field">
+            <label htmlFor="type">Event type: </label>
+            <input type ="text" value={this.state.type} placeholder="What type of event is this?" id="type" onChange={this.handleChangeType}/>
+          </div>
+
+          <div className ="input-field">
+            <button className = "button">Create New Event</button>
+          </div>
+        </form>
       </div>
     )
   }
@@ -110,4 +157,4 @@ export default compose<React.ComponentType<EventProps>>(
   firestoreConnect([
     { collection: 'events'}
   ])
-)(Events)
+)(CreateEvent)
