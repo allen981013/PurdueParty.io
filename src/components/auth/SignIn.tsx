@@ -3,11 +3,13 @@ import { connect } from 'react-redux';
 import { signIn } from '../../store/actions/authActions';
 import {RootState, AppDispatch} from '../../store'
 import { Dispatch, Action } from 'redux';
+import { getFirebase } from 'react-redux-firebase';
 
 // Interface/type for Events State
 interface SignInState {
   email: string,
-  password: string
+  password: string,
+  errormsg: string
 }
 
 // Interface/type for Events Props
@@ -22,7 +24,8 @@ class SignIn extends Component<SignInProps, SignInState> {
     super(props);
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      errormsg: ""
     };
   }
 
@@ -44,10 +47,20 @@ class SignIn extends Component<SignInProps, SignInState> {
   handleSubmit = (event:any) => {
     event.preventDefault();
     this.props.signIn(this.state);
-    this.setState({
-      email: "",
-      password: ""
-    })
+    const firebase = getFirebase();
+    const user = firebase.auth().currentUser;
+    if(user != null && user.email === this.state.email){
+      this.setState({
+        errormsg: "Sign-in successful",
+        email: "",
+        password: ""
+      })
+    }
+    else {
+      this.setState({
+        errormsg: "Please make sure Email and Password are both valid"      
+      })
+    }
   }
 
   render() {
@@ -67,7 +80,7 @@ class SignIn extends Component<SignInProps, SignInState> {
           <p></p>
           <button>Login</button>
           <p>
-            testerrormsg
+            {this.state.errormsg}
           </p>
         </form>
       </div>

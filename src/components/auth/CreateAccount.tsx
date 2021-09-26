@@ -1,71 +1,90 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { signUp } from '../../store/actions/authActions';
-import {RootState, AppDispatch} from '../../store'
+import { RootState, AppDispatch } from '../../store'
+import { getFirebase } from 'react-redux-firebase';
+import { constants } from 'redux-firestore';
 
 // Interface/type for create account State
 interface CreateAccountState {
   email: string,
   password: string,
   confirmpassword: string,
-  bio: string
+  bio: string,
+  errormsg: string
 }
 
 // Interface/type for create account Props
 interface CreateAccountProps {
-    auth: any,
-    signUp: (state:CreateAccountState) => void
+  auth: any,
+  signUp: (state: CreateAccountState) => void
 }
 
 class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
   // Initialize state
 
-  constructor(props:CreateAccountProps) {
+  constructor(props: CreateAccountProps) {
     super(props);
     this.state = {
       email: "",
       password: "",
       confirmpassword: "",
-      bio: ""
+      bio: "",
+      errormsg: ""
     };
   }
 
   // State updater during form modification
   handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      email : e.target.value
+      email: e.target.value
     })
   }
 
   // State updater during form modification
   handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      password : e.target.value
+      password: e.target.value
     })
   }
 
   // State updater during form modification
   handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      confirmpassword : e.target.value
+      confirmpassword: e.target.value
     })
   }
 
   // Handle user submit
-  handleSubmit = (event:any) => {
+  handleSubmit = (event: any) => {
     event.preventDefault();
-    if(this.state.password === this.state.confirmpassword){
-        this.props.signUp(this.state);
-        this.setState({
-            email: "",
-            password: "",
-            confirmpassword: ""
-        })
+
+    if (this.state.email === "") {
+      this.setState({
+        errormsg: "Please fill in all required fields"
+      })
+    }
+    else if (this.state.password !== "" && this.state.password === this.state.confirmpassword) {
+      // this.setState({
+      //   errormsg: "Please make sure your email is not associated with an existing user"
+      // })
+
+      this.props.signUp(this.state);
+      this.setState({
+        //errormsg: "Account creation successful",
+        errormsg: "",
+        email: "",
+        password: "",
+        confirmpassword: ""
+      })
+
+    }
+    else {
+      this.setState({
+        errormsg: "Please make sure both passwords are matching, valid, and not empty"
+      })
     }
   }
-
-  
-
 
   render() {
     //console.log(this.props.auth);
@@ -76,24 +95,27 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
           <p>
             Email:
           </p>
-          <input type="text" value={this.state.email} id="email" onChange={this.handleEmailChange}/>
+          <input type="text" value={this.state.email} id="email" onChange={this.handleEmailChange} />
           <p>
-            Password: 
+            Password:
           </p>
-          <input type="text" value={this.state.password} id="email" onChange={this.handlePasswordChange}/>
+          <input type="text" value={this.state.password} id="email" onChange={this.handlePasswordChange} />
           <p>
-            Confirm Password: 
+            Confirm Password:
           </p>
-          <input type="text" value={this.state.confirmpassword} id="password"  onChange={this.handleConfirmPasswordChange}/>
+          <input type="text" value={this.state.confirmpassword} id="password" onChange={this.handleConfirmPasswordChange} />
           <p></p>
           <button>Create Account</button>
         </form>
+        <p>
+          {this.state.errormsg}
+        </p>
       </div>
     )
   }
 }
 
-const mapStateToProps = (state:any) => {
+const mapStateToProps = (state: any) => {
   return {
     auth: state.firebase.auth,
     authError: state.auth.authError
@@ -103,7 +125,7 @@ const mapStateToProps = (state:any) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Return functions for signUp
   return {
-    signUp: (creds:any) => dispatch(signUp(creds))
+    signUp: (creds: any) => dispatch(signUp(creds))
   }
 }
 
