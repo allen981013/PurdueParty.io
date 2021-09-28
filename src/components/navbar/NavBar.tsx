@@ -1,10 +1,11 @@
 import './NavBar.css'
 import { Link } from 'react-router-dom'
 import { signOut } from '../../store/actions/authActions'
-import { FirebaseReducer} from 'react-redux-firebase';
+import { FirebaseReducer } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Button } from '@mui/material'
 
 interface NavBarProps {
   auth: FirebaseReducer.AuthState;
@@ -44,12 +45,12 @@ class NavBar extends Component<NavBarProps, NavBarState> {
         <div id="topbar__black" />
         <div id="topbar__nav">
           <div>
-            <Link to="/">Home</Link>
-            <Link to="/events">Event</Link>
-            <Link to="/market">Market</Link>
-            <Link to="/life">Life</Link>
-            <Link to="/classes">Class</Link>
-            <Link to="/clubs">Club</Link>
+            <Button component={Link} to="/">Home</Button>
+            <Button component={Link} to="/events">Event</Button>
+            <Button component={Link} to="/market">Market</Button>
+            <Button component={Link} to="/life">Life</Button>
+            <Button component={Link} to="/classes">Class</Button>
+            <Button component={Link} to="/clubs">Club</Button>
           </div>
         </div>
       </div>

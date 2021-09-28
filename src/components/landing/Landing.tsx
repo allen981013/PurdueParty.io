@@ -5,7 +5,7 @@ import { LandingStatesRedux, loadLandingPageContent } from './LandingSlice'
 import { AppDispatch, RootState } from '../../store'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { IconButton } from '@mui/material'
+import { Button, IconButton } from '@mui/material'
 import { ArrowForwardOutlined } from "@mui/icons-material"
 
 interface LandingProps {
@@ -19,7 +19,6 @@ interface LandingProps {
 interface LandingStates {
 }
 
-// TODO: Add a "navigate to" icon button in each section
 // TODO: Add a decoration icon in each section
 
 class Landing extends Component<LandingProps, LandingStates> {
@@ -38,14 +37,18 @@ class Landing extends Component<LandingProps, LandingStates> {
 
   getItemCard(title: string, href: string, detail?: string) {
     return (
-      <div className="item-card">
-        <Link to={href} title={detail ? title + ", " + detail : title} />
+      <Button
+        component={Link}
+        to={href}
+        title={detail ? title + ", " + detail : title}
+        className="item-card"
+      >
         <div className="item-card__stripe" />
         <div className="item-card__body">
           <span>{title}</span>
           {detail && <span>{detail}</span>}
         </div>
-      </div>
+      </Button>
     )
   }
 
