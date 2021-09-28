@@ -42,16 +42,34 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     })
   }
 
+  handleSignOutClick = (e: any) => {
+    this.props.signOut()
+  }
+
+  getGreetingOrAuthButton(text: string, href: string, onClickHandler?: (e: any) => void) {
+    return onClickHandler === undefined
+      ? <Button component={Link}
+        to={href}
+        sx={{ textTransform: "unset", fontWeight: "light", textDecoration: "underline !important" }}
+      >{text}
+      </Button>
+      : <Button component={Link}
+        to={href}
+        onClick={onClickHandler}
+        sx={{ textTransform: "unset", fontWeight: "light", textDecoration: "underline !important"}}
+      >{text}
+      </Button>
+  }
+
   render() {
     return (
       <div id='topbar'>
         <div id='topbar__gold'>
           <div>
-            {!this.isLoggedIn() && <Link to="/signin">Hi, {this.props.username}</Link>}
-            {!this.isLoggedIn() && <Link to="/signin">Sign in</Link>}
-            {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, {this.props.username}</Link>}
-            {this.isLoggedIn() && <Link to="/" onClick={(e) =>
-              this.props.signOut()}>Sign out</Link>}
+            {!this.isLoggedIn() && this.getGreetingOrAuthButton("Hi, " + this.props.username, "/signin")}
+            {!this.isLoggedIn() && this.getGreetingOrAuthButton("Sign in", "/signin")}
+            {this.isLoggedIn() && this.getGreetingOrAuthButton("Hi, " + this.props.username, "/" + this.props.username)}
+            {this.isLoggedIn() && this.getGreetingOrAuthButton("Sign out", "/", this.handleSignOutClick)}
           </div>
         </div>
         <div id="topbar__black" />
@@ -68,7 +86,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             sx={{
               width: '100%',
               maxWidth: 150,
-              display: {sm: "none", padding: "0px"}
+              display: { sm: "none", padding: "0px" }
             }}
             component="nav"
           >
