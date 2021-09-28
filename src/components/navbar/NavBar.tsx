@@ -10,10 +10,12 @@ import { connect } from 'react-redux';
 interface NavBarProps {
   auth: FirebaseReducer.AuthState;
   username: string;
+  loadUsername: () => void;
   signOut: () => void;
 }
 
 interface NavBarState {
+  loginStatusUpdated: boolean;
 }
 
 // TODO: Check if user is logged in and update navbar accordingly
@@ -23,10 +25,10 @@ class NavBar extends Component<NavBarProps, NavBarState> {
 
   constructor(props: NavBarProps) {
     super(props)
-    this.state = { username: "Raziq" }
   }
 
-  isLoggedIn() {
+  updateLoginStatus() {
+    this.loadUsername()
     return this.props.auth.uid != undefined
   }
 
@@ -35,11 +37,11 @@ class NavBar extends Component<NavBarProps, NavBarState> {
       <div id='topbar'>
         <div id='topbar__gold'>
           <div>
-            {!this.isLoggedIn() && <Link to="/signin">Hello, Guest</Link>}
-            {!this.isLoggedIn() && <Link to="/signin">Sign in</Link>}
-            {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, &nbsp;
+            {!this.updateLoginStatus() && <Link to="/signin">Hello, Guest</Link>}
+            {!this.updateLoginStatus() && <Link to="/signin">Sign in</Link>}
+            {this.updateLoginStatus() && <Link to={"/" + this.props.username}>Hi, &nbsp;
               {this.props.username}</Link>}
-            {this.isLoggedIn() && <Link to="/" onClick={(e) =>
+            {this.updateLoginStatus() && <Link to="/" onClick={(e) =>
               this.props.signOut()}>Sign out</Link>}
           </div>
         </div>
@@ -79,4 +81,4 @@ export default compose<React.ComponentType<NavBarProps>>(
   firestoreConnect([
     { collection: 'users' }
   ])
-)(NavBar) as any
+)(NavBar) as any 
