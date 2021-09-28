@@ -1,19 +1,22 @@
 import './NavBar.css'
 import { Link } from 'react-router-dom'
-import { signOut } from '../../store/actions/authActions'
+import { refreshUserData, signOut } from '../../store/actions/authActions'
 import { FirebaseReducer } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
-import { Button } from '@mui/material'
+import { Box, Button, Collapse, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { Menu } from '@mui/icons-material'
 
 interface NavBarProps {
   auth: FirebaseReducer.AuthState;
   username: string;
+  refreshUserData: () => void;
   signOut: () => void;
 }
 
 interface NavBarState {
+  isCollapsibleMenuOpen: boolean;
 }
 
 // TODO: Check if user is logged in and update navbar accordingly
@@ -23,10 +26,20 @@ class NavBar extends Component<NavBarProps, NavBarState> {
 
   constructor(props: NavBarProps) {
     super(props)
+    this.state = {
+      isCollapsibleMenuOpen: false,
+    }
+    this.props.refreshUserData()
   }
 
   isLoggedIn() {
     return this.props.auth.uid != undefined
+  }
+
+  handleCollapsibleMenuClick = (e: any) => {
+    this.setState((state, props) => {
+      return { ...state, isCollapsibleMenuOpen: !state.isCollapsibleMenuOpen }
+    })
   }
 
   render() {
@@ -36,22 +49,60 @@ class NavBar extends Component<NavBarProps, NavBarState> {
           <div>
             {!this.isLoggedIn() && <Link to="/signin">Hi, {this.props.username}</Link>}
             {!this.isLoggedIn() && <Link to="/signin">Sign in</Link>}
-            {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, &nbsp;
-              {this.props.username}</Link>}
+            {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, {this.props.username}</Link>}
             {this.isLoggedIn() && <Link to="/" onClick={(e) =>
               this.props.signOut()}>Sign out</Link>}
           </div>
         </div>
         <div id="topbar__black" />
         <div id="topbar__nav">
-          <div>
+          <Box sx={{ display: { xs: "none !important", sm: "flex !important" }, height: "50px" }}>
             <Button component={Link} to="/">Home</Button>
             <Button component={Link} to="/events">Event</Button>
             <Button component={Link} to="/market">Market</Button>
             <Button component={Link} to="/life">Life</Button>
             <Button component={Link} to="/classes">Class</Button>
             <Button component={Link} to="/clubs">Club</Button>
-          </div>
+          </Box>
+          <List
+            sx={{
+              width: '100%',
+              maxWidth: 150,
+              display: {sm: "none", padding: "0px"}
+            }}
+            component="nav"
+          >
+            <ListItemButton
+              // sx={{ height: "40px" }}
+              onClick={this.handleCollapsibleMenuClick}
+            >
+              <ListItemIcon><Menu /></ListItemIcon>
+              <ListItemText>Menu</ListItemText>
+            </ListItemButton>
+            <Collapse
+              in={this.state.isCollapsibleMenuOpen}
+              orientation={"vertical"}
+            >
+              <ListItemButton alignItems={"center"} component={Link} to="/">
+                <ListItemText>Home</ListItemText>
+              </ListItemButton>
+              <ListItemButton alignItems={"center"} component={Link} to="/events">
+                <ListItemText>Event</ListItemText>
+              </ListItemButton>
+              <ListItemButton alignItems={"center"} component={Link} to="/market">
+                <ListItemText>Market</ListItemText>
+              </ListItemButton>
+              <ListItemButton alignItems={"center"} component={Link} to="/life">
+                <ListItemText>Life</ListItemText>
+              </ListItemButton>
+              <ListItemButton alignItems={"center"} component={Link} to="/classes">
+                <ListItemText>Class</ListItemText>
+              </ListItemButton>
+              <ListItemButton alignItems={"center"} component={Link} to="/clubs">
+                <ListItemText>Clubs</ListItemText>
+              </ListItemButton>
+            </Collapse>
+          </List>
         </div>
       </div>
     )
@@ -61,12 +112,13 @@ class NavBar extends Component<NavBarProps, NavBarState> {
 const mapStateToProps = (state: RootState) => {
   return {
     auth: state.firebase.auth,
-    username: state.auth.username,
+    username: state.auth.lastCheckedUsername,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
+    refreshUserData: () => dispatch(refreshUserData()),
     signOut: () => dispatch(signOut())
   }
 }
