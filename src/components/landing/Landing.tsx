@@ -24,6 +24,13 @@ interface LandingStates {
 
 class Landing extends Component<LandingProps, LandingStates> {
 
+  livingPageItems = [
+    { title: "Gym", href: "living/gym" }, 
+    { title: "Laundry", href: "living/laundry" },
+    { title: "Bus", href: "living/bus" },
+    { title: "Dining", href: "living/dining" },
+  ]
+
   constructor(props: LandingProps) {
     super(props);
     this.props.loadLandingPageContent()
@@ -32,7 +39,7 @@ class Landing extends Component<LandingProps, LandingStates> {
   getItemCard(title: string, href: string, detail?: string) {
     return (
       <div className="item-card">
-        <Link to={href} title={title + ", " + detail} />
+        <Link to={href} title={detail ? title + ", " + detail: title} />
         <div className="item-card__stripe" />
         <div className="item-card__body">
           <span>{title}</span>
@@ -80,6 +87,10 @@ class Landing extends Component<LandingProps, LandingStates> {
           {
             this.getSectionCard("Clubs",
               this.props.clubs.map((club) => this.getItemCard(club.title, club.href)))
+          }
+          {
+            this.getSectionCard("Living",
+              this.livingPageItems.map((item) => this.getItemCard(item.title, item.href)))
           }
         </Grid>
       </Box>

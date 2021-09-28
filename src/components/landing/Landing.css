@@ -110,7 +110,7 @@
   display: block;
 }
 
-.item-card__body span:last-child {
+.item-card__body span:nth-child(2){
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
