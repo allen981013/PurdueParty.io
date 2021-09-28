@@ -14,7 +14,7 @@ export const refreshUserData = () => {
     const db = getFirestore()
     db.collection("users").doc(userId).get()
       .then((doc: any) => {
-        payload = { lastCheckedUsername: doc.data().username, lastCheckedIsLoggedIn: true }
+        payload = { lastCheckedUsername: doc.data().userName, lastCheckedIsLoggedIn: true }
         dispatch({ type: 'USER_DATA_REFRESHED', payload: payload })
       });
 
@@ -36,7 +36,7 @@ export const signIn = (credentials: { email: string, password: string }) => {
       const db = getFirestore()
       db.collection("users").doc(userId).get()
         .then((doc: any) => {
-          let payload = { lastCheckedUsername: doc.data().username }
+          let payload = { lastCheckedUsername: doc.data().userName }
           dispatch({ type: 'LOGIN_SUCCESS', payload: payload })
         });
     }).catch((err: any) => {
