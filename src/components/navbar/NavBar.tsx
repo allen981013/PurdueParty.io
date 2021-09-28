@@ -1,21 +1,18 @@
 import './NavBar.css'
 import { Link } from 'react-router-dom'
 import { signOut } from '../../store/actions/authActions'
-import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
+import { FirebaseReducer} from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import React, { Component } from 'react';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
 
 interface NavBarProps {
   auth: FirebaseReducer.AuthState;
   username: string;
-  loadUsername: () => void;
   signOut: () => void;
 }
 
 interface NavBarState {
-  loginStatusUpdated: boolean;
 }
 
 // TODO: Check if user is logged in and update navbar accordingly
@@ -27,8 +24,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     super(props)
   }
 
-  updateLoginStatus() {
-    this.loadUsername()
+  isLoggedIn() {
     return this.props.auth.uid != undefined
   }
 
@@ -37,11 +33,11 @@ class NavBar extends Component<NavBarProps, NavBarState> {
       <div id='topbar'>
         <div id='topbar__gold'>
           <div>
-            {!this.updateLoginStatus() && <Link to="/signin">Hello, Guest</Link>}
-            {!this.updateLoginStatus() && <Link to="/signin">Sign in</Link>}
-            {this.updateLoginStatus() && <Link to={"/" + this.props.username}>Hi, &nbsp;
+            {!this.isLoggedIn() && <Link to="/signin">Hi, {this.props.username}</Link>}
+            {!this.isLoggedIn() && <Link to="/signin">Sign in</Link>}
+            {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, &nbsp;
               {this.props.username}</Link>}
-            {this.updateLoginStatus() && <Link to="/" onClick={(e) =>
+            {this.isLoggedIn() && <Link to="/" onClick={(e) =>
               this.props.signOut()}>Sign out</Link>}
           </div>
         </div>
@@ -62,23 +58,16 @@ class NavBar extends Component<NavBarProps, NavBarState> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  console.log( state.firestore.ordered.users)
   return {
     auth: state.firebase.auth,
-    userName: ""
+    username: state.auth.username,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
-  // Return functions from actions folder
   return {
     signOut: () => dispatch(signOut())
   }
 }
 
-export default compose<React.ComponentType<NavBarProps>>(
-  connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect([
-    { collection: 'users' }
-  ])
-)(NavBar) as any 
+export default connect(mapStateToProps, mapDispatchToProps)(NavBar)
