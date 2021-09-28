@@ -36,17 +36,24 @@ export const landing = createSlice({
     name: 'landing',
     initialState: initState,
     reducers: {
-        loadLandingPageContent: (state: LandingStatesRedux, action) => {
-            state.events = action.payload.events
-            state.classes = action.payload.classes
-            state.clubs = action.payload.clubs
-            state.saleItems = action.payload.saleItems
+        landingPageContentLoaded: (state: LandingStatesRedux, action) => {
+            return {
+                ...state,
+                events: action.payload.events,
+                classes: action.payload.classes,
+                clubs: action.payload.clubs,
+                saleItems: action.payload.saleItems,
+            }
         },
     },
 })
 
 // actions 
 export const loadLandingPageContent = () => {
+    /**
+     * Read db content for events, marketplace, classes, and clubs data and 
+     * populate the store through the reducer.
+     */
     return async (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore()
         const itemLimit = 5
@@ -106,7 +113,7 @@ export const loadLandingPageContent = () => {
         });
         Promise.all([eventsQueryPromise, saleItemsQueryPromise, clubsQueryPromise, classesQueryPromise])
             .then(() => {
-                dispatch(landing.actions.loadLandingPageContent(payload))
+                dispatch(landing.actions.landingPageContentLoaded(payload))
             });
     }
 }

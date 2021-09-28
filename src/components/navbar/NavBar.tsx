@@ -1,10 +1,9 @@
 import './NavBar.css'
 import { Link } from 'react-router-dom'
 import { signOut } from '../../store/actions/authActions'
-import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
+import { FirebaseReducer} from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import React, { Component } from 'react';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
 
 interface NavBarProps {
@@ -23,7 +22,6 @@ class NavBar extends Component<NavBarProps, NavBarState> {
 
   constructor(props: NavBarProps) {
     super(props)
-    this.state = { username: "Raziq" }
   }
 
   isLoggedIn() {
@@ -35,7 +33,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
       <div id='topbar'>
         <div id='topbar__gold'>
           <div>
-            {!this.isLoggedIn() && <Link to="/signin">Hello, Guest</Link>}
+            {!this.isLoggedIn() && <Link to="/signin">Hi, {this.props.username}</Link>}
             {!this.isLoggedIn() && <Link to="/signin">Sign in</Link>}
             {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, &nbsp;
               {this.props.username}</Link>}
@@ -60,23 +58,16 @@ class NavBar extends Component<NavBarProps, NavBarState> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  console.log( state.firestore.ordered.users)
   return {
     auth: state.firebase.auth,
-    userName: ""
+    username: state.auth.username,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
-  // Return functions from actions folder
   return {
     signOut: () => dispatch(signOut())
   }
 }
 
-export default compose<React.ComponentType<NavBarProps>>(
-  connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect([
-    { collection: 'users' }
-  ])
-)(NavBar) as any
+export default connect(mapStateToProps, mapDispatchToProps)(NavBar)
