@@ -1,10 +1,12 @@
 
 type AuthState = {
-    authError?: string
+    authError?: string,
+    username: string
 }
 
 const initState: AuthState = {  // NOTE: We need this type annotation so that the RootState type can be inferred properly. 
     authError: undefined,       // Perhaps because initState prop, authError, can assume two types (string and undefined).
+    username: "Guest"
 };
 
 
@@ -16,9 +18,10 @@ type Action = {
 const authReducer = (state = initState, action: Action): AuthState => {
     switch (action.type) {
         case 'LOGIN_SUCCESS':
-            console.log('user logged in');
+            console.log('user logged in: ', action.payload);
             return {
                 ...state,
+                username: action.payload.username,
                 authError: undefined 
             }
         case 'LOGIN_ERROR':
@@ -29,7 +32,10 @@ const authReducer = (state = initState, action: Action): AuthState => {
             }
         case 'SIGNOUT_SUCCESS':
             console.log('user signed out');
-            return state;
+            return {
+              ...state,
+              username: "Guest",
+            };
         case 'SIGNOUT_ERROR':
             console.log('error during user sign out');
             return {
@@ -49,7 +55,7 @@ const authReducer = (state = initState, action: Action): AuthState => {
                 authError: "Signup failed"
             }
         default :
-            return initState;
+            return state;
     }
 }
 
