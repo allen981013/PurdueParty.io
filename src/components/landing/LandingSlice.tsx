@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Action, Dispatch } from 'redux'
+import { Timestamp } from 'firebase/firestore'
 
 // type for states returned by reducer
 export interface LandingStatesRedux {
@@ -58,7 +59,10 @@ export const loadLandingPageContent = () => {
         const db = getFirestore()
         const itemLimit = 5
         var payload: LandingStatesRedux = { events: [], classes: [], clubs: [], saleItems: [] }
-        var eventsQueryPromise = db.collection("events").orderBy("dateTime").limit(itemLimit).get().then((querySnapshot: any) => {
+        var eventsQueryPromise = db.collection("events")
+        .where("dateTime", ">", Timestamp.now())
+        .orderBy("dateTime").limit(itemLimit)
+        .get().then((querySnapshot: any) => {
             querySnapshot.forEach((doc: any) => {
                 let rawTime = new Date(doc.data().dateTime.seconds * 1000)
                 let today = new Date()
