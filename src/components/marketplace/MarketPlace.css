@@ -1,0 +1,28 @@
+.item-card {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    width: 100%;
+    border: 1px solid var(--light-grey) !important;
+    border-radius: 0px !important;
+    text-overflow: ellipsis;
+    padding: 0px !important;
+  }
+  
+  .item-card__stripe {
+    height: 100%;
+    width: 8px;
+    background: var(--dull-gold);
+  }
+  
+  .item-card__body {
+    padding: 8px 16px;
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    /* display: block; */
+  }

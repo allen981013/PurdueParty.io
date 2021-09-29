@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import thunk from 'redux-thunk';
 import { configureStore } from '@reduxjs/toolkit'
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import rootReducer from './store/reducers/rootReducer'
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
 import { getFirebase, ReactReduxFirebaseProvider, isLoaded } from 'react-redux-firebase';
 import { getFirestore, createFirestoreInstance, reduxFirestore } from 'redux-firestore';
+import { RootState } from './store';
+import { refreshUserData } from './store/actions/authActions';
 
 const firebaseConfig: any = {
   apiKey: "AIzaSyAtGu2EAwCasekXH6yzYxy7NqqA3APpus0",
@@ -31,12 +33,11 @@ const rrfConfig = {
 
 firebase.initializeApp(firebaseConfig);
 firebase.firestore();
-console.log(firebase);
 
 export const store = configureStore({
   reducer: rootReducer,
   middleware: [thunk.withExtraArgument({ getFirebase, getFirestore })],
-  enhancers:  [
+  enhancers: [
     reduxFirestore(firebase, firebaseConfig)
   ]
 })
@@ -49,9 +50,13 @@ const rrfProps = {
 };
 
 function AuthIsLoaded({ children }: any) {
-  const auth = useSelector( (state: any )=> state.firebase.auth);
-  if (!isLoaded(auth)) return <div>Loading Screen...</div>;
-    return children;
+  const auth = useSelector((state: RootState) => state.firebase.auth);
+  const lastCheckedIsLoggedIn = useSelector((state: RootState) => state.auth.lastCheckedIsLoggedIn);
+  const dispatch = useDispatch()
+  dispatch(refreshUserData())
+  if (!isLoaded(auth)) return <div></div>;
+  if (isLoaded(auth) && auth.uid && !lastCheckedIsLoggedIn) return <div></div>;
+  return children;
 }
 
 ReactDOM.render(
