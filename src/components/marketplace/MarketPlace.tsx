@@ -37,14 +37,13 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
     constructor(props:MarketPlaceProps) {
         super(props);
         this.state = {
-            title: "",
-            price: 0,
-            seller: ""
+
         }
     }
 
+
     //material-ui use card
-    getItemCard(title: string, price: number, seller: string) {
+    getItemCard(title: string, price: number, seller: string, id: string) {
         return (
           <Grid item xs={12} sm={6} md={4}>
             <div className="section-card">
@@ -54,6 +53,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
                   <h3 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "larger" }}>{title} </h3>
                   <h1 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "smaller" }}>Cost: {price} </h1>
                   <h1 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "smaller" }}>Sold By: {seller} </h1>
+                  <a href={"/sellListing/" + id}> View Additional Information </a>
                 </div>
               </div>
             </div>
@@ -66,20 +66,13 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
         //const { sellListings } = this.props.marketplace;
         console.log(this.props.marketplace);
         if (!auth.uid) return <Redirect to= '/signin'/>
-
-        var renderedListings:any[] = [];
-
-        if (this.props.marketplace !== undefined) {
-            renderedListings = this.props.marketplace;
-        }
-
         return (
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
             <Box id="cropped-purdue-img" />
             <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
                 { this.props.marketplace != null
                 ?
-                this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.owner))
+                this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.owner, sellListing.id))
                 :
                 <div></div>
                 }
