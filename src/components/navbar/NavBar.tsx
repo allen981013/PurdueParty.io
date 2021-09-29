@@ -43,13 +43,19 @@ class NavBar extends Component<NavBarProps, NavBarState> {
   }
 
   render() {
+
+    var userName = "User";
+    if (this.props.username) {
+      userName = this.props.username
+    }
+
     return (
       <div id='topbar'>
         <div id='topbar__gold'>
           <div>
-            {!this.isLoggedIn() && <Link to="/signin">Hi, {this.props.username}</Link>}
+            {!this.isLoggedIn() && <Link to="/signin">Hi, {userName}</Link>}
             {!this.isLoggedIn() && <Link to="/signin">Sign in</Link>}
-            {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, {this.props.username}</Link>}
+            {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, {userName}</Link>}
             {this.isLoggedIn() && <Link to="/" onClick={(e) =>
               this.props.signOut()}>Sign out</Link>}
           </div>
@@ -59,7 +65,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
           <Box sx={{ display: { xs: "none !important", sm: "flex !important" }, height: "50px" }}>
             <Button component={Link} to="/">Home</Button>
             <Button component={Link} to="/events">Event</Button>
-            <Button component={Link} to="/market">Market</Button>
+            <Button component={Link} to="/marketplace">Market</Button>
             <Button component={Link} to="/life">Life</Button>
             <Button component={Link} to="/classes">Class</Button>
             <Button component={Link} to="/clubs">Club</Button>
