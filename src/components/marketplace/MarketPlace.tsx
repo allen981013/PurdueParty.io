@@ -64,7 +64,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
     render() {
         const { auth } = this.props;
         //const { sellListings } = this.props.marketplace;
-        //console.log(this.props.marketplace);
+        console.log(this.props.marketplace);
         if (!auth.uid) return <Redirect to= '/signin'/>
 
         var renderedListings:any[] = [];
@@ -77,7 +77,12 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
             <Box id="cropped-purdue-img" />
             <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                { this.props.marketplace && this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.owner))}
+                { this.props.marketplace != null
+                ?
+                this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.owner))
+                :
+                <div></div>
+                }
             </Grid>
             </Box>
         )
