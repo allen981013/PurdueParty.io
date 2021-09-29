@@ -43,6 +43,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
         }
     }
 
+    //material-ui use card
     getItemCard(title: string, price: number, seller: string) {
         return (
           <Grid item xs={12} sm={6} md={4}>
@@ -76,12 +77,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
             <Box id="cropped-purdue-img" />
             <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                { this.props.marketplace != null
-                    ?
-                    this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.owner))
-                    :
-                    console.log('rendering')
-                }
+                { this.props.marketplace && this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.owner))}
             </Grid>
             </Box>
         )
