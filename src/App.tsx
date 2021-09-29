@@ -7,6 +7,7 @@ import MarketPlace from './components/marketplace/MarketPlace';
 import Events from './components/events/Events';
 import NavBar from './components/navbar/NavBar'
 // import Navbar 
+import createSellListing from './components/marketplace/create-sell-listings';
 
 
 function App() {
@@ -19,7 +20,8 @@ function App() {
           <Route exact path = '/' component = {Landing} />
           <Route path = '/events' component = {Events} />
           <Route path = '/signin' component = {SignIn} />
-          <Route path = '/marketplace' component = {MarketPlace} />
+          <Route exact path = '/marketplace' component = {MarketPlace} />
+          <Route path = '/marketplace/create-listing' component = {createSellListing} />
         </Switch>
         <div style={{flexGrow:1}}/> {/* hack to make footer stays at the bottom of the page */}
         <div className="w-100 bg-black" style={{width: "100%", color: "#fff", padding: "20px 0px"}}>
