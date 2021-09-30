@@ -2,6 +2,7 @@
 import eventReducer from './eventReducer';
 import authReducer from './authReducer';
 import homepageReducer from './homepageReducer';
+import marketplaceReducer from './marketplaceReducer';
 import { firebaseReducer } from 'react-redux-firebase';
 import { firestoreReducer } from 'redux-firestore';
 import { combineReducers } from 'redux';
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
     auth: authReducer,
     event: eventReducer,
     landing: landing.reducer,
-    homepage: homepageReducer
+    homepage: homepageReducer,
+    marketplace: marketplaceReducer
 });
 
 export default rootReducer;
