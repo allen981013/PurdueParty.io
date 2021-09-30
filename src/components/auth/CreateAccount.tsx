@@ -4,6 +4,7 @@ import { signUp } from '../../store/actions/authActions';
 import { RootState, AppDispatch } from '../../store'
 import { getFirebase } from 'react-redux-firebase';
 import { constants } from 'redux-firestore';
+import { Redirect } from 'react-router-dom';
 
 // Interface/type for create account State
 interface CreateAccountState {
@@ -11,12 +12,14 @@ interface CreateAccountState {
   password: string,
   confirmpassword: string,
   bio: string,
+  redirect: boolean,
   errormsg: string
 }
 
 // Interface/type for create account Props
 interface CreateAccountProps {
   auth: any,
+  authError: any,
   signUp: (state: CreateAccountState) => void
 }
 
@@ -30,6 +33,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
       password: "",
       confirmpassword: "",
       bio: "",
+      redirect: false,
       errormsg: ""
     };
   }
@@ -55,39 +59,65 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
     })
   }
 
+  handleBioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      bio: e.target.value
+    })
+  }
+
   // Handle user submit
   handleSubmit = (event: any) => {
     event.preventDefault();
 
-    if (this.state.email === "") {
+    //check for empty requried fields
+    if (this.state.email === "" || this.state.password === "" || this.state.confirmpassword === "") {
       this.setState({
-        errormsg: "Please fill in all required fields"
+        errormsg: "Please fill at least the email and both password fields"
       })
     }
-    else if (this.state.password !== "" && this.state.password === this.state.confirmpassword) {
-      // this.setState({
-      //   errormsg: "Please make sure your email is not associated with an existing user"
-      // })
-
+    //check that email is purdue email
+    else if (!this.state.email.includes('@purdue.edu', this.state.email.length - 11)) {
+      this.setState({
+        errormsg: "Only Purdue email addresses are allowed for Account Creation!"
+      })
+    }
+    //check that passwords match
+    else if (this.state.password === this.state.confirmpassword) {
       this.props.signUp(this.state);
       this.setState({
-        //errormsg: "Account creation successful",
-        errormsg: "",
-        email: "",
-        password: "",
-        confirmpassword: ""
+        redirect: true
       })
-
     }
     else {
       this.setState({
-        errormsg: "Please make sure both passwords are matching, valid, and not empty"
+        errormsg: "Please make sure your passwords are matching"
       })
     }
   }
 
   render() {
-    //console.log(this.props.auth);
+    //redirect to homepage upon successful account creation
+
+    const { auth } = this.props;
+    const { authError } = this.props;
+    if (auth.uid) {
+      this.setState({
+        errormsg: "Account creation successful",
+        email: "",
+        password: "",
+        confirmpassword: "",
+        bio: "",
+        redirect: false
+      })
+      return <Redirect to='/' />
+      //error message if account exists
+    } else if (authError && this.state.redirect == true) {
+      this.setState({
+        errormsg: "Please make sure your account does not already exist",
+        redirect: false
+      })
+    }
+
     return (
       <div className="createaccount">
         <h1>If you like to party, create your account!</h1>
@@ -99,11 +129,15 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
           <p>
             Password:
           </p>
-          <input type="text" value={this.state.password} id="email" onChange={this.handlePasswordChange} />
+          <input type="text" value={this.state.password} id="password" onChange={this.handlePasswordChange} />
           <p>
             Confirm Password:
           </p>
-          <input type="text" value={this.state.confirmpassword} id="password" onChange={this.handleConfirmPasswordChange} />
+          <input type="text" value={this.state.confirmpassword} id="confirmPassword" onChange={this.handleConfirmPasswordChange} />
+          <p>
+            Bio:
+          </p>
+          <input type="text" value={this.state.bio} id="bio" onChange={this.handleBioChange} />
           <p></p>
           <button>Create Account</button>
         </form>

@@ -60,6 +60,18 @@ const authReducer = (state = initState, action: Action): AuthState => {
         ...state,
         authError: "Signup failed"
       }
+    case 'DELETE_SUCCESS':
+      console.log('user deleted');
+      return {
+        ...state,
+        authError: undefined
+      }
+    case 'DELETE_ERROR':
+      console.log('err deleting user');
+      return {
+        ...state,
+        authError: "User delete failed"
+      }
     case 'USER_DATA_REFRESHED':
       return {
         ...state,
