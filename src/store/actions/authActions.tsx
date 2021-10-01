@@ -14,7 +14,7 @@ export const refreshUserData = () => {
         const db = getFirestore()
         db.collection("users").doc(userId).get()
             .then((doc: any) => {
-                payload = { lastCheckedUsername: doc.data().username, lastCheckedIsLoggedIn: true }
+                payload = { lastCheckedUsername: doc.data().userName, lastCheckedIsLoggedIn: true }
                 dispatch({ type: 'USER_DATA_REFRESHED', payload: payload })
             });
 
