@@ -2,6 +2,7 @@ import './App.css';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Landing from './components/landing/Landing';
 import SignIn from './components/auth/SignIn';
+import CreateAccount from './components/auth/CreateAccount';
 import Homepage from './components/homepage/Homepage';
 import MarketPlace from './components/marketplace/MarketPlace';
 import Events from './components/events/Events';
@@ -22,8 +23,9 @@ function App() {
           <Route exact path = '/' component = {Landing} />
           <Route path = '/events' component = {Events} />
           <Route path = '/signin' component = {SignIn} />
+          <Route path = '/createaccount' component = {CreateAccount} />
 
-          <Route exact path = '/marketplace' component = {MarketPlace} />
+          <Route path = '/marketplace' component = {MarketPlace} />
           <Route path = '/marketplace/create-listing' component = {createSellListing} />
           <Route path = '/sellListing/:itemID' component = {GenericSellListing} />
 

@@ -19,6 +19,7 @@ type Action = {
 }
 
 const authReducer = (state = initState, action: Action): AuthState => {
+
   switch (action.type) {
     case 'LOGIN_SUCCESS':
       console.log('user logged in: ', action.payload);
@@ -58,6 +59,18 @@ const authReducer = (state = initState, action: Action): AuthState => {
       return {
         ...state,
         authError: "Signup failed"
+      }
+    case 'DELETE_SUCCESS':
+      console.log('user deleted');
+      return {
+        ...state,
+        authError: undefined
+      }
+    case 'DELETE_ERROR':
+      console.log('err deleting user');
+      return {
+        ...state,
+        authError: "User delete failed"
       }
     case 'USER_DATA_REFRESHED':
       return {
