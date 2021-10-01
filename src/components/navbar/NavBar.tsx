@@ -62,6 +62,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
   }
 
   render() {
+
     return (
       <div id='topbar'>
         <div id='topbar__gold'>
@@ -77,7 +78,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
           <Box sx={{ display: { xs: "none !important", sm: "flex !important" }, height: "50px" }}>
             <Button component={Link} to="/">Home</Button>
             <Button component={Link} to="/events">Event</Button>
-            <Button component={Link} to="/market">Market</Button>
+            <Button component={Link} to="/marketplace">Market</Button>
             <Button component={Link} to="/life">Life</Button>
             <Button component={Link} to="/classes">Class</Button>
             <Button component={Link} to="/clubs">Club</Button>
