@@ -3,11 +3,11 @@ import { Dispatch, Action, compose } from 'redux';
 import { addEvent } from '../../store/actions/eventActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
-import { Timestamp } from '@firebase/firestore';
 import { AppDispatch, RootState } from '../../store';
-import {Redirect} from 'react-router-dom';
-import ReactModal from 'react-modal';
+import { Redirect } from 'react-router-dom';
+import { Timestamp } from '@firebase/firestore';
 import { IconButton, Grid, Box } from '@mui/material';
+import ReactModal from 'react-modal';
 
 // Interface/type for Events State
 interface EventState {

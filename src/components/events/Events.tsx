@@ -4,9 +4,13 @@ import { addEvent } from '../../store/actions/eventActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 import { Timestamp } from '@firebase/firestore';
-import {Redirect} from 'react-router-dom'
+import { IconButton, Grid, Box } from '@mui/material';
+import ReactModal from 'react-modal';
+import { ArrowForwardOutlined } from "@mui/icons-material";
+import { Link } from 'react-router-dom';
+import './Events.css';
 
 
 // Interface/type for Events State

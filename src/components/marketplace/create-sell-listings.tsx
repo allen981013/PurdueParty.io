@@ -7,9 +7,7 @@ import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom'
 import { Timestamp } from '@firebase/firestore';
 import { IconButton, Grid, Box } from '@mui/material';
-import { PasswordTwoTone } from '@mui/icons-material';
 import ReactModal from 'react-modal';
-
 
 // Interface/type for sellListing State
 interface sellListingState {

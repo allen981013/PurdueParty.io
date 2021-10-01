@@ -10,7 +10,6 @@ import { ArrowForwardOutlined } from "@mui/icons-material";
 import { Link } from 'react-router-dom';
 import './MarketPlace.css';
 
-
 // Interface/type for Marketplace State
 interface MarketPlaceState {
 
