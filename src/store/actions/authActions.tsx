@@ -58,31 +58,22 @@ export const signOut = () => {
     }
 }
 
-const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, useruid: any) => {
+const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, fieldName: any, docType: any, useruid: any, ) => {
     const firebase = getFirebase();
     const db = getFirestore();
 
     var collection = db.collection(collectionName)
-    collection.where("owner", "==", useruid).get().then((querySnapshot: any[]) => {
+    collection.where(fieldName, docType, useruid).get().then((querySnapshot: any[]) => {
         querySnapshot.forEach((doc) => {
-            collection.doc(doc.id).update({
-                owner: firebase.firestore.FieldValue.delete()
-            })
-        });
-    })
-        .catch((error: any) => {
-            console.log("Error deleting owner docs", error);
-        });
-
-    collection.where("editors", "array-contains", useruid).get().then((querySnapshot: any[]) => {
-        querySnapshot.forEach((doc) => {
-            collection.doc(doc.id).update({
-                editors: firebase.firestore.FieldValue.arrayRemove(useruid)
+            collection.doc(doc.id).delete().then(() => {
+                console.log("user owner successfully deleted!");
+            }).catch(() => {
+                console.error("Error removing user (owner)");
             });
         });
     })
         .catch((error: any) => {
-            console.log("Error deleting editor docs", error);
+            console.log("Error deleting owner docs", error);
         });
 }
 
@@ -92,23 +83,12 @@ export const deleteAccount = () => {
         const db = getFirestore();
         const user = firebase.auth().currentUser;
         const useruid = user.uid;
-
-        if(db.collection('clubs').where("owner", "==", useruid) 
-        || db.collection('events').where("owner", "==", useruid)){
-            dispatch({ type: 'DELETE_ERROR'});
-        }
         
         //delete user from auth
         user.delete().then(() => {
             //firestore deletions
-            //delete username and bio fields from users 
-            var collection = db.collection('users');
-            collection.doc(useruid).update({
-                userName: firebase.firestore.FieldValue.delete(),
-                bio: firebase.firestore.FieldValue.delete()
-            });
-
             //delete user doc
+            var collection = db.collection('users');
             collection.doc(useruid).delete().then(() => {
                 console.log("user successfully deleted!");
             }).catch(() => {
@@ -116,26 +96,16 @@ export const deleteAccount = () => {
             });
 
             //delete owner and editor fields from events and clubs
-            deleteFields({ getFirebase, getFirestore }, 'events', useruid)
-            deleteFields({ getFirebase, getFirestore }, 'clubs', useruid)
+            deleteFields({ getFirebase, getFirestore }, 'events', 'owner', '==', useruid)
+            deleteFields({ getFirebase, getFirestore }, 'events', 'editors', 'array-contains', useruid)
+            deleteFields({ getFirebase, getFirestore }, 'clubs', 'owner', '==', useruid)
+            deleteFields({ getFirebase, getFirestore }, 'clubs', 'editors', 'array-contains', useruid)
+            deleteFields({ getFirebase, getFirestore }, 'sellListings', 'owner', '==', useruid)
 
             //delete users sell listings and fields
             collection = db.collection('sellListings')
             collection.where("owner", "==", useruid).get().then((querySnapshot: any[]) => {
                 querySnapshot.forEach((doc) => {
-                    //delete sellListing fields
-                    collection.doc(doc.id).update({
-                        owner: firebase.firestore.FieldValue.delete(),
-                        contactInfo: firebase.firestore.FieldValue.delete(),
-                        description: firebase.firestore.FieldValue.delete(),
-                        id: firebase.firestore.FieldValue.delete(),
-                        image: firebase.firestore.FieldValue.delete(),
-                        postedDateTime: firebase.firestore.FieldValue.delete(),
-                        price: firebase.firestore.FieldValue.delete(),
-                        title: firebase.firestore.FieldValue.delete(),
-                        type: firebase.firestore.FieldValue.delete(),
-                    });
-
                     //delete sellListing doc
                     collection.doc(doc.id).delete().then(() => {
                         console.log("user successfully deleted!");
