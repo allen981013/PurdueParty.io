@@ -1,8 +1,8 @@
 const initState = {
     sellListings: [
-        {title: 'Space Jam Poster', price: 5000, owner: "Michael Jordan"},
-        {title: 'Krabby Patty', price: 2, owner: "Spongebob"},
-        {title: 'Heelys', price: 200, owner: "Matt"}
+        {title: 'Space Jam Poster', price: 0, owner: "Michael Jordan"},
+        {title: 'Krabby Patty', price: 0, owner: "Spongebob"},
+        {title: 'Heelys', price: 0, owner: "Matt"}
     ]
 }
 

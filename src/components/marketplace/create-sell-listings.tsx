@@ -88,8 +88,10 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
   // General purpose state updater during form modification
   handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("I AM CHANGING PRICE");
+    console.log(typeof(e.target.value))
+
     this.setState({
-      price : parseFloat(e.target.value)
+      price : parseFloat(parseFloat(e.target.value).toFixed(2))
     })
   }
 
@@ -119,7 +121,7 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
         console.log("Please select type from dropdown");
         window.alert("Please select type from dropdown")
     }
-    else if (isNaN(this.state.price)) {
+    else if (isNaN(this.state.price)) { //
         // Pop modal for no price error
         console.log("Please enter a price");
         window.alert("Please enter a price");

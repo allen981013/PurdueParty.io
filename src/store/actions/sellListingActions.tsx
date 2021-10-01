@@ -1,11 +1,12 @@
 import { Dispatch, Action } from 'redux';
-import { Timestamp } from '@firebase/firestore';
+import { addDoc, Timestamp } from '@firebase/firestore';
 
 // Need to explicitly define these types at some point
 export const addSellListing = (newSellListing:any) => {
     return(dispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {
         const db = getFirestore();
         var docref = db.collection('sellListings');
+
         docref.add({
             id: newSellListing.id,
             owner: getState().firebase.auth.uid,
