@@ -5,6 +5,7 @@ import SignIn from './components/auth/SignIn';
 import Homepage from './components/homepage/Homepage';
 import MarketPlace from './components/marketplace/MarketPlace';
 import Events from './components/events/Events';
+import CreateEvent from './components/events/CreateEvent';
 
 
 // import Navbar 
@@ -21,6 +22,8 @@ function App() {
         <Switch>
           <Route exact path = '/' component = {Landing} />
           <Route path = '/events' component = {Events} />
+          <Route path = '/create-event' component = {CreateEvent} />
+
           <Route path = '/signin' component = {SignIn} />
 
           <Route exact path = '/marketplace' component = {MarketPlace} />

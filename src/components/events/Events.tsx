@@ -5,11 +5,23 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom'
+import { Timestamp } from '@firebase/firestore';
+import {Redirect} from 'react-router-dom'
+
 
 // Interface/type for Events State
 interface EventState {
-  id: number,
+  id: string,
+  owner: string,
+  editors: string[],
+  orgID: string,
   title: string
+  description: string,
+  location: string,
+  dateTime: Timestamp,
+  postedDateTime: Timestamp,
+  attendees: string[],
+  type: string,
 }
 
 // Interface/type for Events Props
@@ -25,13 +37,22 @@ class Events extends Component<EventProps, EventState> {
   constructor(props:EventProps) {
     super(props);
     this.state = {
-      id: 0,
-      title: ""
+      id: "",
+      owner: "",
+      editors: [""],
+      orgID: "",
+      title: "",
+      description: "",
+      location: "",
+      dateTime: new Timestamp(0,0),
+      postedDateTime: new Timestamp(0,0),
+      attendees: [""],
+      type: ""
     };
   }
 
   // General purpose state updater during form modification
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       title : e.target.value
     })
@@ -40,14 +61,26 @@ class Events extends Component<EventProps, EventState> {
   // Handle user submit
   handleSubmit = (event:any) => {
     event.preventDefault();
+
     this.props.addEvent(this.state);
+
     this.setState({
-      id: 0,
-      title: ""
+      id: "",
+      owner: "",
+      editors: [""],
+      orgID: "",
+      title: "",
+      description: "",
+      location: "",
+      dateTime: new Timestamp(0,0),
+      postedDateTime: new Timestamp(0,0),
+      attendees: [""],
+      type: ""
     })
   }
 
   render() {
+
     console.log(this.props.events);
     console.log(this.state);
 
@@ -57,16 +90,16 @@ class Events extends Component<EventProps, EventState> {
 
     return (
       <div>
-        <form onSubmit = {this.handleSubmit}>
-          <h1>Enter event title:</h1>
-          <div className = "input-field">
-            <label htmlFor="title">Event Title: </label>
-            <input type ="text" value={this.state.title} id="title" onChange={this.handleChange}/>
-          </div>
-          <div className ="input-field">
-            <button className = "button">Create New Event</button>
-          </div>
-        </form>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
+            <Box id="cropped-purdue-img"/>
+        </Box>
+        
+        <div>
+           <h1> Purdue Events </h1>
+        </div>
+        <div>
+            <a href="/create-event">Create a new event</a>
+        </div>
       </div>
     )
   }
