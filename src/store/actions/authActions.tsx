@@ -58,23 +58,30 @@ export const signOut = () => {
     }
 }
 
-const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, fieldName: any, docType: any, useruid: any, ) => {
+const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
     const firebase = getFirebase();
     const db = getFirestore();
 
     var collection = db.collection(collectionName)
     collection.where(fieldName, docType, useruid).get().then((querySnapshot: any[]) => {
         querySnapshot.forEach((doc) => {
-            collection.doc(doc.id).delete().then(() => {
-                console.log("user owner successfully deleted!");
-            }).catch(() => {
-                console.error("Error removing user (owner)");
-            });
+            if (fieldName == 'owner') {
+                collection.doc(doc.id).update({
+                    owner: firebase.firestore.FieldValue.delete()
+                })
+            }
+            if(fieldName == 'editors'){
+                collection.doc(doc.id).update({
+                    editors: firebase.firestore.FieldValue.arrayRemove(useruid)
+                })
+            }
         });
     })
         .catch((error: any) => {
-            console.log("Error deleting owner docs", error);
+            console.log("Error deleting docs", error);
         });
+
+
 }
 
 export const deleteAccount = () => {
@@ -83,7 +90,7 @@ export const deleteAccount = () => {
         const db = getFirestore();
         const user = firebase.auth().currentUser;
         const useruid = user.uid;
-        
+
         //delete user from auth
         user.delete().then(() => {
             //firestore deletions
@@ -92,7 +99,7 @@ export const deleteAccount = () => {
             collection.doc(useruid).delete().then(() => {
                 console.log("user successfully deleted!");
             }).catch(() => {
-                console.error("Error removing user");
+                console.error("Error removing user from firestore");
             });
 
             //delete owner and editor fields from events and clubs
@@ -100,7 +107,6 @@ export const deleteAccount = () => {
             deleteFields({ getFirebase, getFirestore }, 'events', 'editors', 'array-contains', useruid)
             deleteFields({ getFirebase, getFirestore }, 'clubs', 'owner', '==', useruid)
             deleteFields({ getFirebase, getFirestore }, 'clubs', 'editors', 'array-contains', useruid)
-            deleteFields({ getFirebase, getFirestore }, 'sellListings', 'owner', '==', useruid)
 
             //delete users sell listings and fields
             collection = db.collection('sellListings')
