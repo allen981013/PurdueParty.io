@@ -67,17 +67,28 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
         console.log(this.props.marketplace);
         if (!auth.uid) return <Redirect to= '/signin'/>
         return (
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
-            <Box id="cropped-purdue-img" />
-            <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                { this.props.marketplace != null
-                ?
-                this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.owner, sellListing.id))
-                :
-                <div></div>
-                }
-            </Grid>
-            </Box>
+            <div>
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
+              <Box id="cropped-purdue-img" />
+                <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
+                    { this.props.marketplace != null
+                    ?
+                    this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.owner, sellListing.id))
+                    :
+                    <div></div>
+                    }
+                </Grid>
+              </Box>
+              
+              <div>
+                <Link to="/marketplace/create-listing">
+                    <button type="button">
+                          Create a listing
+                    </button>
+                </Link>
+              </div>
+
+            </div>
         )
     }
 }

@@ -1,0 +1,26 @@
+.Modal {
+    position: absolute;
+    top: 20vh;
+    left: 15vw;
+    right: 15vw;
+    bottom: 20vh;
+    padding: 2%;
+    background-color: #F5FFFA;
+    text-align: center;
+  }
+
+  .Overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 5px black;
+    background: rgba(112, 128, 144, 0.2);
+  }
+
+  .btn-bot{ 
+    position: absolute;
+    vertical-align: bottom;
+    bottom: 4vh;
+ }
