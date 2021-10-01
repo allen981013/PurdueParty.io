@@ -18,6 +18,9 @@ export const addSellListing = (newSellListing:any) => {
             price: newSellListing.price,
             contactInfo: newSellListing.contactInfo
         }).then((newDocRef:any) => {
+            newDocRef.update({
+                id: newDocRef.id
+            })
             dispatch({ type: 'ADD_LISTING_SUCCESS', newDocRef });
         }).catch((err:any) => {
             dispatch({ type: 'ADD_LISTING_ERR', err});
