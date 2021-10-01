@@ -81,8 +81,20 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
         errormsg: "Only Purdue email addresses are allowed for Account Creation!"
       })
     }
-    //check that passwords match
-    else if (this.state.password === this.state.confirmpassword) {
+    //check email is valid
+    else if (this.state.email.length < 12) {
+      this.setState({
+        errormsg: "Email must be valid!"
+      })
+    }
+    //check max bio length
+    else if(this.state.bio.length > 256){
+      this.setState({
+        errormsg: "Bio cannot be longer that 256 characters in length"
+      })
+    }
+    //check that passwords match and are valid
+    else if (this.state.password === this.state.confirmpassword && this.state.password.length > 5) {
       this.props.signUp(this.state);
       this.setState({
         redirect: true
@@ -90,7 +102,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
     }
     else {
       this.setState({
-        errormsg: "Please make sure your passwords are matching"
+        errormsg: "Please make sure your passwords are matching and contain at least 6 characters"
       })
     }
   }
