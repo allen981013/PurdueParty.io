@@ -4,7 +4,10 @@ import { addEvent } from '../../store/actions/eventActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { Timestamp } from '@firebase/firestore';
-import {Redirect} from 'react-router-dom'
+import { AppDispatch, RootState } from '../../store';
+import {Redirect} from 'react-router-dom';
+import ReactModal from 'react-modal';
+import { IconButton, Grid, Box } from '@mui/material';
 
 // Interface/type for Events State
 interface EventState {
@@ -100,6 +103,10 @@ class CreateEvent extends Component<EventProps, EventState> {
 
     return (
       <div>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
+            <Box id="cropped-purdue-img"/>
+        </Box>
+        
         <form onSubmit = {this.handleSubmit}>
           <h1>Enter event title:</h1>
           <div className = "input-field">
