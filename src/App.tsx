@@ -24,8 +24,7 @@ function App() {
           <Route path = '/events' component = {Events} />
           <Route path = '/signin' component = {SignIn} />
           <Route path = '/createaccount' component = {CreateAccount} />
-
-          <Route path = '/marketplace' component = {MarketPlace} />
+          <Route exact path = '/marketplace' component = {MarketPlace} />
           <Route path = '/marketplace/create-listing' component = {createSellListing} />
           <Route path = '/sellListing/:itemID' component = {GenericSellListing} />
 
