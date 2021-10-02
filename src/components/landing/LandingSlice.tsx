@@ -60,11 +60,11 @@ export const loadLandingPageContent = () => {
         const itemLimit = 5
         var payload: LandingStatesRedux = { events: [], classes: [], clubs: [], saleItems: [] }
         var eventsQueryPromise = db.collection("events")
-        .where("dateTime", ">", Timestamp.now())
-        .orderBy("dateTime").limit(itemLimit)
+        .where("startTime", ">", Timestamp.now())
+        .orderBy("startTime").limit(itemLimit)
         .get().then((querySnapshot: any) => {
             querySnapshot.forEach((doc: any) => {
-                let rawTime = new Date(doc.data().dateTime.seconds * 1000)
+                let rawTime = new Date(doc.data().startTime.seconds * 1000)
                 let today = new Date()
                 let isToday = (rawTime.getDate() == today.getDate())
                     && (rawTime.getMonth() == today.getMonth())
