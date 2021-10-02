@@ -7,6 +7,7 @@ import { firebaseReducer } from 'react-redux-firebase';
 import { firestoreReducer } from 'redux-firestore';
 import { combineReducers } from 'redux';
 import { landing } from '../../components/landing/LandingSlice';
+import { eventInfoSlice } from '../../components/events/EventInfoSlice';
 
 // Add it to this list
 const rootReducer = combineReducers({
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     event: eventReducer,
     landing: landing.reducer,
     homepage: homepageReducer,
-    marketplace: marketplaceReducer
+    marketplace: marketplaceReducer,
+    eventInfo: eventInfoSlice.reducer,
 });
 
 export default rootReducer;
