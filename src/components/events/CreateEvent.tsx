@@ -7,22 +7,22 @@ import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom'
 
 // Interface/type for Events State
-interface EventState {
+interface CreateEventState {
   id: number,
   title: string
 }
 
 // Interface/type for Events Props
-interface EventProps {
+interface CreateEventProps {
     auth: any,
     events: any,
-    addEvent: (state:EventState) => void
+    addEvent: (state:CreateEventState) => void
 }
 
-class Events extends Component<EventProps, EventState> {
+class CreateEvent extends Component<CreateEventProps, CreateEventState> {
 
   // Initialize state
-  constructor(props:EventProps) {
+  constructor(props:CreateEventProps) {
     super(props);
     this.state = {
       id: 0,
@@ -87,9 +87,9 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
   }
 }
 
-export default compose<React.ComponentType<EventProps>>(
+export default compose<React.ComponentType<CreateEventProps>>(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect([
     { collection: 'events'}
   ])
-)(Events)
+)(CreateEvent)
