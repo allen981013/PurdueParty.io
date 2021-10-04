@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { Action, Dispatch } from 'redux'
 import { Timestamp } from 'firebase/firestore'
 import { Description, TagSharp } from '@mui/icons-material'
+import { firebaseStorageRef } from '../..'
 
 // type for states returned by reducer
 export interface EventInfoStatesRedux {
@@ -48,6 +49,13 @@ export const eventInfoSlice = createSlice({
   name: 'eventInfo',
   initialState: initState,
   reducers: {
+    newEventInfoRequested: (state: EventInfoStatesRedux): EventInfoStatesRedux => {
+      return {
+        ...state,
+        hasInfoFetched: false,
+        eventNotFound: false,
+      }
+    },
     eventInfoFetched: (state: EventInfoStatesRedux, action): EventInfoStatesRedux => {
       return {
         ...state,
@@ -73,6 +81,7 @@ export const fetchEventInfo = (eventID: string) => {
    * Read db content for event information and populate the store through the reducer.
    */
   return async (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+    dispatch(eventInfoSlice.actions.newEventInfoRequested())
     const db = getFirestore()
     // Query event info
     db.collection("events").doc(eventID).get()
@@ -90,25 +99,31 @@ export const fetchEventInfo = (eventID: string) => {
         var description = doc.data().description
         var categories = doc.data().categories
         var perks = doc.data().perks
-        var imageUrl = doc.data().imageUrl
-        var hostID = doc.data().hostID
-        var hostType = doc.data().hostType
+        var ownerID = doc.data().ownerID
+        var orgID = doc.data().orgID
+        var imagePath = doc.data().imagePath
+        // Query host info
         var hostName: string | undefined = undefined
         var hostHref: string | undefined = undefined
-        // Query host info
-        if (hostType == "USER") {
-          var hostQueryPromise = db.collection("users").doc(hostID).get()
+        if (ownerID.length != 0) {
+          var hostQueryPromise = db.collection("users").doc(ownerID).get()
             .then((userDoc: any) => {
               // Map host info 
               hostName = userDoc.data().userName
               hostHref = "/users/" + hostName
             })
         }
-        else if (hostType == "CLUB") {
+        else if (orgID.length != 0) {
           // TODO: Finish this once club info has been created
         }
+        // Query image url
+        var imageUrl = ""
+        var imageUrlQueryPromise = firebaseStorageRef.child(imagePath).getDownloadURL()
+          .then((url) => {
+            imageUrl = url
+          })
         // Create payload and dispatch
-        Promise.all([hostQueryPromise])
+        Promise.all([hostQueryPromise, imageUrlQueryPromise])
           .then(() => {
             type PayloadType = {
               event: EventInfoStatesRedux["event"],
