@@ -5,6 +5,7 @@ import SignIn from './components/auth/SignIn';
 import CreateAccount from './components/auth/CreateAccount';
 import Homepage from './components/homepage/Homepage';
 import MarketPlace from './components/marketplace/MarketPlace';
+import EventsLanding from './components/events/EventsLanding';
 import CreateEvent from './components/events/CreateEvent';
 import EventInfo from './components/events/EventInfo';
 import NavBar from './components/navbar/NavBar'
@@ -28,7 +29,7 @@ function App() {
           <Route path='/events/:eventID' render={({match}) => {
             return <EventInfo eventID={match.params.eventID} />
           }}/>
-
+          <Route path='/events' component={EventsLanding} />
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
         <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px" }}>

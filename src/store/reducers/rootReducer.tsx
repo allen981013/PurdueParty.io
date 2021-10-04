@@ -8,6 +8,7 @@ import { firestoreReducer } from 'redux-firestore';
 import { combineReducers } from 'redux';
 import { landing } from '../../components/landing/LandingSlice';
 import { eventInfoSlice } from '../../components/events/EventInfoSlice';
+import { eventsLandingSlice } from '../../components/events/EventsLandingSlice';
 
 // Add it to this list
 const rootReducer = combineReducers({
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
     homepage: homepageReducer,
     marketplace: marketplaceReducer,
     eventInfo: eventInfoSlice.reducer,
+    eventsLanding: eventsLandingSlice.reducer
 });
 
 export default rootReducer;
