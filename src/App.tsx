@@ -13,6 +13,7 @@ import CreateClub from './components/clubs/CreateClub';
 import NavBar from './components/navbar/NavBar'
 import createSellListing from './components/marketplace/create-sell-listings';
 import GenericSellListing from './components/marketplace/GenericSellListing';
+import CreatePost from './components/forum/create-post';
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
@@ -34,6 +35,7 @@ function App() {
           }}/>
           <Route exact path = '/clubs' component = {Clubs} />
           <Route path = '/clubs/create-club' component = {CreateClub} />
+          <Route path = '/forum/create-post' component = {CreatePost} />
 
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
