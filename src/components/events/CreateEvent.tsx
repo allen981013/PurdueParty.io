@@ -9,6 +9,15 @@ import { Timestamp } from '@firebase/firestore';
 import { IconButton, Grid, Box } from '@mui/material';
 import ReactModal from 'react-modal';
 
+import DateMomentUtils from '@date-io/moment';
+import {
+  DatePicker,
+  TimePicker,
+  DateTimePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
+import { now } from 'moment';
+
 // Interface/type for Events State
 interface EventState {
   id: string,
@@ -18,7 +27,7 @@ interface EventState {
   title: string
   description: string,
   location: string,
-  dateTime: Timestamp,
+  dateTime: Date,
   postedDateTime: Timestamp,
   attendees: string[],
   type: string,
@@ -40,11 +49,11 @@ class CreateEvent extends Component<EventProps, EventState> {
       id: "",
       owner: "",
       editors: [""],
-      orgID: "",
+      orgID: "None",
       title: "",
       description: "",
       location: "",
-      dateTime: new Timestamp(0,0),
+      dateTime: new Date(),
       postedDateTime: new Timestamp(0,0),
       attendees: [""],
       type: ""
@@ -64,9 +73,23 @@ class CreateEvent extends Component<EventProps, EventState> {
     })
   }
 
+  handleChangeDateTime = (e: any) => {
+    console.log("CHANGE DATE\TIME");
+    console.log(e);
+    this.setState({
+      dateTime : e.toDate()
+    })
+  }
+
   handleChangeLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       location : e.target.value
+    })
+  }
+
+  handleChangeOrgID = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      orgID : e.target.value
     })
   }
 
@@ -80,21 +103,56 @@ class CreateEvent extends Component<EventProps, EventState> {
   handleSubmit = (event:any) => {
     event.preventDefault();
 
-    this.props.addEvent(this.state);
+    if (this.state.title.length < 3) { 
+      // Pop modal for title length error
+      console.log("Minimum title length required: 3 characters");
+      window.alert("Minimum title length required: 3 characters")
+    }
+    else if (this.state.description.length < 10) {
+        // Pop modal for description length error
+        console.log("Minimum description Length Required: 10 characters");
+        window.alert("Minimum description length required: 10 characters")
+    }
+    else if (this.state.dateTime < new Date() ) { //
+        // Pop modal if date entered is before now
+        console.log("Please enter a valid upcoming date/time");
+        window.alert("Please enter a valid upcoming date/time");
+    }
+    else if (this.state.location.length < 3) {
+        // Pop modal for if the location is not 3 chars
+        console.log("Minimum location length required: 3 characters");
+        window.alert("Minimum location length required: 3 characters");
+    }
+    else if (this.state.type === "") {
+      // Pop modal for no type error
+      console.log("Please select type from dropdown");
+      window.alert("Please select type from dropdown")
+    }
+    else if (this.state.orgID === "") {
+      // Pop modal for no type error
+      console.log("Please select orgID from dropdown");
+      window.alert("Please select an organization from the dropdown")
+    }
+    else {
+        console.log("Event Posted Successfully!");
+        window.alert("Event posted successfully!")
 
-    this.setState({
-      id: "",
-      owner: "",
-      editors: [""],
-      orgID: "",
-      title: "",
-      description: "",
-      location: "",
-      dateTime: new Timestamp(0,0),
-      postedDateTime: new Timestamp(0,0),
-      attendees: [""],
-      type: ""
-    })
+        this.props.addEvent(this.state);
+
+        this.setState({
+          id: "",
+          owner: "",
+          editors: [""],
+          orgID: "",
+          title: "",
+          description: "",
+          location: "",
+          dateTime: new Date(),
+          postedDateTime: new Timestamp(0,0),
+          attendees: [""],
+          type: ""
+        })
+    }
   }
 
   render() {
@@ -122,6 +180,11 @@ class CreateEvent extends Component<EventProps, EventState> {
                    onChange={this.handleChangeDescription}/>
           </div>
 
+          <h1>Enter event date and time:</h1>
+          <MuiPickersUtilsProvider utils={DateMomentUtils}>
+              <DateTimePicker emptyLabel="Choose Date" disablePast={true} value={this.state.dateTime} onChange={this.handleChangeDateTime} onAccept={this.handleChangeDateTime}  />
+            </MuiPickersUtilsProvider>
+
           <h1>Enter event location:</h1>
           <div className = "input-field">
             <label htmlFor="location">Event location: </label>
@@ -133,6 +196,12 @@ class CreateEvent extends Component<EventProps, EventState> {
           <div className = "input-field">
             <label htmlFor="type">Event type: </label>
             <input type ="text" value={this.state.type} placeholder="What type of event is this?" id="type" onChange={this.handleChangeType}/>
+          </div>
+
+          <h1>Enter associated organization:</h1>
+          <div className = "input-field">
+            <label htmlFor="type">Organization: </label>
+            <input type ="text" value={this.state.orgID} placeholder="Who's hosting the party?" id="type" onChange={this.handleChangeOrgID}/>
           </div>
 
           <div className ="input-field">

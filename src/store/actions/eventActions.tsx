@@ -20,6 +20,9 @@ export const addEvent = (newEvent:any) => {
             attendees: newEvent.attendees,
             type: newEvent.type
         }).then((newDocRef:any) => {
+            newDocRef.update({
+                id: newDocRef.id
+            })
             dispatch({ type: 'ADD_EVENT_SUCCESS', newDocRef });
         }).catch((err:any) => {
             dispatch({ type: 'ADD_EVENT_ERR', err});
