@@ -9,7 +9,7 @@ export const addPost = (newPost:any) => {
 
         docref.add({
             postId: newPost.postId,
-            owner: newPost.owner,
+            owner: getState().firebase.auth.uid,
             classID: newPost.classID,
             title: newPost.title,
             description: newPost.description,
