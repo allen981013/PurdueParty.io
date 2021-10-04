@@ -79,6 +79,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
             id="image-container"
             xs={12}
             md={6}
+            sx={{minWidth:"450px"}}
           >
             <img width="100%" height="100%" src={this.props.event.imageUrl} />
           </Grid>
