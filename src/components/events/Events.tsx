@@ -10,8 +10,6 @@ import { IconButton, Grid, Box } from '@mui/material';
 import ReactModal from 'react-modal';
 import { ArrowForwardOutlined } from "@mui/icons-material";
 import { Link } from 'react-router-dom';
-import './Events.css';
-
 
 // Interface/type for Events State
 interface EventState {
