@@ -33,7 +33,7 @@ const initState: LandingStatesRedux = {
 }
 
 // create slice
-export const landing = createSlice({
+export const landingSlice = createSlice({
     name: 'landing',
     initialState: initState,
     reducers: {
@@ -117,7 +117,7 @@ export const loadLandingPageContent = () => {
         });
         Promise.all([eventsQueryPromise, saleItemsQueryPromise, clubsQueryPromise, classesQueryPromise])
             .then(() => {
-                dispatch(landing.actions.landingPageContentLoaded(payload))
+                dispatch(landingSlice.actions.landingPageContentLoaded(payload))
             });
     }
 }

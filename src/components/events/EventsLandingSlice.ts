@@ -65,26 +65,23 @@ export const fetchEvents = (furthestPage: number) => {
       .limit(furthestPage * itemsPerPage)
       .get()
     var createEventPromisesPromise = queryEventsPromise.then((querySnapshot: any) => {
-      return querySnapshot.docs.map((doc: any) => {
+      return querySnapshot.docs.map(async (doc: any) => {
         let queryUrlPromise = firebaseStorageRef.child(doc.data().imagePath).getDownloadURL()
         if (doc.data().ownerID.length > 0) {
           var queryHostPromise = db.collection("users").doc(doc.data().ownerID).get()
         }
-        else if (doc.data().ownerID.length > 0) {
+        else if (doc.data().orgID.length > 0) {
           // TODO: Query when host is a club when we've reached that user story
         }
-        let createEventPromise = Promise.all([queryUrlPromise, queryHostPromise])
-          .then((urlAndHostTuple) => {
-            return {
-              title: doc.data().title,
-              startTime: doc.data().startTime.toDate().toLocaleString("en-US"),
-              location: doc.data().location,
-              imageUrl: urlAndHostTuple[0],
-              href: "/events/" + doc.data().id,
-              hostName: urlAndHostTuple[1].data().userName, // TODO: Cater to the case when the host is a club entity
-            }
-          })
-        return createEventPromise
+        const urlAndHostTuple = await Promise.all([queryUrlPromise, queryHostPromise])
+        return {
+          title: doc.data().title,
+          startTime: doc.data().startTime.toDate().toLocaleString("en-US"),
+          location: doc.data().location,
+          imageUrl: urlAndHostTuple[0],
+          href: "/events/" + doc.data().id,
+          hostName: urlAndHostTuple[1].data().userName, // TODO: Cater to the case when the host is a club entity
+        }
       })
     })
     createEventPromisesPromise.then((createEventPromises: any[]) => {
