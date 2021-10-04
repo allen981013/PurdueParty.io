@@ -121,6 +121,26 @@ export const deleteAccount = () => {
                 });
             });
 
+            // Create a path to profile pic to delete
+            var deletePath = 'profilePics/' + user.uid;
+
+            firebaseStorageRef.child(deletePath + '.jpeg')
+                .delete().then(() => {
+                    console.log("jpeg profile pic deleted!");
+                }).catch(() => {
+                    firebaseStorageRef.child(deletePath + '.jpg')
+                        .delete().then(() => {
+                            console.log("jpg profile pic deleted!");
+                        }).catch(() => {
+                            firebaseStorageRef.child(deletePath + '.png')
+                                .delete().then(() => {
+                                    console.log("png profile pic deleted!");
+                                }).catch(() => {
+                                    console.error("Error removing profile pic");
+                                });
+                        });
+                });
+
             dispatch({ type: 'DELETE_SUCCESS' });
         }).catch((err: any) => {
             dispatch({ type: 'DELETE_ERROR', err });
@@ -171,16 +191,16 @@ export const signUp = (newUser: any) => {
                     },
                     () => {
                         fileRef.getDownloadURL().then((downloadURL) => {
-                            imageURL = downloadURL                          
+                            imageURL = downloadURL
                         })
                     })
 
             }
-            
+
             return db.collection('users').doc(newUserRef.user.uid).set({
                 userName: newUser.email,
                 bio: newUser.bio,
-                profilePicURL: imageURL
+                // profilePicURL: imageURL
             })
         }).then(() => {
             dispatch({ type: 'SIGNUP_SUCCESS' })
