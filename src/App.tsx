@@ -5,6 +5,7 @@ import SignIn from './components/auth/SignIn';
 import CreateAccount from './components/auth/CreateAccount';
 import Homepage from './components/homepage/Homepage';
 import MarketPlace from './components/marketplace/MarketPlace';
+import Events from './components/events/Events';
 import CreateEvent from './components/events/CreateEvent';
 import EventInfo from './components/events/EventInfo';
 import NavBar from './components/navbar/NavBar'
@@ -24,7 +25,8 @@ function App() {
           <Route exact path='/marketplace' component={MarketPlace} />
           <Route path='/marketplace/create-listing' component={createSellListing} />
           <Route path='/sellListing/:itemID' component={GenericSellListing} />
-          <Route path='/events/create' component={CreateEvent} />
+          <Route exact path = '/events' component = {Events} />
+          <Route path = '/events/create-event' component = {CreateEvent} />
           <Route path='/events/:eventID' render={({match}) => {
             return <EventInfo eventID={match.params.eventID} />
           }}/>
