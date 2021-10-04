@@ -1,5 +1,6 @@
 import { Dispatch, Action } from 'redux';
 import { RootState } from '..';
+import { firebaseStorageRef } from '../..';
 
 
 export const refreshUserData = () => {
@@ -22,27 +23,27 @@ export const refreshUserData = () => {
 }
 
 export const signIn = (credentials: { email: string, password: string }) => {
-  return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-    const firebase = getFirebase();
-    firebase.auth().signInWithEmailAndPassword(
-      credentials.email,
-      credentials.password
-    ).then((response: any) => {
-      const userId = response.user.uid
-      let payload = { lastCheckedUsername: "guest" }
-      if (userId)
-        dispatch({ type: 'LOGIN_SUCCESS', payload: payload })  // update login status first while waiting for username query to return
-      // Query username from db
-      const db = getFirestore()
-      db.collection("users").doc(userId).get()
-        .then((doc: any) => {
-          let payload = { lastCheckedUsername: doc.data().userName }
-          dispatch({ type: 'LOGIN_SUCCESS', payload: payload })
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const firebase = getFirebase();
+        firebase.auth().signInWithEmailAndPassword(
+            credentials.email,
+            credentials.password
+        ).then((response: any) => {
+            const userId = response.user.uid
+            let payload = { lastCheckedUsername: "guest" }
+            if (userId)
+                dispatch({ type: 'LOGIN_SUCCESS', payload: payload })  // update login status first while waiting for username query to return
+            // Query username from db
+            const db = getFirestore()
+            db.collection("users").doc(userId).get()
+                .then((doc: any) => {
+                    let payload = { lastCheckedUsername: doc.data().userName }
+                    dispatch({ type: 'LOGIN_SUCCESS', payload: payload })
+                });
+        }).catch((err: any) => {
+            dispatch({ type: 'LOGIN_ERROR', err });
         });
-    }).catch((err: any) => {
-      dispatch({ type: 'LOGIN_ERROR', err });
-    });
-  }
+    }
 }
 
 //May need adjustments
@@ -69,7 +70,7 @@ const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, f
                     owner: firebase.firestore.FieldValue.delete()
                 })
             }
-            if(fieldName == 'editors'){
+            if (fieldName == 'editors') {
                 collection.doc(doc.id).update({
                     editors: firebase.firestore.FieldValue.arrayRemove(useruid)
                 })
@@ -113,12 +114,32 @@ export const deleteAccount = () => {
                 querySnapshot.forEach((doc) => {
                     //delete sellListing doc
                     collection.doc(doc.id).delete().then(() => {
-                        console.log("user successfully deleted!");
+                        console.log("listing successfully deleted!");
                     }).catch(() => {
-                        console.error("Error removing user");
+                        console.error("Error removing listing");
                     });
                 });
             });
+
+            // Create a path to profile pic to delete
+            var deletePath = 'profilePics/' + user.uid;
+
+            firebaseStorageRef.child(deletePath + '.jpeg')
+                .delete().then(() => {
+                    console.log("jpeg profile pic deleted!");
+                }).catch(() => {
+                    firebaseStorageRef.child(deletePath + '.jpg')
+                        .delete().then(() => {
+                            console.log("jpg profile pic deleted!");
+                        }).catch(() => {
+                            firebaseStorageRef.child(deletePath + '.png')
+                                .delete().then(() => {
+                                    console.log("png profile pic deleted!");
+                                }).catch(() => {
+                                    console.error("Error removing profile pic");
+                                });
+                        });
+                });
 
             dispatch({ type: 'DELETE_SUCCESS' });
         }).catch((err: any) => {
@@ -132,15 +153,54 @@ export const signUp = (newUser: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const firebase = getFirebase();
         const db = getFirestore();
+        var imageURL = ""
 
         firebase.auth().createUserWithEmailAndPassword(
             newUser.email,
-            newUser.password
+            newUser.password,
         ).then((newUserRef: any) => {
-            firebase.auth().currentUser.sendEmailVerification();
+            const user = firebase.auth().currentUser
+            user.sendEmailVerification();
+
+            //put profile pic in firebase storage
+            if (newUser.profilePic != null as any) {
+                var fileType = ''
+                var metadata = {
+                    contentType: '',
+                };
+                //configure metadata
+                if (newUser.profilePic.type == 'image/jpeg' || newUser.profilePic.type == 'image/jpg') {
+                    metadata.contentType = 'image/jpeg'
+                    fileType = '.jpeg'
+                }
+                else {
+                    metadata.contentType = 'image/png'
+                    fileType = '.png'
+                }
+                //create proper filename with user uid and path
+                var fileRef = firebaseStorageRef.child('profilePics/' + user.uid + fileType);
+
+                //upload to firebase storage
+                var waitOnUpload = fileRef.put(newUser.profilePic, metadata)
+
+                //create image URL to store in Firestore
+                waitOnUpload.on('state_changed', (snapshot) => {
+                },
+                    (error) => {
+                        console.log('upload error')
+                    },
+                    () => {
+                        fileRef.getDownloadURL().then((downloadURL) => {
+                            imageURL = downloadURL
+                        })
+                    })
+
+            }
+
             return db.collection('users').doc(newUserRef.user.uid).set({
                 userName: newUser.email,
-                bio: newUser.bio
+                bio: newUser.bio,
+                // profilePicURL: imageURL
             })
         }).then(() => {
             dispatch({ type: 'SIGNUP_SUCCESS' })
