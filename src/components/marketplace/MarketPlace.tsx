@@ -43,7 +43,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
 
 
     //material-ui use card
-    getItemCard(title: string, price: number, seller: string, id: string) {
+    getItemCard(title: string, price: number, id: string) {
         return (
           <Grid item xs={12} sm={6} md={4}>
             <div className="section-card">
@@ -52,7 +52,6 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
                 <div style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
                   <h3 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "larger" }}>{title} </h3>
                   <h1 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "smaller" }}>Cost: {price} </h1>
-                  <h1 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "smaller" }}>Sold By: {seller} </h1>
                   <a href={"/sellListing/" + id}> View Additional Information </a>
                 </div>
               </div>
@@ -73,7 +72,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
                 <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
                     { this.props.marketplace != null
                     ?
-                    this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.owner, sellListing.id))
+                    this.props.marketplace.map((sellListing) => this.getItemCard(sellListing.title, sellListing.price, sellListing.id))
                     :
                     <div></div>
                     }
