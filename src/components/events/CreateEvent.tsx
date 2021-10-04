@@ -50,7 +50,7 @@ function getStyles(selectedItem: string, items: string[], theme: any) {
 // Interface/type for Events State
 interface EventState {
   id: string,
-  owner: string,
+  ownerID: string,
   editors: string[],
   orgID: string,
   title: string
@@ -83,7 +83,7 @@ class CreateEvent extends Component<EventProps, EventState> {
     super(props);
     this.state = {
       id: "",
-      owner: "",
+      ownerID: "",
       editors: [],
       orgID: "",
       title: "",
@@ -207,7 +207,7 @@ class CreateEvent extends Component<EventProps, EventState> {
 
       this.setState({
         id: "",
-        owner: "",
+        ownerID: "",
         editors: [""],
         orgID: "",
         title: "",
