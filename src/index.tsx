@@ -10,7 +10,7 @@ import rootReducer from './store/reducers/rootReducer'
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
-import 'firebase/compat/storage'
+import 'firebase/compat/storage';
 import { getFirebase, ReactReduxFirebaseProvider, isLoaded } from 'react-redux-firebase';
 import { getFirestore, createFirestoreInstance, reduxFirestore } from 'redux-firestore';
 import { RootState } from './store';
