@@ -45,25 +45,6 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
         }
     }
 
-
-    //material-ui use card
-    getItemCard(title: string, price: number, id: string) {
-        return (
-          <Grid item xs={12} sm={6} md={4}>
-            <div className="section-card">
-              <div className="section-card__stripe" />
-              <div className="section-card__body">
-                <div style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-                  <h3 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "larger" }}>{title} </h3>
-                  <h1 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "smaller" }}>Cost: {price} </h1>
-                  <a href={"/sellListing/" + id}> View Additional Information </a>
-                </div>
-              </div>
-            </div>
-          </Grid>
-        )
-      }
-
     async getImageDownload(imageURL:string) {
       try {
         const storageRef = this.props.firebase.storage().ref();
