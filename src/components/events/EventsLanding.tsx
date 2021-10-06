@@ -103,9 +103,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
   }
 
   render() {
-    const { auth } = this.props;
-    if (!auth) return <Redirect to='/signin' />
-    
+
     return (
       <Box
         display="flex"

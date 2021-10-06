@@ -76,8 +76,6 @@ class Clubs extends Component<ClubProps, ClubState> {
 
   render() {
 
-    const { auth } = this.props;
-    if (!auth) return <Redirect to='/signin' />
 
     console.log(this.props.clubs);
     console.log(this.state);
