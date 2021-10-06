@@ -30,7 +30,6 @@ interface MarketPlaceProps {
     price: number,
     title: string,
     type: string,
-    imageURL: string
   }[],
   auth: any,
   firebase: any
@@ -44,20 +43,6 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
       imageURL: ""
     }
   }
-
-  /*
-  async getImageDownload(imageURL: string) {
-    try {
-      const storageRef = this.props.firebase.storage().ref();
-      const res = await Promise.resolve(storageRef.child(imageURL).getDownloadURL());
-      this.setState({
-        imageURL: res
-      })
-    } catch (err) {
-      console.log(err);
-    }
-  }
-  */
 
   getCard(title: string, price: number, id: string, imageURL: string) {
 
