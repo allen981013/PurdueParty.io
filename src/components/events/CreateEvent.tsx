@@ -8,6 +8,7 @@ import { Redirect } from 'react-router-dom';
 import { Timestamp } from '@firebase/firestore';
 import { IconButton, Grid, Box } from '@mui/material';
 import ReactModal from 'react-modal';
+import Dropzone from 'react-dropzone'
 
 import FormControl from '@mui/material/FormControl';
 import { useTheme } from '@mui/material/styles';
@@ -56,6 +57,7 @@ interface EventState {
   title: string
   description: string,
   location: string,
+  image: File,
   themes: string[],
   categories: string[],
   perks: string[],
@@ -89,9 +91,10 @@ class CreateEvent extends Component<EventProps, EventState> {
       title: "",
       description: "",
       location: "",
+      image: null as any,
       perks: [],
-      themes: [""],
-      categories: [""],
+      themes: [],
+      categories: [],
       startTime: new Date(),
       endTime: new Date(),
       postedDateTime: new Timestamp(0, 0),
@@ -154,6 +157,22 @@ class CreateEvent extends Component<EventProps, EventState> {
     })
   }
 
+   // General purpose state updater during form modification
+   handleInputImage = (e: File) => {
+    console.log(typeof(e));
+    console.log(e);
+    console.log(this.state);
+
+    if (e == undefined) {
+      window.alert("Please enter a valid file with a .JPG, .PNG, .JPEG extension.")
+    }
+    else {
+      this.setState({
+        image: e
+      })
+    }
+  }
+
   // Handle user submit
   handleSubmit = (event: any) => {
     event.preventDefault();
@@ -213,6 +232,7 @@ class CreateEvent extends Component<EventProps, EventState> {
         title: "",
         description: "",
         location: "",
+        image: null as any,
         themes: [""],
         categories: [""],
         perks: [""],
@@ -328,7 +348,23 @@ class CreateEvent extends Component<EventProps, EventState> {
           <h1>Enter event perks:</h1>
           {this.getMultipleSelect(this.state.perks, this.perks, this.handleChangePerks, "Perks")}
 
-          <h1>Upload an Image for your event:</h1>
+          
+          <Dropzone
+            accept="image/jpeg, image/jpg, image/png"
+            maxFiles={1}
+            onDrop={inputtedFile => 
+              this.handleInputImage(inputtedFile[0])
+            }
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Click here to upload a picture. JPG, JPEG, or PNG only.</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
 
           <div className="input-field">
             <button className="button">Create New Event</button>
