@@ -94,7 +94,7 @@ export const loadLandingPageContent = () => {
             querySnapshot.forEach((doc: any) => {
                 payload.saleItems.push({
                     title: doc.data().title,
-                    href: "/sellListings/" + doc.id,
+                    href: "/sellListing/" + doc.id,
                     price: "$" + parseFloat(doc.data().price).toFixed(2),
                 })
             });
