@@ -119,9 +119,9 @@ export const deleteAccount = () => {
 
                         firebaseStorageRef.child(deletePath + '.jpg')
                             .delete().then(() => {
-                                console.log("jpeg profile pic deleted!");
+                                console.log("jpg profile pic deleted!");
                             }).catch(() => {
-                                console.log("jpeg profile pic delete error!");
+                                console.log("jpg profile pic delete error!");
                             });
                     });
             });
@@ -209,7 +209,7 @@ export const signUp = (newUser: any) => {
                 //upload to firebase storage
                 var waitOnUpload = fileRef.put(newUser.profilePic, metadata)
 
-                //create image URL to store in Firestore
+                //create image URL to store in Firestore (not working yet)
                 waitOnUpload.on('state_changed', (snapshot) => {
                 },
                     (error) => {

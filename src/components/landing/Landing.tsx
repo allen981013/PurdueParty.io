@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { Button, IconButton } from '@mui/material'
 import { ArrowForwardOutlined } from "@mui/icons-material"
+import { Redirect } from 'react-router-dom';
 
 interface LandingProps {
   events: LandingStatesRedux["events"];
@@ -14,6 +15,7 @@ interface LandingProps {
   classes: LandingStatesRedux["classes"];
   clubs: LandingStatesRedux["clubs"];
   loadLandingPageContent: () => void;
+  auth: any
 }
 
 interface LandingStates {
@@ -83,6 +85,9 @@ class Landing extends Component<LandingProps, LandingStates> {
   }
 
   render() {
+    const { auth } = this.props;
+    if (!auth) return <Redirect to='/signin' />
+
     return (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
         <Box id="cropped-purdue-img" sx={{height:{xs:"250px", sm: "400px"}}}/>

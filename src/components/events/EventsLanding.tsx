@@ -14,12 +14,14 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import DirectionsIcon from '@mui/icons-material/Directions';
+import { Redirect } from 'react-router-dom';
 
 interface EventsLandingProps {
   events: EventsLandingStatesRedux["events"];
   isEventsFetched: boolean;
   isLastPage: boolean;
   fetchEvents: (furthestPage: number, filterParameter: FilterParameter) => void;
+  auth: any
 }
 
 interface EventsLandingStates {
@@ -101,6 +103,9 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
   }
 
   render() {
+    const { auth } = this.props;
+    if (!auth) return <Redirect to='/signin' />
+    
     return (
       <Box
         display="flex"
