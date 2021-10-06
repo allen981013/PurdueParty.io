@@ -90,11 +90,11 @@ export const loadLandingPageContent = () => {
                 })
             });
         });
-        var saleItemsQueryPromise = db.collection("marketplace").limit(itemLimit).get().then((querySnapshot: any) => {
+        var saleItemsQueryPromise = db.collection("sellListings").limit(itemLimit).get().then((querySnapshot: any) => {
             querySnapshot.forEach((doc: any) => {
                 payload.saleItems.push({
                     title: doc.data().title,
-                    href: "/marketplace/" + doc.id,
+                    href: "/sellListings/" + doc.id,
                     price: "$" + parseFloat(doc.data().price).toFixed(2),
                 })
             });
