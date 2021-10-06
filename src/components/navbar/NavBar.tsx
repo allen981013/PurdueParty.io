@@ -56,6 +56,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             {!this.isLoggedIn() && <Link to="/signin">Hi, {userName}</Link>}
             {!this.isLoggedIn() && <Link to="/signin">Sign in</Link>}
             {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, {userName}</Link>}
+            {this.isLoggedIn() && <Link to="/changePassword">Change Password</Link>}
             {this.isLoggedIn() && <Link to="/" onClick={(e) =>
               this.props.signOut()}>Sign out</Link>}
           </div>

@@ -2,6 +2,9 @@ import './App.css';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Landing from './components/landing/Landing';
 import SignIn from './components/auth/SignIn';
+import ChangePassword from './components/auth/ChangePassword';
+import ResetPasswordRequest from './components/auth/ResetPasswordRequest';
+import ResetPassword from './components/auth/ResetPassword';
 import CreateAccount from './components/auth/CreateAccount';
 import Homepage from './components/homepage/Homepage';
 import MarketPlace from './components/marketplace/MarketPlace';
@@ -24,6 +27,9 @@ function App() {
           <Route path = '/events' component = {Events} />
           <Route path = '/signin' component = {SignIn} />
           <Route path = '/createaccount' component = {CreateAccount} />
+          <Route path = '/changePassword' component = {ChangePassword} />
+          <Route path = '/resetPassword' component = {ResetPassword} />
+          <Route path = '/resetPasswordRequest' component = {ResetPasswordRequest} />
 
           <Route path = '/marketplace' component = {MarketPlace} />
           <Route path = '/marketplace/create-listing' component = {createSellListing} />

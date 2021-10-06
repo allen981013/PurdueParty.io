@@ -1,5 +1,10 @@
+import { queryEqual } from 'firebase/firestore';
+import { isEmpty } from 'react-redux-firebase';
 import { Dispatch, Action } from 'redux';
+import { StringLiteralLike } from 'typescript';
 import { RootState } from '..';
+import { getAuth, sendPasswordResetEmail, updatePassword } from "firebase/auth";
+import { current } from '@reduxjs/toolkit';
 
 
 export const refreshUserData = () => {
@@ -158,13 +163,23 @@ export const signUp = (newUser: any) => {
         const firebase = getFirebase();
         const db = getFirestore();
 
+        // Create a reference to the cities collection
+        const userRef = db.collection('users');
+
+        // Create a query against the collection
+        const queryRef = userRef.where('userName', '==', newUser.username);
+
+        if (!isEmpty(queryRef)) {
+            dispatch({ type: 'SIGNUP_ERROR', string: "non-original username" })
+        }
+
         firebase.auth().createUserWithEmailAndPassword(
             newUser.email,
             newUser.password
         ).then((newUserRef: any) => {
             firebase.auth().currentUser.sendEmailVerification();
             return db.collection('users').doc(newUserRef.user.uid).set({
-                userName: newUser.email,
+                userName: newUser.username,
                 bio: newUser.bio
             })
         }).then(() => {
@@ -174,3 +189,42 @@ export const signUp = (newUser: any) => {
         })
     }
 }
+
+
+export const changePassword = (credentials: { newPassword: string }) => {
+  return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+    const firebase = getFirebase();
+    const user = firebase.auth().currentUser;
+    
+    user.updatePassword(credentials.newPassword).then(() => {
+        dispatch({ type: 'SIGNUP_SUCCESS' })
+    }).catch((err: any) => {
+        dispatch({ type: 'SIGNUP_ERROR', err })
+    });
+  }
+}
+
+export const resetPasswordRequest = (credentials: { email: string }) => {
+  return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+    const auth = getAuth();
+    sendPasswordResetEmail(auth, credentials.email)
+    .then(() => {
+        dispatch({ type: 'SIGNUP_SUCCESS' })
+    }).catch((err: any) => {
+        dispatch({ type: 'SIGNUP_ERROR', err })
+    });
+  }
+}
+
+export const resetPassword = (credentials: { email: string, username: string, password: string }) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const auth = getAuth();
+        const firebase = getFirebase();
+        updatePassword(firebase.auth().currentUser, credentials.password)
+        .then(() => {
+            dispatch({ type: 'SIGNUP_SUCCESS' })
+        }).catch((err: any) => {
+            dispatch({ type: 'SIGNUP_ERROR', err })
+        });
+    }
+  }
