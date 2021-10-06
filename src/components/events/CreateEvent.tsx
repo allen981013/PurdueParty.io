@@ -75,10 +75,11 @@ interface EventProps {
 }
 
 class CreateEvent extends Component<EventProps, EventState> {
-  themes = ["Arts & Music", "Athletics", "Service", "Culture", "Charity/Service", "Other"];
-  categories = ["Greek Life", "Social", "Celebration", "Education", "Rally", "Party", "Other"];
-  perks = ["free food", "free swag", "credits"];
-
+  themes = ["Arts & Music", "Athletics", "Charity/Service", "Cultural/Religious", 
+            "Greek Life", "Social", "Technology", "Education/Professional", "Other"];
+  categories = ["Callout", "Informational", "Fundraiser", "Rush", "Performance", 
+                "Hackathon", "Rally", "Party/Celebration", "Study-abroad", "Other"];
+  perks = ["Free food", "Free swag", "Credits", "None"];
 
   // Initialize state
   constructor(props: EventProps) {
@@ -319,6 +320,10 @@ class CreateEvent extends Component<EventProps, EventState> {
             <input type ="text" value={this.state.orgID} placeholder="Who's hosting the party?" id="type" onChange={this.handleChangeOrgID}/>
           </div> */}
 
+
+          <h1>Enter event theme:</h1>
+          {this.getMultipleSelect(this.state.themes, this.themes, this.handleChangeThemes, "Themes")}
+
           <h1>Enter event category:</h1>
           <FormControl sx={{ m: 1, width: 300 }}>
             <InputLabel id="a">Category</InputLabel>
@@ -341,9 +346,6 @@ class CreateEvent extends Component<EventProps, EventState> {
               ))}
             </Select>
           </FormControl>
-
-          <h1>Enter event theme:</h1>
-          {this.getMultipleSelect(this.state.themes, this.themes, this.handleChangeThemes, "Themes")}
 
           <h1>Enter event perks:</h1>
           {this.getMultipleSelect(this.state.perks, this.perks, this.handleChangePerks, "Perks")}
