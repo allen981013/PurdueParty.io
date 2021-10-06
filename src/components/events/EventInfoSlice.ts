@@ -101,7 +101,7 @@ export const fetchEventInfo = (eventID: string) => {
         var perks = doc.data().perks
         var ownerID = doc.data().ownerID
         var orgID = doc.data().orgID
-        var imagePath = doc.data().imagePath
+        var imageUrl = doc.data().image
         // Query host info
         var hostName: string | undefined = undefined
         var hostHref: string | undefined = undefined
@@ -116,14 +116,8 @@ export const fetchEventInfo = (eventID: string) => {
         else if (orgID.length != 0) {
           // TODO: Finish this once club info has been created
         }
-        // Query image url
-        var imageUrl = ""
-        var imageUrlQueryPromise = firebaseStorageRef.child(imagePath).getDownloadURL()
-          .then((url) => {
-            imageUrl = url
-          })
         // Create payload and dispatch
-        Promise.all([hostQueryPromise, imageUrlQueryPromise])
+        Promise.all([hostQueryPromise])
           .then(() => {
             type PayloadType = {
               event: EventInfoStatesRedux["event"],

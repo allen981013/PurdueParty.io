@@ -32,6 +32,9 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     this.state = {
       isCollapsibleMenuOpen: false,
     }
+  }
+
+  componentDidMount() {
     this.props.refreshUserData()
   }
 
@@ -41,9 +44,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     if (window.confirm('Are you sure you wish to delete your account?')){
       this.props.deleteAccount();
     }
-  }
-
-
+  } 
 
   isLoggedIn() {
     return this.props.auth.uid != undefined
