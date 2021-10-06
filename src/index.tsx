@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -10,6 +10,7 @@ import rootReducer from './store/reducers/rootReducer'
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
+import 'firebase/compat/storage';
 import { getFirebase, ReactReduxFirebaseProvider, isLoaded } from 'react-redux-firebase';
 import { getFirestore, createFirestoreInstance, reduxFirestore } from 'redux-firestore';
 import { RootState } from './store';
@@ -33,6 +34,7 @@ const rrfConfig = {
 
 firebase.initializeApp(firebaseConfig);
 firebase.firestore();
+export const firebaseStorageRef = firebase.storage().ref()
 
 export const store = configureStore({
   reducer: rootReducer,

@@ -5,6 +5,7 @@ import { RootState, AppDispatch } from '../../store'
 import { getFirebase } from 'react-redux-firebase';
 import { constants } from 'redux-firestore';
 import { Redirect } from 'react-router-dom';
+import Dropzone from 'react-dropzone'
 
 // Interface/type for create account State
 interface CreateAccountState {
@@ -13,8 +14,10 @@ interface CreateAccountState {
   password: string,
   confirmpassword: string,
   bio: string,
+  profilePic: File,
   redirect: boolean,
-  errormsg: string
+  errormsg: string,
+  
 }
 
 // Interface/type for create account Props
@@ -35,6 +38,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
       password: "",
       confirmpassword: "",
       bio: "",
+      profilePic: null as any,
       redirect: false,
       errormsg: ""
     };
@@ -97,7 +101,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
       })
     }
     //check max bio length
-    else if(this.state.bio.length > 256){
+    else if (this.state.bio.length > 256) {
       this.setState({
         errormsg: "Bio cannot be longer that 256 characters in length"
       })
@@ -116,6 +120,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
     }
   }
 
+
   render() {
     //redirect to homepage upon successful account creation
 
@@ -129,6 +134,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
         password: "",
         confirmpassword: "",
         bio: "",
+        profilePic: null as any,
         redirect: false
       })
       return <Redirect to='/' />
@@ -165,6 +171,28 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
           </p>
           <input type="text" value={this.state.bio} id="bio" onChange={this.handleBioChange} />
           <p></p>
+
+          <Dropzone
+            accept="image/jpeg, image/jpg, image/png"
+            maxFiles={1}
+            onDrop={inputtedFile => 
+              this.setState({
+                profilePic: inputtedFile[0]
+              })
+            }
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Click here to upload a profile picture. JPG, JPEG, or PNG only.</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
+
+
+          <p></p>
           <button>Create Account</button>
         </form>
         <p>
@@ -174,6 +202,8 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
     )
   }
 }
+
+
 
 const mapStateToProps = (state: any) => {
   return {

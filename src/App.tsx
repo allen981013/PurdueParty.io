@@ -6,38 +6,44 @@ import ChangePassword from './components/auth/ChangePassword';
 import ResetPasswordRequest from './components/auth/ResetPasswordRequest';
 import ResetPassword from './components/auth/ResetPassword';
 import CreateAccount from './components/auth/CreateAccount';
-import Homepage from './components/homepage/Homepage';
 import MarketPlace from './components/marketplace/MarketPlace';
-import Events from './components/events/Events';
-
-
-// import Navbar 
+import EventsLanding from './components/events/EventsLanding';
+import CreateEvent from './components/events/CreateEvent';
+import EventInfo from './components/events/EventInfo';
+import Clubs from './components/clubs/Clubs';
+import CreateClub from './components/clubs/CreateClub';
 import NavBar from './components/navbar/NavBar'
 import createSellListing from './components/marketplace/create-sell-listings';
 import GenericSellListing from './components/marketplace/GenericSellListing';
+import CreatePost from './components/forum/create-post';
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
   return (
     <BrowserRouter>
       <div className="App">
-        <NavBar/>
+        <NavBar />
         <Switch>
-          <Route exact path = '/' component = {Landing} />
-          <Route path = '/events' component = {Events} />
-          <Route path = '/signin' component = {SignIn} />
-          <Route path = '/createaccount' component = {CreateAccount} />
+          <Route exact path='/' component={Landing} />
+          <Route path='/signin' component={SignIn} />
+          <Route path='/createaccount' component={CreateAccount} />
           <Route path = '/changePassword' component = {ChangePassword} />
           <Route path = '/resetPassword' component = {ResetPassword} />
           <Route path = '/resetPasswordRequest' component = {ResetPasswordRequest} />
-
-          <Route path = '/marketplace' component = {MarketPlace} />
-          <Route path = '/marketplace/create-listing' component = {createSellListing} />
-          <Route path = '/sellListing/:itemID' component = {GenericSellListing} />
-
+          <Route exact path='/marketplace' component={MarketPlace} />
+          <Route path='/marketplace/create-listing' component={createSellListing} />
+          <Route path='/sellListing/:itemID' component={GenericSellListing} />
+          <Route path = '/events/create' component = {CreateEvent} />
+          <Route path='/events/:eventID' render={({match}) => {
+            return <EventInfo eventID={match.params.eventID} />
+          }}/>
+          <Route path='/events' component={EventsLanding} />
+          <Route exact path = '/clubs' component = {Clubs} />
+          <Route path = '/clubs/create-club' component = {CreateClub} />
+          <Route path = '/forum/create-post' component = {CreatePost} />
         </Switch>
-        <div style={{flexGrow:1}}/> {/* hack to make footer stays at the bottom of the page */}
-        <div className="w-100 bg-black" style={{width: "100%", color: "#fff", padding: "20px 0px"}}>
+        <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
+        <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px" }}>
           Purdue University, 100 North University Street, West Lafayette, IN, 47907
         </div>
       </div>

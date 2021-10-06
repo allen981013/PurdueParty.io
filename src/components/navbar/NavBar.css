@@ -9,11 +9,11 @@
   justify-content: center;
   background: var(--dull-gold);
   height: 35px;
+  padding: 0px 24px;
 }
 
 #topbar__gold  a {
   color: black;
-  padding: 16px;
 }
 
 #topbar__gold > div {

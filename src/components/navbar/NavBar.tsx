@@ -1,6 +1,7 @@
 import './NavBar.css'
 import { Link } from 'react-router-dom'
-import { refreshUserData, signOut } from '../../store/actions/authActions'
+//remove deleteAccount
+import { refreshUserData, signOut, deleteAccount } from '../../store/actions/authActions'
 import { FirebaseReducer } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Component } from 'react';
@@ -13,6 +14,8 @@ interface NavBarProps {
   username: string;
   refreshUserData: () => void;
   signOut: () => void;
+  //remove this
+  deleteAccount: () => void;
 }
 
 interface NavBarState {
@@ -29,8 +32,19 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     this.state = {
       isCollapsibleMenuOpen: false,
     }
+  }
+
+  componentDidMount() {
     this.props.refreshUserData()
   }
+
+  //delete this later
+  handleDelete = (event: any) => {
+    event.preventDefault()
+    if (window.confirm('Are you sure you wish to delete your account?')){
+      this.props.deleteAccount();
+    }
+  } 
 
   isLoggedIn() {
     return this.props.auth.uid != undefined
@@ -42,23 +56,41 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     })
   }
 
-  render() {
+  handleSignOutClick = (e: any) => {
+    this.props.signOut()
+  }
 
-    var userName = "User";
-    if (this.props.username) {
-      userName = this.props.username
-    }
+  getGreetingOrAuthButton(text: string, href: string, onClickHandler?: (e: any) => void) {
+    return onClickHandler === undefined
+      ? <Button component={Link}
+        to={href}
+        sx={{ textTransform: "unset", fontWeight: "light", textDecoration: "underline !important" }}
+      >{text}
+      </Button>
+      : <Button component={Link}
+        to={href}
+        onClick={onClickHandler}
+        sx={{ textTransform: "unset", fontWeight: "light", textDecoration: "underline !important" }}
+      >{text}
+      </Button>
+  }
+
+  render() {
 
     return (
       <div id='topbar'>
         <div id='topbar__gold'>
           <div>
-            {!this.isLoggedIn() && <Link to="/signin">Hi, {userName}</Link>}
-            {!this.isLoggedIn() && <Link to="/signin">Sign in</Link>}
-            {this.isLoggedIn() && <Link to={"/" + this.props.username}>Hi, {userName}</Link>}
+            {!this.isLoggedIn() && this.getGreetingOrAuthButton("Hi, " + this.props.username, "/signin")}
+            {!this.isLoggedIn() && this.getGreetingOrAuthButton("Sign in", "/signin")}
+            {this.isLoggedIn() && this.getGreetingOrAuthButton("Hi, " + this.props.username, "/users/" + this.props.username)}
+            {this.isLoggedIn() && this.getGreetingOrAuthButton("Sign out", "/", this.handleSignOutClick)}
+
             {this.isLoggedIn() && <Link to="/changePassword">Change Password</Link>}
-            {this.isLoggedIn() && <Link to="/" onClick={(e) =>
-              this.props.signOut()}>Sign out</Link>}
+            <form onSubmit={this.handleDelete}>
+              <button>Delete Account</button>
+            </form>
+
           </div>
         </div>
         <div id="topbar__black" />
@@ -75,7 +107,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             sx={{
               width: '100%',
               maxWidth: 150,
-              display: {sm: "none", padding: "0px"}
+              display: { sm: "none", padding: "0px" }
             }}
             component="nav"
           >
@@ -126,7 +158,9 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
     refreshUserData: () => dispatch(refreshUserData()),
-    signOut: () => dispatch(signOut())
+    signOut: () => dispatch(signOut()),
+    //delete this later
+    deleteAccount: () => dispatch(deleteAccount())
   }
 }
 

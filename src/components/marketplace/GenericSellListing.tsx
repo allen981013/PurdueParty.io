@@ -25,6 +25,10 @@ interface genericSelllistingProps {
       price: number,
       title: string,
       type: string
+  }[],
+  users: {
+    bio: string,
+    userName: string
   }[]
 }
 
@@ -41,23 +45,44 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
     };
   }
 
+
+  showUser (curUser:any) {
+      console.log("USER IS HERE")
+      console.log(curUser);
+  }
+
+  isOwner = (user:any) => {
+    if (this.props.marketplace) {
+      return user.id === this.props.marketplace[0].owner
+    } else {
+      return false;
+    }
+  }
+
   render() {
     var postDate:any = Date.now();
     if (this.props.marketplace) {
       postDate = this.props.marketplace[0].postedDateTime.toDate();
+      console.log(this.props.marketplace[0].image);
+    }
+
+    var curUser : any = "User";
+    if (this.props.users) {
+      curUser = this.props.users.find(this.isOwner);
     }
 
     return (
       <div className="container-spacer">
         <div className="container-card">
             <div className="container-card__stripe" />
-            { this.props.marketplace != null
+            {this.showUser(curUser)}
+            { this.props.marketplace != null && curUser
                 ?
                 <div>
                   <h3>{this.props.marketplace[0].title}</h3>
                   <div className="container-card__body">
                     <p style={boldText}>Sold By</p>
-                    <p>{this.props.marketplace[0].owner}</p>
+                    <p>{curUser.userName}</p>
                   </div>
                   <div className="container-card__body">
                     <p style={boldText}>Price</p>
@@ -65,6 +90,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
                   </div>
                   <div className="container-card__body">
                     <p style={boldText}>Contact Info</p>
+                    <p>{curUser.email}</p>
                     <p>{this.props.marketplace[0].contactInfo}</p>
                   </div>
 
@@ -72,7 +98,9 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
                     <p style={boldText}>Description</p>
                     <p>{this.props.marketplace[0].description}</p>
                   </div>
-                  
+                  <div className="container-card__desc">
+                    <img src = {this.props.marketplace[0].image} style = {{ width : "95%"}} />
+                  </div>
                   <div className="container-card__dateTime">
                     <p>Posted On: {postDate.toString()}</p>
                   </div>
@@ -89,7 +117,8 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
 const mapStateToProps = (state: RootState) => {
   return {
     auth: state.firebase.auth,
-    marketplace: state.firestore.ordered.sellListings
+    marketplace: state.firestore.ordered.sellListings,
+    users: state.firestore.ordered.users
   }
 }
 
@@ -108,6 +137,9 @@ export default compose<React.ComponentType<genericSelllistingProps>>(
         { 
           collection: 'sellListings',
           doc: props.match.params.itemID
+        },
+        {
+          collection: 'users'
         }
       ]
     } else {

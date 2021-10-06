@@ -33,7 +33,7 @@ const initState: LandingStatesRedux = {
 }
 
 // create slice
-export const landing = createSlice({
+export const landingSlice = createSlice({
     name: 'landing',
     initialState: initState,
     reducers: {
@@ -60,11 +60,11 @@ export const loadLandingPageContent = () => {
         const itemLimit = 5
         var payload: LandingStatesRedux = { events: [], classes: [], clubs: [], saleItems: [] }
         var eventsQueryPromise = db.collection("events")
-        .where("dateTime", ">", Timestamp.now())
-        .orderBy("dateTime").limit(itemLimit)
+        .where("startTime", ">", Timestamp.now())
+        .orderBy("startTime").limit(itemLimit)
         .get().then((querySnapshot: any) => {
             querySnapshot.forEach((doc: any) => {
-                let rawTime = new Date(doc.data().dateTime.seconds * 1000)
+                let rawTime = new Date(doc.data().startTime.seconds * 1000)
                 let today = new Date()
                 let isToday = (rawTime.getDate() == today.getDate())
                     && (rawTime.getMonth() == today.getMonth())
@@ -90,11 +90,11 @@ export const loadLandingPageContent = () => {
                 })
             });
         });
-        var saleItemsQueryPromise = db.collection("marketplace").limit(itemLimit).get().then((querySnapshot: any) => {
+        var saleItemsQueryPromise = db.collection("sellListings").limit(itemLimit).get().then((querySnapshot: any) => {
             querySnapshot.forEach((doc: any) => {
                 payload.saleItems.push({
                     title: doc.data().title,
-                    href: "/marketplace/" + doc.id,
+                    href: "/sellListings/" + doc.id,
                     price: "$" + parseFloat(doc.data().price).toFixed(2),
                 })
             });
@@ -117,7 +117,7 @@ export const loadLandingPageContent = () => {
         });
         Promise.all([eventsQueryPromise, saleItemsQueryPromise, clubsQueryPromise, classesQueryPromise])
             .then(() => {
-                dispatch(landing.actions.landingPageContentLoaded(payload))
+                dispatch(landingSlice.actions.landingPageContentLoaded(payload))
             });
     }
 }
