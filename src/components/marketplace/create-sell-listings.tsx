@@ -9,6 +9,7 @@ import { Timestamp } from '@firebase/firestore';
 import { IconButton, Grid, Box } from '@mui/material';
 import { PasswordTwoTone } from '@mui/icons-material';
 import ReactModal from 'react-modal';
+import Dropzone from 'react-dropzone'
 
 
 // Interface/type for sellListing State
@@ -19,11 +20,10 @@ interface sellListingState {
     description: string,
     postedDateTime: Timestamp,
     type: string,
-    image: string,
+    image: File,
     price: number,
     contactInfo: string,
     validationMsg: string,
-    showPopup: boolean
 }
 
 // Interface/type for sellListing Props
@@ -45,24 +45,13 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
       description: "",
       postedDateTime: new Timestamp(0,0),
       type: "",
-      image: "",
+      image: null as any,
       price: 0,
       contactInfo: "",
-      validationMsg: "",
-      showPopup: false
+      validationMsg: ""
     };
-
-    this.handleOpenPopup = this.handleOpenPopup.bind(this);
-    this.handleClosePopup = this.handleClosePopup.bind(this);
   }
 
-    handleOpenPopup () {
-        this.setState({ showPopup: true });
-    }
-    
-    handleClosePopup () {
-        this.setState({ showPopup: false });
-    }
 
   // General purpose state updater during form modification
   handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +76,6 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
 
   // General purpose state updater during form modification
   handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("I AM CHANGING PRICE");
     console.log(typeof(e.target.value))
 
     this.setState({
@@ -100,6 +88,24 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
     this.setState({
       contactInfo : e.target.value
     })
+  }
+
+  // General purpose state updater during form modification
+  handleInputImage = (e: File) => {
+    console.log(typeof(e));
+    console.log(e);
+    console.log(this.state);
+
+    
+
+    if (e == undefined) {
+      window.alert("Please enter a valid file with a .JPG, .PNG, .JPEG extension.")
+    }
+    else {
+      this.setState({
+        image: e
+      })
+    }
   }
 
   // Handle user submit
@@ -132,26 +138,6 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
         window.alert("Please enter a valid purdue email. TEMPORARY");
     }
     else {
-        // NOTE: Possibly just make price field a string and then
-        //       use the toFixed(2) function to force two decimal 
-        //       place input. 
-
-        /*
-        console.log("CHANGING PRICE NOW... BEFORE");
-        console.log(this.state.price);
-    
-        var roundedNum = Math.round(this.state.price * 1e2) / 1e2;
-        console.log(roundedNum);
-
-        this.setState({
-            //price: Math.round((1.00 * this.state.price + Number.EPSILON) * 100) / 100
-            price: Math.round(this.state.price * 1e2) / 1e2
-        })
-
-        console.log("CHANGED PRICE... AFTER");
-        console.log(this.state.price);
-        */
-
         console.log("Listing Posted Successfully!");
         window.alert("Listing posted successfully!")
 
@@ -164,7 +150,7 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
           description: "",
           postedDateTime: new Timestamp(0,0),
           type: "",
-          image: "",
+          image: null as any,
           price: 0,
           contactInfo: ""
         })
@@ -220,20 +206,26 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
             <input type ="text" value={this.state.contactInfo} id="contactInfo" onChange={this.handleContactInfoChange}/>
           </div>
 
+          <Dropzone
+            accept="image/jpeg, image/jpg, image/png"
+            maxFiles={1}
+            onDrop={inputtedFile => 
+              this.handleInputImage(inputtedFile[0])
+            }
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Click here to upload a picture. JPG, JPEG, or PNG only.</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
+
           <div className ="input-field">
             <button className = "button">Submit Listing</button>
           </div>
-
-          <ReactModal 
-                  isOpen={this.state.showPopup}
-                  contentLabel="Additional Listing Information"
-                  onRequestClose={this.handleClosePopup}
-                  className="Modal"
-                  overlayClassName="Overlay"
-                >
-                <text> {this.state.validationMsg} </text>
-                <button className="btn-bot" onClick={this.handleClosePopup}>Close</button>
-        </ReactModal>
 
         </form>
       </div>
