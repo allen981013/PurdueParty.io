@@ -57,6 +57,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
     var postDate:any = Date.now();
     if (this.props.marketplace) {
       postDate = this.props.marketplace[0].postedDateTime.toDate();
+      console.log(this.props.marketplace[0].image);
     }
 
     var curUser : any = "User";
@@ -89,7 +90,9 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
                     <p style={boldText}>Description</p>
                     <p>{this.props.marketplace[0].description}</p>
                   </div>
-                  
+                  <div className="container-card__desc">
+                    <img src = {this.props.marketplace[0].image} style = {{ width : "95%"}} />
+                  </div>
                   <div className="container-card__dateTime">
                     <p>Posted On: {postDate.toString()}</p>
                   </div>
