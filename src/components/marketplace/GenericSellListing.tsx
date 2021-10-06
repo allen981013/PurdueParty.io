@@ -45,6 +45,12 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
     };
   }
 
+
+  showUser (curUser:any) {
+      console.log("USER IS HERE")
+      console.log(curUser);
+  }
+
   isOwner = (user:any) => {
     if (this.props.marketplace) {
       return user.id === this.props.marketplace[0].owner
@@ -69,6 +75,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
       <div className="container-spacer">
         <div className="container-card">
             <div className="container-card__stripe" />
+            {this.showUser(curUser)}
             { this.props.marketplace != null && curUser
                 ?
                 <div>
@@ -83,6 +90,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
                   </div>
                   <div className="container-card__body">
                     <p style={boldText}>Contact Info</p>
+                    <p>{curUser.email}</p>
                     <p>{this.props.marketplace[0].contactInfo}</p>
                   </div>
 

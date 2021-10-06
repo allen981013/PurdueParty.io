@@ -112,6 +112,9 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
   handleSubmit = (event:any) => {
     event.preventDefault();
 
+    // Phone # validation
+    var phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+
     if (this.state.title.length < 3) { 
         // Pop modal for title length error
         console.log("Minimum title length required: 3 characters");
@@ -132,10 +135,10 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
         console.log("Please enter a price");
         window.alert("Please enter a price");
     }
-    else if (!this.state.contactInfo.includes("@purdue.edu") || this.state.contactInfo.split("@purdue.edu")[0].length < 1) {
+    else if (this.state.contactInfo.length != 0 && !this.state.contactInfo.match(phoneno)) {
         // Pop modal for if the contact info isn't a purdue email or if there's nothing before the @purdue.edu
-        console.log("Please enter a valid purdue email. TEMPORARY");
-        window.alert("Please enter a valid purdue email. TEMPORARY");
+        console.log("Please enter a valid phone #.");
+        window.alert("Please enter a valid phone #. Example Formats:\nXXX-XXX-XXX\nXXX.XXX.XXXX\nXXX XXX XXXX\nXXXXXXXXXX\netc");
     }
     else {
         console.log("Listing Posted Successfully!");
@@ -173,7 +176,6 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
             <Box id="cropped-purdue-img"/>
         </Box>
 
-      
         <form onSubmit = {this.handleSubmit}>
 
           <h1>Enter a title for your listing:</h1>
@@ -191,7 +193,8 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
           <h1>Enter the type of listing this is:</h1>
           <div className = "input-field">
             <label htmlFor="type">Sell-Listing type: </label>
-            <input type ="text" value={this.state.type} id="type" onChange={this.handleTypeChange}/>
+            <input type ="text"  placeholder="What type of thing are you selling?" 
+                  value={this.state.type} id="type" onChange={this.handleTypeChange}/>
           </div>
 
           <h1>Enter a price for your listing:</h1>
@@ -200,10 +203,11 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
             <input type="number" value={this.state.price} id="price" onChange={this.handlePriceChange}/>
           </div>
 
-          <h1>Enter contact information for your listing:</h1>
+          <h1>(Optional) Enter your phone number:</h1>
           <div className = "input-field">
             <label htmlFor="contactInfo">Sell-Listing contact Info: </label>
-            <input type ="text" value={this.state.contactInfo} id="contactInfo" onChange={this.handleContactInfoChange}/>
+            <input type ="text" placeholder="We'll use your email by default if empty." 
+                  value={this.state.contactInfo} id="contactInfo" onChange={this.handleContactInfoChange}/>
           </div>
 
           <Dropzone
