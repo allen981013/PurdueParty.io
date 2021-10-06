@@ -47,11 +47,6 @@ export const addSellListing = (newSellListing: any) => {
                 path = 'marketplace/' + newDocRef.id + fileType;
                 fileRef = firebaseStorageRef.child(path);
             }
-
-            newDocRef.update({
-                image: path
-            })
-
             if (newSellListing.image != null as any) {
                 //upload to firebase storage
                 var waitOnUpload = fileRef.put(newSellListing.image, metadata)
@@ -64,10 +59,21 @@ export const addSellListing = (newSellListing: any) => {
                     },
                     () => {
                         fileRef.getDownloadURL().then((downloadURL) => {
-                            imageURL = downloadURL
+                            //imageURL = downloadURL
+                            newDocRef.update({
+                                image: downloadURL
+                            })
+                
                         })
                     })
 
+            } else {
+                fileRef = firebaseStorageRef.child('marketplace/P.JPG');
+                fileRef.getDownloadURL().then((downloadURL) => {
+                    newDocRef.update({
+                        image: downloadURL
+                    })
+                }) 
             }
 
             dispatch({ type: 'ADD_LISTING_SUCCESS', newDocRef });

@@ -45,6 +45,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
     }
   }
 
+  /*
   async getImageDownload(imageURL: string) {
     try {
       const storageRef = this.props.firebase.storage().ref();
@@ -56,11 +57,12 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
       console.log(err);
     }
   }
+  */
 
   getCard(title: string, price: number, id: string, imageURL: string) {
 
-    this.getImageDownload(imageURL);
-
+    //this.getImageDownload(imageURL);
+    console.log(imageURL);
     return (
       <Grid
         item
@@ -73,7 +75,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
             <CardMedia
               component="img"
               height="140"
-              image={this.state.imageURL}
+              image={imageURL}
             />
             <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
               <Typography gutterBottom noWrap component="div">
@@ -91,8 +93,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
 
   render() {
     const { auth } = this.props;
-    //const { sellListings } = this.props.marketplace;
-    //console.log(this.props.firebase.storage);
+    //console.log(this.props.marketplace);
     if (!auth.uid) return <Redirect to='/signin' />
     return (
       <div>
@@ -127,7 +128,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
           <Box id="cropped-purdue-img" />
           <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-            {this.props.marketplace != null
+            {this.props.marketplace != undefined && this.props.marketplace.length != 0
               ?
               this.props.marketplace.map((sellListing) => this.getCard(sellListing.title, sellListing.price, sellListing.id, sellListing.image))
               :
