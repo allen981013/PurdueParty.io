@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom';
-import { Timestamp} from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import './MarketPlace.css';
 import {
@@ -15,54 +15,41 @@ import {
 
 // Interface/type for Marketplace State
 interface MarketPlaceState {
-  imageURL:string
+  imageURL: string
 }
 
 // Interface/type for MarketPlace Props
 interface MarketPlaceProps {
-    marketplace: {
-        contactInfo: string,
-        description: string,
-        id: string,
-        image: string,
-        owner: string,
-        postedDateTime: Timestamp,
-        price: number,
-        title: string,
-        type: string,
-        imageURL: string
-    }[],
-    auth: any,
-    firebase: any
+  marketplace: {
+    contactInfo: string,
+    description: string,
+    id: string,
+    image: string,
+    owner: string,
+    postedDateTime: Timestamp,
+    price: number,
+    title: string,
+    type: string,
+  }[],
+  auth: any,
+  firebase: any
 }
 
 class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
 
-    constructor(props:MarketPlaceProps) {
-        super(props);
-        this.state = {
-          imageURL: ""
-        }
+  constructor(props: MarketPlaceProps) {
+    super(props);
+    this.state = {
+      imageURL: ""
     }
+  }
 
-    async getImageDownload(imageURL:string) {
-      try {
-        const storageRef = this.props.firebase.storage().ref();
-        const res = await Promise.resolve(storageRef.child(imageURL).getDownloadURL());
-        this.setState({
-          imageURL: res
-        })
-      } catch (err) {
-        console.log(err);
-      }
-    }
+  getCard(title: string, price: number, id: string, imageURL: string) {
 
-    getCard(title: string, price: number, id: string, imageURL: string) {
-
-      this.getImageDownload(imageURL);
-
-      return (
-        <Grid
+    //this.getImageDownload(imageURL);
+    console.log(imageURL);
+    return (
+      <Grid
         item
         id="image-container"
         xs={12}
@@ -73,7 +60,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
             <CardMedia
               component="img"
               height="140"
-              image={this.state.imageURL}
+              image={imageURL}
             />
             <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
               <Typography gutterBottom noWrap component="div">
@@ -85,59 +72,77 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
             </CardContent>
           </CardActionArea>
         </Card>
-       </Grid>
-      )
-    }
+      </Grid>
+    )
+  }
 
-    render() {
-        const { auth } = this.props;
-        //const { sellListings } = this.props.marketplace;
-        //console.log(this.props.firebase.storage);
-        if (!auth.uid) return <Redirect to= '/signin'/>
-        return (
-            <div>
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
-              <Box id="cropped-purdue-img" />
-                <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                    { this.props.marketplace != null
-                    ?
-                    this.props.marketplace.map((sellListing) => this.getCard(sellListing.title, sellListing.price, sellListing.id, sellListing.imageURL))
-                    :
-                    <div>No SellListings Found</div>
-                    }
-                </Grid>
-              </Box>
-              
-              <div>
-                <Link to="/marketplace/create-listing">
-                    <button type="button">
-                          Create a listing
-                    </button>
-                </Link>
-              </div>
+  render() {
+    const { auth } = this.props;
+    //console.log(this.props.marketplace);
+    if (!auth.uid) return <Redirect to='/signin' />
+    return (
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Box
+            display="flex"
+            alignSelf="center"
+            flexDirection="column"
+            alignItems="center"
+            pt="8px"
+            width="100%"
+            maxWidth="1200px"
+            padding="48px 16px"
+          >
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              width="100%"
+              pb="16px"
+            >
+              <h1 style={{ fontWeight: 300, margin: "0px" }}>MarketPlace</h1>
+              <Button
+                component={Link}
+                to="marketplace/create-listing/"
+                variant="outlined"
+                sx={{ color: "black", border: "1px solid black" }}
+              > Create
+              </Button>
+            </Box>
+          </Box></div>
 
-            </div>
-        )
-    }
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
+          <Box id="cropped-purdue-img" />
+          <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
+            {this.props.marketplace != undefined && this.props.marketplace.length != 0
+              ?
+              this.props.marketplace.map((sellListing) => this.getCard(sellListing.title, sellListing.price, sellListing.id, sellListing.image))
+              :
+              <div>No SellListings Found</div>
+            }
+          </Grid>
+        </Box>
+      </div>
+    )
+  }
 }
 
 const mapStateToProps = (state: RootState) => {
-    return {
-      marketplace: state.firestore.ordered.sellListings,
-      auth: state.firebase.auth
-    }
+  return {
+    marketplace: state.firestore.ordered.sellListings,
+    auth: state.firebase.auth
   }
-  
-  const mapDispatchToProps = (dispatch: AppDispatch) => {
-    // Insert functions from actions folder in similar syntax
-    return {
-      
-    }
+}
+
+const mapDispatchToProps = (dispatch: AppDispatch) => {
+  // Insert functions from actions folder in similar syntax
+  return {
+
   }
-  
-  export default compose<React.ComponentType<MarketPlaceProps>>(
-    connect(mapStateToProps, mapDispatchToProps),
-    firestoreConnect([
-      { collection: 'sellListings'}
-    ])
-  )(MarketPlace)
+}
+
+export default compose<React.ComponentType<MarketPlaceProps>>(
+  connect(mapStateToProps, mapDispatchToProps),
+  firestoreConnect([
+    { collection: 'sellListings' }
+  ])
+)(MarketPlace)

@@ -45,6 +45,12 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
     };
   }
 
+
+  showUser (curUser:any) {
+      console.log("USER IS HERE")
+      console.log(curUser);
+  }
+
   isOwner = (user:any) => {
     if (this.props.marketplace) {
       return user.id === this.props.marketplace[0].owner
@@ -57,6 +63,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
     var postDate:any = Date.now();
     if (this.props.marketplace) {
       postDate = this.props.marketplace[0].postedDateTime.toDate();
+      console.log(this.props.marketplace[0].image);
     }
 
     var curUser : any = "User";
@@ -68,6 +75,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
       <div className="container-spacer">
         <div className="container-card">
             <div className="container-card__stripe" />
+            {this.showUser(curUser)}
             { this.props.marketplace != null && curUser
                 ?
                 <div>
@@ -82,6 +90,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
                   </div>
                   <div className="container-card__body">
                     <p style={boldText}>Contact Info</p>
+                    <p>{curUser.email}</p>
                     <p>{this.props.marketplace[0].contactInfo}</p>
                   </div>
 
@@ -89,7 +98,9 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
                     <p style={boldText}>Description</p>
                     <p>{this.props.marketplace[0].description}</p>
                   </div>
-                  
+                  <div className="container-card__desc">
+                    <img src = {this.props.marketplace[0].image} style = {{ width : "95%"}} />
+                  </div>
                   <div className="container-card__dateTime">
                     <p>Posted On: {postDate.toString()}</p>
                   </div>
