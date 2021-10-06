@@ -245,6 +245,7 @@ export const changePassword = (credentials: { newPassword: string }) => {
     
     user.updatePassword(credentials.newPassword).then(() => {
         dispatch({ type: 'SIGNUP_SUCCESS' })
+        firebase.auth().signOut();
     }).catch((err: any) => {
         dispatch({ type: 'SIGNUP_ERROR', err })
     });
