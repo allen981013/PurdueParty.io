@@ -6,13 +6,20 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { AppDispatch, RootState } from '../../store'
-import { EventsLandingStatesRedux, fetchEvents } from './EventsLandingSlice'
+import { EventsLandingStatesRedux, fetchEvents, FilterParameter } from './EventsLandingSlice'
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import DirectionsIcon from '@mui/icons-material/Directions';
 
 interface EventsLandingProps {
   events: EventsLandingStatesRedux["events"];
   isEventsFetched: boolean;
   isLastPage: boolean;
-  fetchEvents: (furthestPage: number) => void;
+  fetchEvents: (furthestPage: number, filterParameter: FilterParameter) => void;
 }
 
 interface EventsLandingStates {
@@ -21,6 +28,10 @@ interface EventsLandingStates {
 
 class EventsLanding extends React.Component<EventsLandingProps, EventsLandingStates> {
   furthestPage = 1
+  filterParameter = {
+    searchKeyword: "",
+
+  }
 
   constructor(props: EventsLandingProps) {
     super(props)
@@ -28,7 +39,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
 
   componentDidMount() {
     console.log("")
-    this.props.fetchEvents(this.furthestPage)
+    this.props.fetchEvents(this.furthestPage, this.filterParameter)
   }
 
   getCards(events: EventsLandingStatesRedux['events']) {
@@ -37,7 +48,8 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
         item
         id="image-container"
         xs={12}
-        md={3}
+        sm={6}
+        md={4}
       >
         <Card>
           <CardActionArea component={Link} to={event.href}>
@@ -68,9 +80,24 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
       </Grid>)
   }
 
+  handleSearchBarChange = (e: any) => {
+    this.filterParameter.searchKeyword = e.target.value
+  }
+
+  handleSearchBarKeyDown = (e: any) => {
+    if (e.key === "Enter") {
+      this.props.fetchEvents(this.furthestPage, this.filterParameter)
+    }
+  }
+
+  handleSearchButtonClick = (e: any) => {
+    console.log(this.filterParameter)
+    this.props.fetchEvents(this.furthestPage, this.filterParameter)
+  }
+
   handleLoadMoreClick = (e: any) => {
     this.furthestPage += 1
-    this.props.fetchEvents(this.furthestPage)
+    this.props.fetchEvents(this.furthestPage, this.filterParameter)
   }
 
   render() {
@@ -83,7 +110,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
         pt="8px"
         width="100%"
         maxWidth="1200px"
-        padding="48px 16px"
+        padding="48px 32px"
       >
         <Box
           display="flex"
@@ -94,7 +121,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
           <h1 style={{ fontWeight: 300, margin: "0px" }}>Events</h1>
           <Button
             component={Link}
-            to="events/create/"
+            to="/events/create/"
             variant="outlined"
             sx={{ color: "black", border: "1px solid black" }}
           > Create
@@ -106,10 +133,40 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
           this.props.events.length != 0 &&
           <Grid
             container
-            id="top-page-container"
             spacing={2}
+            padding={"16px 0px"}
           >
-            {this.getCards(this.props.events)}
+            <Grid
+              item
+              xs={12}
+              md={3}
+            >
+              <Box display="flex" flexDirection="column" width="100%">
+                <Paper
+                  sx={{ p: '2px 4px 0px 0px ', display: 'flex', alignItems: 'center' }}
+                >
+                  <InputBase
+                    sx={{ ml: 2, flex: 1 }}
+                    placeholder="Search events"
+                    inputProps={{ 'aria-label': 'search events' }}
+                    onChange={this.handleSearchBarChange}
+                    onKeyDown={this.handleSearchBarKeyDown}
+                  />
+                  <IconButton sx={{ p: '10px' }} aria-label="search" onClick={this.handleSearchButtonClick}>
+                    <SearchIcon />
+                  </IconButton>
+                </Paper>
+              </Box>
+            </Grid>
+            <Grid
+              container
+              xs={12}
+              md={9}
+              spacing={2}
+              sx={{ margin: 0, padding: 0 }}
+            >
+              {this.getCards(this.props.events)}
+            </Grid>
           </Grid>
         }
         {
@@ -128,7 +185,6 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
 
 }
 
-
 const mapStateToProps = ((state: RootState) => {
   return {
     events: state.eventsLanding.events,
@@ -139,7 +195,7 @@ const mapStateToProps = ((state: RootState) => {
 
 const mapDispatchToProps = ((dispatch: AppDispatch) => {
   return {
-    fetchEvents: (furthestPage: number) => dispatch(fetchEvents(furthestPage)),
+    fetchEvents: (furthestPage: number, filterParameter: FilterParameter) => dispatch(fetchEvents(furthestPage, filterParameter)),
   }
 })
 
