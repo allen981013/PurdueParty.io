@@ -85,8 +85,6 @@ class Landing extends Component<LandingProps, LandingStates> {
   }
 
   render() {
-    const { auth } = this.props;
-    if (!auth) return <Redirect to='/signin' />
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
