@@ -68,12 +68,15 @@ const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, f
             if (fieldName == 'owner') {
                 collection.doc(doc.id).update({
                     owner: firebase.firestore.FieldValue.delete()
+
                 })
+                console.log('owner deleted')
             }
             if (fieldName == 'editors') {
                 collection.doc(doc.id).update({
                     editors: firebase.firestore.FieldValue.arrayRemove(useruid)
                 })
+                console.log('editor deleted')
             }
         });
     })
@@ -91,6 +94,33 @@ export const deleteAccount = () => {
         const user = firebase.auth().currentUser;
         const useruid = user.uid;
 
+        // Create a path to profile pic to delete
+        var deletePath = 'profilePics/' + user.uid;
+
+        firebaseStorageRef.child(deletePath + '.png').getDownloadURL().then(() => {
+            firebaseStorageRef.child(deletePath + '.png')
+                .delete().then(() => {
+                    console.log("png profile pic deleted!");
+                }).catch(() => {
+                    console.log("png profile pic delete error!");
+                });
+        }
+            , () => {
+                firebaseStorageRef.child(deletePath + '.jpeg')
+                    .delete().then(() => {
+                        console.log("jpeg profile pic deleted!");
+                    }).catch(() => {
+                        console.log("jpeg profile pic delete error!");
+
+                        firebaseStorageRef.child(deletePath + '.jpg')
+                            .delete().then(() => {
+                                console.log("jpeg profile pic deleted!");
+                            }).catch(() => {
+                                console.log("jpeg profile pic delete error!");
+                            });
+                    });
+            });
+
         //delete user from auth
         user.delete().then(() => {
             //firestore deletions
@@ -107,6 +137,7 @@ export const deleteAccount = () => {
             deleteFields({ getFirebase, getFirestore }, 'events', 'editors', 'array-contains', useruid)
             deleteFields({ getFirebase, getFirestore }, 'clubs', 'owner', '==', useruid)
             deleteFields({ getFirebase, getFirestore }, 'clubs', 'editors', 'array-contains', useruid)
+            deleteFields({ getFirebase, getFirestore }, 'posts', 'owner', '==', useruid)
 
             //delete users sell listings and fields
             collection = db.collection('sellListings')
@@ -120,26 +151,6 @@ export const deleteAccount = () => {
                     });
                 });
             });
-
-            // Create a path to profile pic to delete
-            var deletePath = 'profilePics/' + user.uid;
-
-            firebaseStorageRef.child(deletePath + '.jpeg')
-                .delete().then(() => {
-                    console.log("jpeg profile pic deleted!");
-                }).catch(() => {
-                    firebaseStorageRef.child(deletePath + '.jpg')
-                        .delete().then(() => {
-                            console.log("jpg profile pic deleted!");
-                        }).catch(() => {
-                            firebaseStorageRef.child(deletePath + '.png')
-                                .delete().then(() => {
-                                    console.log("png profile pic deleted!");
-                                }).catch(() => {
-                                    console.error("Error removing profile pic");
-                                });
-                        });
-                });
 
             dispatch({ type: 'DELETE_SUCCESS' });
         }).catch((err: any) => {
