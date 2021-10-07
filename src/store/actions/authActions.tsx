@@ -161,7 +161,6 @@ export const deleteAccount = () => {
         deleteDocs({ getFirebase, getFirestore }, 'sellListings', 'owner', '==', useruid)
         deleteDocs({ getFirebase, getFirestore }, 'events', 'ownerID', '==', useruid)
 
-        dispatch({ type: 'DELETE_SUCCESS' });
         //delete user from auth
         user.delete().then(() => {
             //firestore deletions
