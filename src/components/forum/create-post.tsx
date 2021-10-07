@@ -83,7 +83,7 @@ class CreatePost extends Component<PostProps, PostState> {
     }
     else {
       console.log("Posted Successfully!");
-      window.alert("Post successfully!")
+      window.alert("Posted successfully!")
 
       this.props.addPost(this.state);
 
