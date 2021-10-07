@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import {RootState, AppDispatch} from '../../store';
 import { Timestamp} from 'firebase/firestore';
+import { Redirect } from 'react-router-dom';
 import './MarketPlace.css';
 
 // Interface/type for Events State
@@ -60,6 +61,9 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
   }
 
   render() {
+    const { auth } = this.props;
+    if (!auth.uid) return <Redirect to='/signin' />
+
     var postDate:any = Date.now();
     if (this.props.marketplace) {
       postDate = this.props.marketplace[0].postedDateTime.toDate();
