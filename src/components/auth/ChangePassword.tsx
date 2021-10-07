@@ -84,7 +84,7 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
 
     return (
       <div className="createaccount">
-        <h1>If you would like to change your password, enter your old one and a new one below!</h1>
+        <h1>If you would like to change your password, enter a new one below!</h1>
         <form onSubmit={this.handleSubmit}>
           <p>
             New Password:
