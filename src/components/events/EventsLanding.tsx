@@ -193,11 +193,9 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
           > Create
           </Button>
         </Box>
-        {!this.props.isEventsFetched && <CircularProgress />}
-        {this.props.isEventsFetched && this.props.events.length == 0 && <div>No events found</div>}
         <Grid
           container
-          spacing={2}
+          spacing={3}
           sx={{ maxWidth: "100%" }}
         // padding={"16px 0px"}
         >
@@ -223,7 +221,6 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
               </Paper> */}
               <Typography style={{ color: "#00000099", alignSelf: "flex-start" }}>Filter by dates</Typography>
               <FormControl component="fieldset" sx={{ padding: "12px 0px 12px" }}>
-                {/* <FormLabel component="legend">Gender</FormLabel> */}
                 <RadioGroup
                   aria-label="gender"
                   name="controlled-radio-buttons-group"
@@ -271,32 +268,34 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
               </Button>
             </Box>
           </Grid>
-          {
-            this.props.events.length != 0 &&
             <Grid
               item
               xs={12}
               md={9}
             >
-              <Grid
-                container
-                spacing={2}
-              >
-                {this.getCards(this.props.events)}
-              </Grid>
+              {
+                this.props.events.length != 0 &&
+                  <Grid
+                    container
+                    spacing={2}
+                  >
+                    {this.getCards(this.props.events)}
+                  </Grid>
+              }
+              {
+                this.props.events.length != 0 && !this.props.isLastPage &&
+                <Button
+                  variant="outlined"
+                  sx={{ color: "black", border: "1px solid black", margin: "32px 0px" }}
+                  onClick={this.handleLoadMoreClick}
+                >
+                  Load more
+                </Button>
+              }
+              { this.props.isEventsFetched && this.props.events.length == 0 && <div>No events found</div>}
+              {!this.props.isEventsFetched && <CircularProgress />}
             </Grid>
-          }
         </Grid>
-        {
-          this.props.events.length != 0 && !this.props.isLastPage &&
-          <Button
-            variant="outlined"
-            sx={{ color: "black", border: "1px solid black", margin: "32px 0px" }}
-            onClick={this.handleLoadMoreClick}
-          >
-            Load more
-          </Button>
-        }
       </Box>
     )
   }

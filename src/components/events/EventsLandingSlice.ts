@@ -65,7 +65,7 @@ export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
         .where("startTime", "<", Timestamp.fromDate(fetchParameter.startTimeUpperBound))
     }
     queryEventsPromise = queryEventsPromise
-      .orderBy("startTime","asc")
+      .orderBy("startTime", "asc")
       .limit(fetchParameter.furthestPage * itemsPerPage + 1)  // request extra 1 doc to determine if it's the last page or not
       .get()
     // Create promises to create event objects
@@ -90,7 +90,7 @@ export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
     })
     createEventPromisesPromise.then((createEventPromises: any[]) => {
       Promise.all(createEventPromises).then((events: any) => {
-        // Note: We tried to requestfor an extra event doc earlier, so make sure to check if we actually get that or not
+        // Note: We tried to request for an extra event doc earlier, so make sure to check if we actually get that or not
         let isLastPage = events.length <= fetchParameter.furthestPage * itemsPerPage
         let payload = {
           events: isLastPage ? events.slice(0, events.length) : events.slice(0, events.length - 1),
