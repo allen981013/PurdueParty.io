@@ -7,10 +7,6 @@ import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom'
 import { Box } from '@mui/material';
 
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-
 // Interface/type for EditProfile State
 interface EditProfileState{
     id: string,
@@ -24,7 +20,8 @@ interface EditProfileState{
 interface EditProfileProps{
     auth: any,
     firebase: any,
-    editProfile: (state: EditProfileState) => void
+    uid: string,
+    editUser: (state: EditProfileState) => void
 }
 
 class EditProfile extends Component<EditProfileProps, EditProfileState> {
@@ -32,7 +29,7 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
     constructor(props:EditProfileProps){
         super(props);
         this.state = {
-            id:"",
+            id: "",
             bio: "",
             userName: "",
             major: "",
@@ -82,10 +79,13 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
             console.log("Profile has been edited!");
             window.alert("Profile has been edited!")
     
-            this.props.editProfile(this.state);
+            this.setState({
+                id: this.props.uid
+            })
+
+            this.props.editUser(this.state);
     
             this.setState({
-              id: "",
               bio: "",
               userName: "",
               major: "",
@@ -104,34 +104,30 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
         <form onSubmit={this.handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <h1>User Name</h1>
           <div className="input-field">
-            <label htmlFor="title">User Name </label>
             <input type="text" value={this.state.userName} placeholder=""
               id="title" onChange={this.handleChangeUserName} />
           </div>
 
           <h1>Bio</h1>
           <div className="input-field">
-            <label htmlFor="title">Bio </label>
             <input type="text" value={this.state.bio} placeholder=""
               id="title" onChange={this.handleChangeBio} />
           </div>
 
           <h1>Major</h1>
           <div className="input-field">
-            <label htmlFor="title">Major </label>
             <input type="text" value={this.state.major} placeholder=""
               id="title" onChange={this.handleChangeMajor} />
           </div>
 
           <h1>Year</h1>
           <div className="input-field">
-            <label htmlFor="title">Year </label>
             <input type="text" value={this.state.year} placeholder=""
               id="title" onChange={this.handleChangeYear} />
           </div>
 
           <div className="input-field">
-            <button className="button">Create New Event</button>
+            <button className="button">Save</button>
           </div>
 
         </form>
@@ -144,13 +140,14 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
 const mapStateToProps = (state: RootState) => {
     return {
         auth: state.firebase.auth,
-        profile: state.firestore.ordered.users
+        profile: state.firestore.ordered.users,
+        uid: state.firebase.auth.uid,
     }
   }
   
   const mapDispatchToProps = (dispatch: AppDispatch) => {
     return {
-        EditProfile: (profile: any) => dispatch(editUser(profile))
+        editUser: (profile: any) => dispatch(editUser(profile))
     }
   }
   

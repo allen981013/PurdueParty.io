@@ -105,7 +105,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                 <div className="input-field">
                 <Button
                 component={Link}
-                to="profile/edit/"
+                to="edit-profile"
                 variant="outlined"
                 sx={{ color: "black", border: "1px solid black" }}
                 > Edit Profile
