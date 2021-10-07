@@ -90,9 +90,11 @@ export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
     })
     createEventPromisesPromise.then((createEventPromises: any[]) => {
       Promise.all(createEventPromises).then((events: any) => {
+        // Note: We tried to requestfor an extra event doc earlier, so make sure to check if we actually get that or not
+        let isLastPage = events.length <= fetchParameter.furthestPage * itemsPerPage
         let payload = {
-          events: events.slice(0, events.length),
-          isLastPage: events.length <= fetchParameter.furthestPage * itemsPerPage,
+          events: isLastPage ? events.slice(0, events.length) : events.slice(0, events.length - 1),
+          isLastPage: isLastPage,
         }
         dispatch(eventsLandingSlice.actions.eventsFetched(payload))
       })
