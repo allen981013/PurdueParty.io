@@ -16,6 +16,8 @@ import NavBar from './components/navbar/NavBar'
 import createSellListing from './components/marketplace/create-sell-listings';
 import GenericSellListing from './components/marketplace/GenericSellListing';
 import CreatePost from './components/forum/create-post';
+import Classes from './components/forum/classes';
+
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
@@ -40,7 +42,8 @@ function App() {
           <Route path='/events' component={EventsLanding} />
           <Route exact path = '/clubs' component = {Clubs} />
           <Route path = '/clubs/create-club' component = {CreateClub} />
-          <Route path = '/forum/create-post' component = {CreatePost} />
+          <Route exact path = '/classes' component = {Classes} />
+          <Route path = '/classes/create-post' component = {CreatePost} />
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
         <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px" }}>

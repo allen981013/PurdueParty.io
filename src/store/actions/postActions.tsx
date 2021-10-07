@@ -8,7 +8,6 @@ export const addPost = (newPost:any) => {
         var docref = db.collection('posts');
 
         docref.add({
-            postId: newPost.postId,
             owner: getState().firebase.auth.uid,
             classID: newPost.classID,
             title: newPost.title,
@@ -19,7 +18,7 @@ export const addPost = (newPost:any) => {
             comments: [],
         }).then((newDocRef:any) => {
             newDocRef.update({
-                id: newDocRef.id
+                postId: newDocRef.id
             })
             dispatch({ type: 'ADD_POST_SUCCESS', newDocRef });
         }).catch((err:any) => {
