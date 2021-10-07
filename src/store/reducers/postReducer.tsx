@@ -11,7 +11,7 @@ const initState = {
         postedDateTime: new Timestamp(0,0),
         upvotes: 1,
         downvotes: 0,
-        comments: []
+        comments: [""]
     }]
 };
 

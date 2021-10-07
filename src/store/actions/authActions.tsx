@@ -273,13 +273,13 @@ export const signUp = (newUser: any) => {
 export const changePassword = (credentials: { newPassword: string }) => {
   return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
     const firebase = getFirebase();
-    //const user = firebase.auth().currentUser;
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const user = firebase.auth().currentUser;
+    //const auth = getAuth();
+    //const user = auth.currentUser;
 
-    updatePassword(user, credentials.newPassword).then(() => {
+    user.updatePassword(credentials.newPassword).then(() => {
         console.log(user)
-        dispatch({ type: 'SIGNUP_SUCCESS' })
+        //dispatch({ type: 'SIGNUP_SUCCESS' })
         firebase.auth().signOut()
     }).catch((err: any) => {
         dispatch({ type: 'SIGNUP_ERROR', err })
