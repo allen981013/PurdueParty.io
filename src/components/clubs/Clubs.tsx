@@ -76,7 +76,7 @@ class Clubs extends Component<ClubProps, ClubState> {
 
   render() {
     const { auth } = this.props;
-    if (!auth) return <Redirect to='/signin' />
+    if (!this.props.auth.uid) return <Redirect to='/signin' />
 
     console.log(this.props.clubs);
     console.log(this.state);
@@ -96,6 +96,7 @@ class Clubs extends Component<ClubProps, ClubState> {
 const mapStateToProps = (state: RootState) => {
   return {
     clubs: state.firestore.ordered.clubs,
+    auth: state.firebase.auth
   }
 }
 
