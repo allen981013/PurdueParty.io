@@ -78,6 +78,22 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
     })
   }
 
+  // General purpose state updater during form modification
+  handleInputImage = (e: File) => {
+    console.log(typeof (e));
+    console.log(e);
+    console.log(this.state);
+
+    if (e == undefined) {
+      window.alert("Please enter a valid file with a .JPG, .PNG, .JPEG extension.")
+    }
+    else {
+      this.setState({
+        profilePic: e
+      })
+    }
+  }
+
   // Handle user submit
   handleSubmit = (event: any) => {
     event.preventDefault();
@@ -176,9 +192,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
             accept="image/jpeg, image/jpg, image/png"
             maxFiles={1}
             onDrop={inputtedFile => 
-              this.setState({
-                profilePic: inputtedFile[0]
-              })
+              this.handleInputImage(inputtedFile[0])
             }
           >
             {({ getRootProps, getInputProps }) => (

@@ -97,11 +97,11 @@ class NavBar extends Component<NavBarProps, NavBarState> {
         <div id="topbar__nav">
           <Box sx={{ display: { xs: "none !important", sm: "flex !important" }, height: "50px" }}>
             <Button component={Link} to="/">Home</Button>
-            <Button component={Link} to="/events">Event</Button>
+            <Button component={Link} to="/events">Events</Button>
             <Button component={Link} to="/marketplace">Market</Button>
             <Button component={Link} to="/life">Life</Button>
-            <Button component={Link} to="/classes">Class</Button>
-            <Button component={Link} to="/clubs">Club</Button>
+            <Button component={Link} to="/classes">Classes</Button>
+            <Button component={Link} to="/clubs">Clubs</Button>
           </Box>
           <List
             sx={{
