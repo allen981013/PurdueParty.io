@@ -66,22 +66,22 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
         alignItems="center"
         pt="8px"
         maxWidth="1200px"
-        padding="56px 16px"
+        margin="56px 16px"
       >
         <Grid
           container
           id="top-page-container"
           spacing={2}
-        // sx={{ margin: "0px" }}
+          sx={{ minWidth: {md:"900px"} }}
         >
           <Grid
             item
             id="image-container"
             xs={12}
             md={6}
-            sx={{minWidth:"450px"}}
+            // sx={{minWidth:"450px"}}
           >
-            <img width="100%" height="100%" src={this.props.event.imageUrl} />
+            <img width="100%" height="100%" src={this.props.event.imageUrl}/>
           </Grid>
           <Grid
             item
