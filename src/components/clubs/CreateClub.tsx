@@ -130,10 +130,10 @@ class CreateClub extends Component<ClubProps, ClubState> {
         console.log("Minimum description Length Required: 10 characters");
         window.alert("Minimum description length required: 10 characters")
       }
-      else if (this.state.contactInfo.length < 3 || !this.state.contactInfo.includes("@purdue.edu") 
+      else if (!this.state.contactInfo.includes("@purdue.edu") 
                 || this.state.contactInfo.split("@purdue.edu")[0].length < 1) { //
         // Pop modal if category is not selected
-        window.alert("Please enter contact info that's at least 3 chars and a purdue email.");
+        window.alert("Please enter contact info that's a valid purdue email.");
       }
       else if (this.state.category.length < 1) { //
         // Pop modal if category is not selected

@@ -25,7 +25,7 @@ export const addClub = (newClub:any) => {
             })
 
             // Get default fireRef first
-            var path = 'marketplace/P.JPG'
+            var path = 'clubs/P.JPG'
             var fileRef = firebaseStorageRef.child(path);
             var fileType = '.png'
             var metadata = {
@@ -68,7 +68,7 @@ export const addClub = (newClub:any) => {
                          })
                      })
              } else {
-                 fileRef = firebaseStorageRef.child('clubs/default.jpg');
+                 fileRef = firebaseStorageRef.child('clubs/P.JPG');
                  fileRef.getDownloadURL().then((downloadURL) => {
                      newDocRef.update({
                          image: downloadURL
