@@ -18,6 +18,8 @@ import GenericSellListing from './components/marketplace/GenericSellListing';
 import CreatePost from './components/forum/create-post';
 import Profile from './components/profile/Profile';
 import Classes from './components/forum/Classes';
+import EditProfile from './components/profile/EditProfile';
+import { Edit } from '@mui/icons-material';
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
@@ -44,6 +46,7 @@ function App() {
           <Route path = '/clubs/create-club' component = {CreateClub} />
           <Route path = '/forum/create-post' component = {CreatePost} />
           <Route path = '/profile' component={Profile} />
+          <Route path = '/profile/edit' component={EditProfile} />
           <Route exact path = '/classes' component = {Classes} />
           <Route path = '/classes/create-post' component = {CreatePost} />
         </Switch>
