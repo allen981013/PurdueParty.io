@@ -45,7 +45,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     <Card>
                         <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
                         <label htmlFor="title">User Name: </label>
-                        <Typography noWrap variant="body2" color="text.secondary" component="div" marginBottom="10px">
+                        <Typography gutterBottom noWrap component="div" marginBottom="10px">
                             {userName}
                         </Typography>
                         <label htmlFor="title">Bio: </label>
