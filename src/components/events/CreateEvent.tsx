@@ -8,7 +8,7 @@ import { Redirect } from 'react-router-dom';
 import { Timestamp } from '@firebase/firestore';
 import { IconButton, Grid, Box } from '@mui/material';
 import ReactModal from 'react-modal';
-import Dropzone from 'react-dropzone'
+import Dropzone from 'react-dropzone';
 
 import FormControl from '@mui/material/FormControl';
 import { useTheme } from '@mui/material/styles';
@@ -16,7 +16,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import MenuItem from '@mui/material/MenuItem';
-import Datetime from 'react-datetime'
+import Datetime from 'react-datetime';
 
 import { now } from 'moment';
 import { Label } from '@mui/icons-material';
