@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { Dispatch, Action, compose } from 'redux';
-import { addPost } from '../../store/actions/postActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
-import { Timestamp } from '@firebase/firestore';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import {
@@ -61,9 +59,7 @@ class Classes extends Component<ClassesProps, ClassesState> {
   render() {
     const { auth } = this.props;
     if (!this.props.auth.uid) return <Redirect to='/signin' />
-
-    if (!auth.uid) return <Redirect to='/signin'/>
-
+    
     return (
       <div>
             <Box

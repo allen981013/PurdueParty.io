@@ -18,6 +18,7 @@ import GenericSellListing from './components/marketplace/GenericSellListing';
 import CreatePost from './components/forum/create-post';
 import Profile from './components/profile/Profile';
 import Classes from './components/forum/Classes';
+import PostsLanding from './components/forum/PostsLanding';
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
@@ -45,6 +46,7 @@ function App() {
           <Route path = '/forum/create-post' component = {CreatePost} />
           <Route path = '/profile' component={Profile} />
           <Route exact path = '/classes' component = {Classes} />
+          <Route path='/classes/:classID' component={PostsLanding} />
           <Route path = '/classes/create-post' component = {CreatePost} />
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
