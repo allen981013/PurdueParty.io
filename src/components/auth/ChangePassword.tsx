@@ -18,7 +18,7 @@ interface ChangePasswordState {
 interface ChangePasswordProps {
   auth: any,
   authError: any,
-  changePassword: (state: ChangePasswordState) => void
+  changePassword: (newPass: string) => void
 }
 
 class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState> {
@@ -55,7 +55,7 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
     //check for empty requried fields
     //check for empty requried fields
     if (this.state.newpassword === this.state.confirmpassword && this.state.newpassword.length > 5) {
-      this.props.changePassword(this.state);
+      this.props.changePassword(this.state.newpassword);
       this.setState({
         redirect: true
       })

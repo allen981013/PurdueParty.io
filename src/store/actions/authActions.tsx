@@ -287,22 +287,24 @@ export const signUp = (newUser: any) => {
         })
     }
   }*/
+  
+export const changePassword = (newPass: String) => {
+  return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+    const firebase = getFirebase();
+    const user = firebase.auth().currentUser;
+    //const auth = getAuth();
+    //const user = auth.currentUser;
 
-export const changePassword = (credentials: { newPassword: string }) => {
-    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-        const firebase = getFirebase();
-        const user = firebase.auth().currentUser;
-        const useruid = user.uid;
-
-        user.updatePassword(credentials.newPassword).then(() => {
-            console.log(user)
-            dispatch({ type: 'SIGNUP_SUCCESS' })
-            firebase.auth().signOut();
-        }).catch((err: any) => {
-            dispatch({ type: 'SIGNUP_ERROR', err })
-            console.log(err)
-        });
-    }
+    console.log(newPass);
+    user.updatePassword(newPass).then(() => {
+        console.log(user);
+        //dispatch({ type: 'SIGNUP_SUCCESS' })
+        firebase.auth().signOut()
+    }).catch((err: any) => {
+        dispatch({ type: 'SIGNUP_ERROR', err })
+        console.log(err)
+    });
+  }
 }
 
 export const resetPasswordRequest = (credentials: { email: string }) => {
