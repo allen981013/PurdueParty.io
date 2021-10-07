@@ -16,16 +16,11 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import MenuItem from '@mui/material/MenuItem';
+import Datetime from 'react-datetime'
 
-import DateMomentUtils from '@date-io/moment';
-import {
-  DatePicker,
-  TimePicker,
-  DateTimePicker,
-  MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
 import { now } from 'moment';
 import { Label } from '@mui/icons-material';
+import moment from 'moment';
 
 
 const ITEM_HEIGHT = 48;
@@ -75,10 +70,10 @@ interface EventProps {
 }
 
 class CreateEvent extends Component<EventProps, EventState> {
-  themes = ["Arts & Music", "Athletics", "Charity/Service", "Cultural/Religious", 
-            "Greek Life", "Social", "Technology", "Education/Professional", "Other"];
-  categories = ["Callout", "Informational", "Fundraiser", "Rush", "Performance", 
-                "Hackathon", "Rally", "Party/Celebration", "Study-abroad", "Other"];
+  themes = ["Arts & Music", "Athletics", "Charity/Service", "Cultural/Religious",
+    "Greek Life", "Social", "Technology", "Education/Professional", "Other"];
+  categories = ["Callout", "Informational", "Fundraiser", "Rush", "Performance",
+    "Hackathon", "Rally", "Party/Celebration", "Study-abroad", "Other"];
   perks = ["Free food", "Free swag", "Credits", "None"];
 
   // Initialize state
@@ -158,9 +153,9 @@ class CreateEvent extends Component<EventProps, EventState> {
     })
   }
 
-   // General purpose state updater during form modification
-   handleInputImage = (e: File) => {
-    console.log(typeof(e));
+  // General purpose state updater during form modification
+  handleInputImage = (e: File) => {
+    console.log(typeof (e));
     console.log(e);
     console.log(this.state);
 
@@ -276,12 +271,8 @@ class CreateEvent extends Component<EventProps, EventState> {
     //const {auth} = this.props;
     //if(!auth.uid) return <Redirect to= '/'/>
     return (
-      <div>
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
-          <Box id="cropped-purdue-img" />
-        </Box>
-
-        <form onSubmit={this.handleSubmit}>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
+        <form onSubmit={this.handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <h1>Enter event title:</h1>
           <div className="input-field">
             <label htmlFor="title">Event Title: </label>
@@ -297,14 +288,25 @@ class CreateEvent extends Component<EventProps, EventState> {
           </div>
 
           <h1>Enter event starting date and time:</h1>
-          <MuiPickersUtilsProvider utils={DateMomentUtils}>
-            <DateTimePicker emptyLabel="Choose Date" disablePast={true} value={this.state.startTime} onChange={this.handleChangeDateTime} onAccept={this.handleChangeDateTime} />
-          </MuiPickersUtilsProvider>
-
+          <Box width="300px">
+            <Datetime
+              value={this.state.startTime}
+              onChange={this.handleChangeDateTime}
+              isValidDate={(current) => current.isAfter(moment().subtract(1, 'day'))}
+              className="custom-datetime-picker"
+              renderInput={(props, openCalendar, closeCalendar) => <input {...props} readOnly/>}
+            />
+          </Box>
           <h1>Enter event ending date and time:</h1>
-          <MuiPickersUtilsProvider utils={DateMomentUtils}>
-            <DateTimePicker emptyLabel="Choose Date" disablePast={true} value={this.state.endTime} onChange={this.handleChangeDateTimeEnd} onAccept={this.handleChangeDateTimeEnd} />
-          </MuiPickersUtilsProvider>
+          <Box width="300px">
+            <Datetime
+              value={this.state.endTime}
+              onChange={this.handleChangeDateTimeEnd}
+              isValidDate={(current) => current.isAfter(moment().subtract(1, 'day'))}
+              className="custom-datetime-picker"
+              renderInput={(props, openCalendar, closeCalendar) => <input {...props} readOnly/>}
+            />
+          </Box>
 
           <h1>Enter event location:</h1>
           <div className="input-field">
@@ -350,11 +352,11 @@ class CreateEvent extends Component<EventProps, EventState> {
           <h1>Enter event perks:</h1>
           {this.getMultipleSelect(this.state.perks, this.perks, this.handleChangePerks, "Perks")}
 
-          
+
           <Dropzone
             accept="image/jpeg, image/jpg, image/png"
             maxFiles={1}
-            onDrop={inputtedFile => 
+            onDrop={inputtedFile =>
               this.handleInputImage(inputtedFile[0])
             }
           >
@@ -373,7 +375,7 @@ class CreateEvent extends Component<EventProps, EventState> {
           </div>
 
         </form>
-      </div>
+      </Box>
     )
   }
 }
