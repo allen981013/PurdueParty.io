@@ -5,6 +5,7 @@ import { Description, TagSharp } from '@mui/icons-material'
 import { GetDerivedStateFromError } from 'react'
 import { RootState } from '../../store'
 import { firebaseStorageRef } from '../..'
+import { EventsFetchParameter } from './EventsLanding'
 
 // type for states returned by reducer
 export interface EventsLandingStatesRedux {
@@ -18,11 +19,6 @@ export interface EventsLandingStatesRedux {
   }[];
   isEventsFetched: boolean;
   isLastPage: boolean;
-}
-
-// type for filter parameter
-export interface FilterParameter {
-  searchKeyword: string;
 }
 
 // initial states
@@ -59,21 +55,21 @@ export const eventsLandingSlice = createSlice({
 // actions 
 
 /* Uncomment this if we're storing image paths instead of image url in firestore */
-export const fetchEvents = (furthestPage: number, filterParameter: FilterParameter) => {
+export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     const db = getFirestore()
     const itemsPerPage = 12
     // Prepare events query 
     var queryEventsPromise = db.collection("events")
-    // if (filterParameter.searchKeyword.length > 0) {
-      // queryEventsPromise = queryEventsPromise.startAt(filterParameter.searchKeyword)
-    // }
     queryEventsPromise = queryEventsPromise
-      .where("startTime", ">", Timestamp.now())
+      .where("startTime", ">=", Timestamp.fromDate(fetchParameter.startTimeLowerBound))
+    if (fetchParameter.startTimeUpperBound) {
+      queryEventsPromise = queryEventsPromise
+        .where("startTime", "<", Timestamp.fromDate(fetchParameter.startTimeUpperBound))
+    }
+    queryEventsPromise = queryEventsPromise
       .orderBy("startTime","asc")
-      // .orderBy("title", "asc")
-      // .startAt(filterParameter.searchKeyword)
-      .limit(furthestPage * itemsPerPage)
+      .limit(fetchParameter.furthestPage * itemsPerPage + 1)  // request extra 1 doc to determine if it's the last page or not
       .get()
     // Create promises to create event objects
     var createEventPromisesPromise = queryEventsPromise.then((querySnapshot: any) => {
@@ -99,8 +95,8 @@ export const fetchEvents = (furthestPage: number, filterParameter: FilterParamet
       Promise.all(createEventPromises).then((events: any) => {
         console.log(events)
         let payload = {
-          events: events,
-          isLastPage: events.length < furthestPage * itemsPerPage,
+          events: events.slice(0, events.length),
+          isLastPage: events.length <= fetchParameter.furthestPage * itemsPerPage,
         }
         dispatch(eventsLandingSlice.actions.eventsFetched(payload))
       })
