@@ -105,7 +105,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                 </Box>
 
                 <div className="input-field">
-                <Button className="button" component={Link} to="/profile/edit">Eidt My Profile</Button>
+                <Button className="button" component={Link} to="/profile/edit-profile">Eidt My Profile</Button>
                 </div>
             
             </div>
