@@ -1,44 +1,38 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { signUp } from '../../store/actions/authActions';
+import { resetPassword } from '../../store/actions/authActions';
 import { RootState, AppDispatch } from '../../store'
 import { getFirebase } from 'react-redux-firebase';
 import { constants } from 'redux-firestore';
 import { Redirect } from 'react-router-dom';
-import Dropzone from 'react-dropzone'
 
 // Interface/type for create account State
-interface CreateAccountState {
+interface ResetPasswordState {
   username: string,
-  email: string,
   password: string,
   confirmpassword: string,
-  bio: string,
-  profilePic: File,
+  email: string,
   redirect: boolean,
-  errormsg: string,
-  
+  errormsg: string
 }
 
 // Interface/type for create account Props
-interface CreateAccountProps {
+interface ResetPasswordProps {
   auth: any,
   authError: any,
-  signUp: (state: CreateAccountState) => void
+  resetPassword: (state: ResetPasswordState) => void
 }
 
-class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
+class ResetPassword extends Component<ResetPasswordProps, ResetPasswordState> {
   // Initialize state
 
-  constructor(props: CreateAccountProps) {
+  constructor(props: ResetPasswordProps) {
     super(props);
     this.state = {
       username: "",
-      email: "",
       password: "",
       confirmpassword: "",
-      bio: "",
-      profilePic: null as any,
+      email: "",
       redirect: false,
       errormsg: ""
     };
@@ -72,43 +66,24 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
     })
   }
 
-  handleBioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      bio: e.target.value
-    })
-  }
-
   // Handle user submit
   handleSubmit = (event: any) => {
     event.preventDefault();
 
     //check for empty requried fields
-    if (this.state.username === "" || this.state.email === "" || this.state.password === "" || this.state.confirmpassword === "") {
-      this.setState({
-        errormsg: "Please fill at least the username, the email, and both password fields"
-      })
-    }
-    //check that email is purdue email
-    else if (!this.state.email.includes('@purdue.edu', this.state.email.length - 11)) {
-      this.setState({
-        errormsg: "Only Purdue email addresses are allowed for Account Creation!"
-      })
+    if (!this.state.email.includes('@purdue.edu', this.state.email.length - 11)) {
+        this.setState({
+          errormsg: "Only Purdue email addresses are allowed for Account Creation!"
+        })
     }
     //check email is valid
     else if (this.state.email.length < 12) {
-      this.setState({
-        errormsg: "Email must be valid!"
-      })
+        this.setState({
+          errormsg: "Email must be valid!"
+        })
     }
-    //check max bio length
-    else if (this.state.bio.length > 256) {
-      this.setState({
-        errormsg: "Bio cannot be longer that 256 characters in length"
-      })
-    }
-    //check that passwords match and are valid
     else if (this.state.password === this.state.confirmpassword && this.state.password.length > 5) {
-      this.props.signUp(this.state);
+      this.props.resetPassword(this.state);
       this.setState({
         redirect: true
       })
@@ -120,21 +95,18 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
     }
   }
 
-
   render() {
-    //redirect to homepage upon successful account creation
+    //redirect to homepage upon successful password reset
 
     const { auth } = this.props;
     const { authError } = this.props;
     if (auth.uid) {
       this.setState({
-        errormsg: "Account creation successful",
+        errormsg: "Password reset successful",
         username: "",
-        email: "",
         password: "",
         confirmpassword: "",
-        bio: "",
-        profilePic: null as any,
+        email: "",
         redirect: false
       })
       return <Redirect to='/' />
@@ -148,7 +120,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
 
     return (
       <div className="createaccount">
-        <h1>If you like to party, create your account!</h1>
+        <h1>If you would like to reset your password, enter a new one and your email below!</h1>
         <form onSubmit={this.handleSubmit}>
           <p>
             Username:
@@ -166,34 +138,8 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
             Confirm Password:
           </p>
           <input type="text" value={this.state.confirmpassword} id="confirmPassword" onChange={this.handleConfirmPasswordChange} />
-          <p>
-            Bio:
-          </p>
-          <input type="text" value={this.state.bio} id="bio" onChange={this.handleBioChange} />
           <p></p>
-
-          <Dropzone
-            accept="image/jpeg, image/jpg, image/png"
-            maxFiles={1}
-            onDrop={inputtedFile => 
-              this.setState({
-                profilePic: inputtedFile[0]
-              })
-            }
-          >
-            {({ getRootProps, getInputProps }) => (
-              <section>
-                <div {...getRootProps()}>
-                  <input {...getInputProps()} />
-                  <p>Click here to upload a profile picture. JPG, JPEG, or PNG only.</p>
-                </div>
-              </section>
-            )}
-          </Dropzone>
-
-
-          <p></p>
-          <button>Create Account</button>
+          <button>Reset Password</button>
         </form>
         <p>
           {this.state.errormsg}
@@ -202,8 +148,6 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
     )
   }
 }
-
-
 
 const mapStateToProps = (state: any) => {
   return {
@@ -215,8 +159,8 @@ const mapStateToProps = (state: any) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Return functions for signUp
   return {
-    signUp: (creds: any) => dispatch(signUp(creds))
+    resetPassword: (creds: any) => dispatch(resetPassword(creds))
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateAccount);
+export default connect(mapStateToProps, mapDispatchToProps)(ResetPassword);

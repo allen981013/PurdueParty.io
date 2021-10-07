@@ -5,6 +5,8 @@ import { RootState, AppDispatch } from '../../store'
 import { Dispatch, Action } from 'redux';
 import { getFirebase } from 'react-redux-firebase';
 import { Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { Button } from '@mui/material'
 
 // Interface/type for Events State
 interface SignInState {
@@ -101,13 +103,13 @@ class SignIn extends Component<SignInProps, SignInState> {
         <h1>If you like to party, enter your login info</h1>
         <form onSubmit={this.handleSubmit}>
           <p>
-            Username:
+            Email:
           </p>
           <input type="text" value={this.state.email} id="email" onChange={this.handleEmailChange} />
           <p>
             Password:
           </p>
-          <input type="text" value={this.state.password} id="password" onChange={this.handlePasswordChange} />
+          <input type="password" value={this.state.password} id="password" onChange={this.handlePasswordChange} />
           <p></p>
           <button>Login</button>
           <p>
@@ -118,6 +120,8 @@ class SignIn extends Component<SignInProps, SignInState> {
         <form onSubmit={this.handleSubmit2}>
           <button>Account Creation</button>
         </form>
+
+        <Button component={Link} to="/resetPasswordRequest">Reset Password</Button>
 
       </div>
     )

@@ -86,7 +86,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             {this.isLoggedIn() && this.getGreetingOrAuthButton("Hi, " + this.props.username, "/users/" + this.props.username)}
             {this.isLoggedIn() && this.getGreetingOrAuthButton("Sign out", "/", this.handleSignOutClick)}
 
-
+            {this.isLoggedIn() && <Link to="/changePassword">Change Password</Link>}
             <form onSubmit={this.handleDelete}>
               <button>Delete Account</button>
             </form>

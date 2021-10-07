@@ -1,4 +1,5 @@
 import './EventsLanding.css'
+import "react-datetime/css/react-datetime.css";
 import {
   Box, Button, CircularProgress, Grid, Card, CardActionArea,
   CardMedia, CardContent, Typography, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio
@@ -13,9 +14,8 @@ import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import Datetime from 'react-datetime'
-
-import "react-datetime/css/react-datetime.css";
 import moment from 'moment'
+import { Redirect } from 'react-router-dom';
 
 
 interface EventsLandingProps {
@@ -23,6 +23,7 @@ interface EventsLandingProps {
   isEventsFetched: boolean;
   isLastPage: boolean;
   fetchEvents: (fetchParameter: EventsFetchParameter) => void;
+  auth: any
 }
 
 interface EventsLandingStates {
@@ -163,6 +164,8 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
   }
 
   render() {
+    const { auth } = this.props;
+    if (!auth) return <Redirect to='/signin' />
     return (
       <Box
         display="flex"
