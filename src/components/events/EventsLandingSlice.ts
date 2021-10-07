@@ -1,10 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Action, Dispatch } from 'redux'
 import { Timestamp } from 'firebase/firestore'
-import { Description, TagSharp } from '@mui/icons-material'
-import { GetDerivedStateFromError } from 'react'
 import { RootState } from '../../store'
-import { firebaseStorageRef } from '../..'
 import { EventsFetchParameter } from './EventsLanding'
 
 // type for states returned by reducer
@@ -93,7 +90,6 @@ export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
     })
     createEventPromisesPromise.then((createEventPromises: any[]) => {
       Promise.all(createEventPromises).then((events: any) => {
-        console.log(events)
         let payload = {
           events: events.slice(0, events.length),
           isLastPage: events.length <= fetchParameter.furthestPage * itemsPerPage,
