@@ -1,0 +1,34 @@
+
+.custom-datetime-picker {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  border: 1px solid #d3d3d3;
+}
+
+.custom-datetime-picker > div {
+  overflow: hidden;
+}
+
+.custom-datetime-picker input {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 15 !important;
+  /* border: 1px solid #d3d3d3; */
+  width: 100% !important;
+  max-width: 100% !important;
+  font-family: 'Roboto';
+  margin-right: -32px;
+  font-size: 1rem;
+  color: grey;
+}
+
+.custom-datetime-picker input:focus-visible {
+  outline: unset;
+}
+
+.custom-datetime-picker .rdtPicker {
+  top: 52px;
+  left: 0px;
+}
