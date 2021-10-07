@@ -1,7 +1,7 @@
-import { queryEqual } from 'firebase/firestore';
+import { Firestore, query, queryEqual, where } from 'firebase/firestore';
 import { isEmpty } from 'react-redux-firebase';
 import { Dispatch, Action } from 'redux';
-import { StringLiteralLike } from 'typescript';
+//import { StringLiteralLike } from 'typescript';
 import { RootState } from '..';
 import { getAuth, sendPasswordResetEmail, updatePassword } from "firebase/auth";
 import { current } from '@reduxjs/toolkit';
@@ -92,6 +92,32 @@ const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, f
 
 }
 
+const deleteFromStorage = (deletePath: any,) => {
+    firebaseStorageRef.child(deletePath + '.png').getDownloadURL().then(() => {
+        firebaseStorageRef.child(deletePath + '.png')
+            .delete().then(() => {
+                console.log("png profile pic deleted!");
+            }).catch(() => {
+                console.log("png profile pic delete error!");
+            });
+    }
+        , () => {
+            firebaseStorageRef.child(deletePath + '.jpeg')
+                .delete().then(() => {
+                    console.log("jpeg profile pic deleted!");
+                }).catch(() => {
+                    console.log("jpeg profile pic delete error!");
+
+                    firebaseStorageRef.child(deletePath + '.jpg')
+                        .delete().then(() => {
+                            console.log("jpg profile pic deleted!");
+                        }).catch(() => {
+                            console.log("jpg profile pic delete error!");
+                        });
+                });
+        });
+}
+
 export const deleteAccount = () => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const firebase = getFirebase();
@@ -99,32 +125,24 @@ export const deleteAccount = () => {
         const user = firebase.auth().currentUser;
         const useruid = user.uid;
 
-        // Create a path to profile pic to delete
-        var deletePath = 'profilePics/' + user.uid;
+        // delete profile pic from storage
+        deleteFromStorage('profilePics/' + user.uid);
 
-        firebaseStorageRef.child(deletePath + '.png').getDownloadURL().then(() => {
-            firebaseStorageRef.child(deletePath + '.png')
-                .delete().then(() => {
-                    console.log("png profile pic deleted!");
+        //delete users sell listings and fields
+        var collection = db.collection('sellListings')
+        collection.where("owner", "==", useruid).get().then((querySnapshot: any[]) => {
+            querySnapshot.forEach((doc) => {
+                //delete sellListing image from storage
+                deleteFromStorage('marketplace/' + doc.id);
+                //delete sellListing doc
+                collection.doc(doc.id).delete().then(() => {
+                    console.log("listing successfully deleted!");
                 }).catch(() => {
-                    console.log("png profile pic delete error!");
+                    console.error("Error removing listing");
                 });
-        }
-            , () => {
-                firebaseStorageRef.child(deletePath + '.jpeg')
-                    .delete().then(() => {
-                        console.log("jpeg profile pic deleted!");
-                    }).catch(() => {
-                        console.log("jpeg profile pic delete error!");
-
-                        firebaseStorageRef.child(deletePath + '.jpg')
-                            .delete().then(() => {
-                                console.log("jpg profile pic deleted!");
-                            }).catch(() => {
-                                console.log("jpg profile pic delete error!");
-                            });
-                    });
             });
+        });
+        
 
         //delete user from auth
         user.delete().then(() => {
@@ -144,21 +162,9 @@ export const deleteAccount = () => {
             deleteFields({ getFirebase, getFirestore }, 'clubs', 'editors', 'array-contains', useruid)
             deleteFields({ getFirebase, getFirestore }, 'posts', 'owner', '==', useruid)
 
-            //delete users sell listings and fields
-            collection = db.collection('sellListings')
-            collection.where("owner", "==", useruid).get().then((querySnapshot: any[]) => {
-                querySnapshot.forEach((doc) => {
-                    //delete sellListing doc
-                    collection.doc(doc.id).delete().then(() => {
-                        console.log("listing successfully deleted!");
-                    }).catch(() => {
-                        console.error("Error removing listing");
-                    });
-                });
-            });
-
             dispatch({ type: 'DELETE_SUCCESS' });
         }).catch((err: any) => {
+            window.alert("Please log out and log back in to delete your account")
             dispatch({ type: 'DELETE_ERROR', err });
         });
     }
@@ -166,19 +172,20 @@ export const deleteAccount = () => {
 
 //May need adjustments
 export const signUp = (newUser: any) => {
-    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+    return async (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const firebase = getFirebase();
         const db = getFirestore();
-        var imageURL = ""
+        var imageURL = "";
 
         // Create a reference to the cities collection
-        const userRef = db.collection('users');
+        //var citiesRef = db.collection("users");
 
-        // Create a query against the collection
-        const queryRef = userRef.where('userName', '==', newUser.username);
-
-        if (!isEmpty(queryRef)) {
+        // Create a query against the collection.
+        var q = db.collection("users").where("userName", "==", newUser.username);
+        const snapshot = await db.collection("users").where("userName", "==", newUser.username).get();
+        if (!snapshot.empty) {
             dispatch({ type: 'SIGNUP_ERROR', string: "non-original username" })
+            return;
         }
 
         firebase.auth().createUserWithEmailAndPassword(
@@ -237,17 +244,45 @@ export const signUp = (newUser: any) => {
     }
 }
 
-
+/*export const changePassword = (credentials: { newPassword: string }) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const firebase = getFirebase();
+        const db = getFirestore();
+        const user = {
+            newPassword: credentials.newPassword,
+        };
+  
+        let uid;
+        db.doc(`/users/${firebase.auth().currentUser}`) //Access database by document
+        .get() //Accesses the user requested, returns the user as a doc
+        .then((doc) => {
+            uid = doc.data().userId;
+            firebase.auth().updateUser(uid, {
+                password: user.newPassword
+            })
+            .then(() => {
+                dispatch({ type: 'SIGNUP_SUCCESS' })
+                firebase.auth().signOut();
+            }).catch((err: any) => {
+                dispatch({ type: 'SIGNUP_ERROR', err })
+            });
+        })
+    }
+  }*/
+  
 export const changePassword = (credentials: { newPassword: string }) => {
   return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
     const firebase = getFirebase();
     const user = firebase.auth().currentUser;
+    const useruid = user.uid;
     
     user.updatePassword(credentials.newPassword).then(() => {
+        console.log(user)
         dispatch({ type: 'SIGNUP_SUCCESS' })
         firebase.auth().signOut();
     }).catch((err: any) => {
         dispatch({ type: 'SIGNUP_ERROR', err })
+        console.log(err)
     });
   }
 }

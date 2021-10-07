@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { Dispatch, Action, compose } from 'redux';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom';
-import { FirebaseReducer } from 'react-redux-firebase';
-import ReactModal from 'react-modal';
 import { Link } from 'react-router-dom';
-import {Box, Button, CircularProgress, Grid, Card, CardActionArea, CardMedia, CardContent, Typography} from '@mui/material';
+import {Box, Button, Grid, Card, CardContent, Typography} from '@mui/material';
 
 // Interface/type for Profile State
 interface ProfileState{
@@ -47,7 +45,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     <Card>
                         <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
                         <label htmlFor="title">User Name: </label>
-                        <Typography noWrap variant="body2" color="text.secondary" component="div" marginBottom="10px">
+                        <Typography gutterBottom noWrap component="div" marginBottom="10px">
                             {userName}
                         </Typography>
                         <label htmlFor="title">Bio: </label>
@@ -105,8 +103,13 @@ class Profile extends Component<ProfileProps, ProfileState> {
                 </Box>
 
                 <div className="input-field">
-                <Button className="button" component={Link} to="/profile/edit">Eidt My Profile</Button>
-                </div>
+                <Button
+                component={Link}
+                to="edit-profile"
+                variant="outlined"
+                sx={{ color: "black", border: "1px solid black" }}
+                > Edit Profile
+              </Button></div>
             
             </div>
         )
