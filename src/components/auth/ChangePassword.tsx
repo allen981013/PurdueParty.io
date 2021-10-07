@@ -60,9 +60,14 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
         redirect: true
       })
     }
+    else if(this.state.newpassword.length <= 5){
+      this.setState({
+        errormsg: "Password is not secure, make sure it is at least 6 characters"
+      })
+    }
     else {
       this.setState({
-        errormsg: "Please make sure your passwords are matching and contain at least 6 characters"
+        errormsg: "Please make sure your passwords are matching"
       })
     }
   }
@@ -73,9 +78,13 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
     const { auth } = this.props;
     const { authError } = this.props;
 
+    if (this.state.redirect == true) {
+      return <Redirect to='/' />
+    }
+
     return (
       <div className="createaccount">
-        <h1>If you would like to change your password, enter your old one and a new one below!</h1>
+        <h1>If you would like to change your password, enter a new one below!</h1>
         <form onSubmit={this.handleSubmit}>
           <p>
             New Password:

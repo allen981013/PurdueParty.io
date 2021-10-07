@@ -25,6 +25,7 @@ interface CreateAccountProps {
   auth: any,
   authError: any,
   signUp: (state: CreateAccountState) => void
+  checkUsername: (state: CreateAccountState) => void
 }
 
 class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
@@ -177,11 +178,11 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
           <p>
             Password:
           </p>
-          <input type="text" value={this.state.password} id="password" onChange={this.handlePasswordChange} />
+          <input type="password" value={this.state.password} id="password" onChange={this.handlePasswordChange} />
           <p>
             Confirm Password:
           </p>
-          <input type="text" value={this.state.confirmpassword} id="confirmPassword" onChange={this.handleConfirmPasswordChange} />
+          <input type="password" value={this.state.confirmpassword} id="confirmPassword" onChange={this.handleConfirmPasswordChange} />
           <p>
             Bio:
           </p>
