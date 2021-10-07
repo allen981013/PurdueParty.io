@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { EditOutlined } from '@mui/icons-material'
 import React from 'react'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom';
 import { firebaseStorageRef } from '../..'
 import { AppDispatch, RootState } from '../../store'
 import { EventInfoStatesRedux, fetchEventInfo } from './EventInfoSlice'
@@ -15,6 +16,7 @@ interface EventInfoProps {
   eventNotFound: boolean;
   event: EventInfoStatesRedux["event"];
   host: EventInfoStatesRedux["host"];
+  auth: any;
   fetchEventInfo: (eventID: string) => void;
 }
 
@@ -50,6 +52,9 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
   }
 
   render() {
+    const { auth } = this.props;
+    if (!auth.uid) return <Redirect to='/signin' />
+    
     if (!this.props.hasInfoFetched)
       return (
         <Box pt="32px"><CircularProgress /></Box>
@@ -176,6 +181,7 @@ const mapStateToProps = (state: RootState) => {
     eventNotFound: state.eventInfo.eventNotFound,
     event: state.eventInfo.event,
     host: state.eventInfo.host,
+    auth: state.firebase.auth
   }
 }
 
