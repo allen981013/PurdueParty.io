@@ -17,7 +17,7 @@ import createSellListing from './components/marketplace/create-sell-listings';
 import GenericSellListing from './components/marketplace/GenericSellListing';
 import CreatePost from './components/forum/create-post';
 import Profile from './components/profile/Profile';
-import Classes from './components/forum/classes';
+import Classes from './components/forum/Classes';
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
