@@ -27,7 +27,7 @@ const boldText = {
     fontWeight: 'bold' as 'bold'
   }
 
-class PostLanding extends Component<PostsLandingProps, PostsLandingState> {
+class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
     // Initialize state
     constructor(props:PostsLandingProps) {
         super(props);
@@ -67,7 +67,7 @@ class PostLanding extends Component<PostsLandingProps, PostsLandingState> {
               width="100%"
               pb="16px"
             >
-              <h1 style={{ fontWeight: 300, marginLeft: "20%", marginTop:"3%" }}>{this.props.class.title}</h1>
+              <h1 style={{ fontWeight: 300, marginLeft: "20%", marginTop:"3%" }}></h1>
               <Button
                 component={Link}
                 to=""
@@ -123,4 +123,4 @@ export default compose<React.ComponentType<PostsLandingProps>>(
         return []
       }
     })
-  )(PostLanding)
+  )(PostsLanding)
