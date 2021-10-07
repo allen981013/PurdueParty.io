@@ -77,9 +77,8 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
   }
 
   render() {
-    const { auth } = this.props;
     //console.log(this.props.marketplace);
-    if (!auth.uid) return <Redirect to='/signin' />
+    if (!this.props.auth.uid) return <Redirect to='/signin' />
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

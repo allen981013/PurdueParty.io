@@ -91,23 +91,23 @@ class Landing extends Component<LandingProps, LandingStates> {
         <Box id="cropped-purdue-img" sx={{height:{xs:"250px", sm: "400px"}}}/>
         <Grid container className="sections" spacing={2} sx={{ padding: "32px 24px" }}>
           {
-            this.getSectionCard("Events", "events",
+            this.getSectionCard("Events", "/events",
               this.props.events.map((event) => this.getItemCard(event.title, event.href, event.time)))
           }
           {
-            this.getSectionCard("Marketplace", "marketplace",
+            this.getSectionCard("Marketplace", "/marketplace",
               this.props.saleItems.map((item) => this.getItemCard(item.title, item.href, item.price)))
           }
           {
-            this.getSectionCard("Classes", "classes",
+            this.getSectionCard("Classes", "/classes",
               this.props.classes.map((class_) => this.getItemCard(class_.title, class_.href)))
           }
           {
-            this.getSectionCard("Clubs", "clubs",
+            this.getSectionCard("Clubs", "/clubs",
               this.props.clubs.map((club) => this.getItemCard(club.title, club.href)))
           }
           {
-            this.getSectionCard("Living", "living",
+            this.getSectionCard("Living", "/living",
               this.livingPageItems.map((item) => this.getItemCard(item.title, item.href)))
           }
         </Grid>
