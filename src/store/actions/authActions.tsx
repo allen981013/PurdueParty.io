@@ -92,6 +92,32 @@ const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, f
 
 }
 
+const deleteFromStorage = (deletePath: any,) => {
+    firebaseStorageRef.child(deletePath + '.png').getDownloadURL().then(() => {
+        firebaseStorageRef.child(deletePath + '.png')
+            .delete().then(() => {
+                console.log("png profile pic deleted!");
+            }).catch(() => {
+                console.log("png profile pic delete error!");
+            });
+    }
+        , () => {
+            firebaseStorageRef.child(deletePath + '.jpeg')
+                .delete().then(() => {
+                    console.log("jpeg profile pic deleted!");
+                }).catch(() => {
+                    console.log("jpeg profile pic delete error!");
+
+                    firebaseStorageRef.child(deletePath + '.jpg')
+                        .delete().then(() => {
+                            console.log("jpg profile pic deleted!");
+                        }).catch(() => {
+                            console.log("jpg profile pic delete error!");
+                        });
+                });
+        });
+}
+
 export const deleteAccount = () => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const firebase = getFirebase();
@@ -99,32 +125,24 @@ export const deleteAccount = () => {
         const user = firebase.auth().currentUser;
         const useruid = user.uid;
 
-        // Create a path to profile pic to delete
-        var deletePath = 'profilePics/' + user.uid;
+        // delete profile pic from storage
+        deleteFromStorage('profilePics/' + user.uid);
 
-        firebaseStorageRef.child(deletePath + '.png').getDownloadURL().then(() => {
-            firebaseStorageRef.child(deletePath + '.png')
-                .delete().then(() => {
-                    console.log("png profile pic deleted!");
+        //delete users sell listings and fields
+        var collection = db.collection('sellListings')
+        collection.where("owner", "==", useruid).get().then((querySnapshot: any[]) => {
+            querySnapshot.forEach((doc) => {
+                //delete sellListing image from storage
+                deleteFromStorage('marketplace/' + doc.id);
+                //delete sellListing doc
+                collection.doc(doc.id).delete().then(() => {
+                    console.log("listing successfully deleted!");
                 }).catch(() => {
-                    console.log("png profile pic delete error!");
+                    console.error("Error removing listing");
                 });
-        }
-            , () => {
-                firebaseStorageRef.child(deletePath + '.jpeg')
-                    .delete().then(() => {
-                        console.log("jpeg profile pic deleted!");
-                    }).catch(() => {
-                        console.log("jpeg profile pic delete error!");
-
-                        firebaseStorageRef.child(deletePath + '.jpg')
-                            .delete().then(() => {
-                                console.log("jpg profile pic deleted!");
-                            }).catch(() => {
-                                console.log("jpg profile pic delete error!");
-                            });
-                    });
             });
+        });
+        
 
         //delete user from auth
         user.delete().then(() => {
@@ -144,21 +162,9 @@ export const deleteAccount = () => {
             deleteFields({ getFirebase, getFirestore }, 'clubs', 'editors', 'array-contains', useruid)
             deleteFields({ getFirebase, getFirestore }, 'posts', 'owner', '==', useruid)
 
-            //delete users sell listings and fields
-            collection = db.collection('sellListings')
-            collection.where("owner", "==", useruid).get().then((querySnapshot: any[]) => {
-                querySnapshot.forEach((doc) => {
-                    //delete sellListing doc
-                    collection.doc(doc.id).delete().then(() => {
-                        console.log("listing successfully deleted!");
-                    }).catch(() => {
-                        console.error("Error removing listing");
-                    });
-                });
-            });
-
             dispatch({ type: 'DELETE_SUCCESS' });
         }).catch((err: any) => {
+            window.alert("Please log out and log back in to delete your account")
             dispatch({ type: 'DELETE_ERROR', err });
         });
     }
