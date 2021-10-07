@@ -88,11 +88,9 @@ const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, f
         .catch((error: any) => {
             console.log("Error deleting docs", error);
         });
-
-
 }
 
-const deleteFromStorage = (deletePath: any,) => {
+const deleteFromStorage = (deletePath: any) => {
     firebaseStorageRef.child(deletePath + '.png').getDownloadURL().then(() => {
         firebaseStorageRef.child(deletePath + '.png')
             .delete().then(() => {
@@ -107,15 +105,43 @@ const deleteFromStorage = (deletePath: any,) => {
                     console.log("jpeg profile pic deleted!");
                 }).catch(() => {
                     console.log("jpeg profile pic delete error!");
-
-                    firebaseStorageRef.child(deletePath + '.jpg')
-                        .delete().then(() => {
-                            console.log("jpg profile pic deleted!");
-                        }).catch(() => {
-                            console.log("jpg profile pic delete error!");
-                        });
+                });
+            firebaseStorageRef.child(deletePath + '.jpg')
+                .delete().then(() => {
+                    console.log("jpg profile pic deleted!");
+                }).catch(() => {
+                    console.log("jpg profile pic delete error!");
                 });
         });
+}
+
+const deleteDocs = ({ getFirebase, getFirestore }: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
+    const firebase = getFirebase();
+    const db = getFirestore();
+    var storageLoc = ''
+
+    if(collectionName === 'events'){
+        storageLoc = 'events/'
+    }
+    else {
+        storageLoc = 'marketplace/'
+    }
+
+    var collection = db.collection(collectionName)
+    collection.where(fieldName, docType, useruid).get().then((querySnapshot: any[]) => {
+        querySnapshot.forEach((doc) => {
+            //delete sellListing image from storage
+            deleteFromStorage(storageLoc + doc.id);
+            console.log(doc.id)
+
+            //delete sellListing doc
+            collection.doc(doc.id).delete().then(() => {
+                console.log("doc successfully deleted!" + collectionName);
+            }).catch(() => {
+                console.error("Error removing doc" + collectionName);
+            });
+        });
+    });
 }
 
 export const deleteAccount = () => {
@@ -129,21 +155,13 @@ export const deleteAccount = () => {
         deleteFromStorage('profilePics/' + user.uid);
 
         //delete users sell listings and fields
-        var collection = db.collection('sellListings')
-        collection.where("owner", "==", useruid).get().then((querySnapshot: any[]) => {
-            querySnapshot.forEach((doc) => {
-                //delete sellListing image from storage
-                deleteFromStorage('marketplace/' + doc.id);
-                //delete sellListing doc
-                collection.doc(doc.id).delete().then(() => {
-                    console.log("listing successfully deleted!");
-                }).catch(() => {
-                    console.error("Error removing listing");
-                });
-            });
-        });
-        
 
+        console.log(useruid)
+
+        deleteDocs({ getFirebase, getFirestore }, 'sellListings', 'owner', '==', useruid)
+        deleteDocs({ getFirebase, getFirestore }, 'events', 'ownerID', '==', useruid)
+
+        dispatch({ type: 'DELETE_SUCCESS' });
         //delete user from auth
         user.delete().then(() => {
             //firestore deletions
@@ -156,7 +174,7 @@ export const deleteAccount = () => {
             });
 
             //delete owner and editor fields from events and clubs
-            deleteFields({ getFirebase, getFirestore }, 'events', 'owner', '==', useruid)
+            //deleteFields({ getFirebase, getFirestore }, 'events', 'owner', '==', useruid)
             deleteFields({ getFirebase, getFirestore }, 'events', 'editors', 'array-contains', useruid)
             deleteFields({ getFirebase, getFirestore }, 'clubs', 'owner', '==', useruid)
             deleteFields({ getFirebase, getFirestore }, 'clubs', 'editors', 'array-contains', useruid)
@@ -269,35 +287,34 @@ export const signUp = (newUser: any) => {
         })
     }
   }*/
-  
-export const changePassword = (credentials: { newPassword: string }) => {
-  return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-    const firebase = getFirebase();
-    const user = firebase.auth().currentUser;
-    //const auth = getAuth();
-    //const user = auth.currentUser;
 
-    user.updatePassword(credentials.newPassword).then(() => {
-        console.log(user)
-        //dispatch({ type: 'SIGNUP_SUCCESS' })
-        firebase.auth().signOut()
-    }).catch((err: any) => {
-        dispatch({ type: 'SIGNUP_ERROR', err })
-        console.log(err)
-    });
-  }
+export const changePassword = (credentials: { newPassword: string }) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const firebase = getFirebase();
+        const user = firebase.auth().currentUser;
+        const useruid = user.uid;
+
+        user.updatePassword(credentials.newPassword).then(() => {
+            console.log(user)
+            dispatch({ type: 'SIGNUP_SUCCESS' })
+            firebase.auth().signOut();
+        }).catch((err: any) => {
+            dispatch({ type: 'SIGNUP_ERROR', err })
+            console.log(err)
+        });
+    }
 }
 
 export const resetPasswordRequest = (credentials: { email: string }) => {
-  return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-    const auth = getAuth();
-    sendPasswordResetEmail(auth, credentials.email)
-    .then(() => {
-        dispatch({ type: 'SIGNUP_SUCCESS' })
-    }).catch((err: any) => {
-        dispatch({ type: 'SIGNUP_ERROR', err })
-    });
-  }
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const auth = getAuth();
+        sendPasswordResetEmail(auth, credentials.email)
+            .then(() => {
+                dispatch({ type: 'SIGNUP_SUCCESS' })
+            }).catch((err: any) => {
+                dispatch({ type: 'SIGNUP_ERROR', err })
+            });
+    }
 }
 
 export const resetPassword = (credentials: { email: string, username: string, password: string }) => {
@@ -305,10 +322,10 @@ export const resetPassword = (credentials: { email: string, username: string, pa
         const auth = getAuth();
         const firebase = getFirebase();
         updatePassword(firebase.auth().currentUser, credentials.password)
-        .then(() => {
-            dispatch({ type: 'SIGNUP_SUCCESS' })
-        }).catch((err: any) => {
-            dispatch({ type: 'SIGNUP_ERROR', err })
-        });
+            .then(() => {
+                dispatch({ type: 'SIGNUP_SUCCESS' })
+            }).catch((err: any) => {
+                dispatch({ type: 'SIGNUP_ERROR', err })
+            });
     }
-  }
+}
