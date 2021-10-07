@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Timestamp } from '@firebase/firestore';
+import Dropzone from 'react-dropzone'
+
 
 import FormControl from '@mui/material/FormControl';
 import { useTheme } from '@mui/material/styles';
@@ -33,6 +35,7 @@ interface ClubState {
   description: string,
   contactInfo: string,
   postedDateTime: Timestamp,
+  image: File,
   attendees: string[],
   category: string[],
   event: string[]
@@ -47,7 +50,8 @@ interface ClubProps {
 
 class CreateClub extends Component<ClubProps, ClubState> {
 
-  categories = ["Arts & Music", "Athletics", "Service", "Culture", "Charity/Service", "Professional", "Gaming", "Other"];
+  themes = ["Arts & Music", "Athletics", "Charity/Service", "Cultural/Religious",
+    "Greek Life", "Social", "Technology", "Education/Professional", "Other"];
 
   // Initialize state
   constructor(props:ClubProps) {
@@ -60,6 +64,7 @@ class CreateClub extends Component<ClubProps, ClubState> {
       description: "",
       contactInfo: "",
       postedDateTime: new Timestamp(0,0),
+      image: null as any,
       attendees: [""],
       category: [],
       event: [""]
@@ -94,6 +99,23 @@ class CreateClub extends Component<ClubProps, ClubState> {
       })
     }
 
+
+  // General purpose state updater during form modification
+  handleInputImage = (e: File) => {
+    console.log(typeof (e));
+    console.log(e);
+    console.log(this.state);
+
+    if (e == undefined) {
+      window.alert("Please enter a valid file with a .JPG, .PNG, .JPEG extension.")
+    }
+    else {
+      this.setState({
+        image: e
+      })
+    }
+  }
+
   // Handle user submit
   handleSubmit = (event:any) => {
     event.preventDefault();
@@ -108,10 +130,10 @@ class CreateClub extends Component<ClubProps, ClubState> {
         console.log("Minimum description Length Required: 10 characters");
         window.alert("Minimum description length required: 10 characters")
       }
-      else if (this.state.contactInfo.length < 3 || !this.state.contactInfo.includes("@purdue.edu") 
+      else if (!this.state.contactInfo.includes("@purdue.edu") 
                 || this.state.contactInfo.split("@purdue.edu")[0].length < 1) { //
         // Pop modal if category is not selected
-        window.alert("Please enter contact info that's at least 3 chars and a purdue email.");
+        window.alert("Please enter contact info that's a valid purdue email.");
       }
       else if (this.state.category.length < 1) { //
         // Pop modal if category is not selected
@@ -122,7 +144,7 @@ class CreateClub extends Component<ClubProps, ClubState> {
         console.log(this.state);
         this.props.addClub(this.state);
     
-        window.alert("Event posted successfully!")
+        window.alert("Club posted successfully!")
 
         this.setState({
           orgId: "",
@@ -178,7 +200,7 @@ class CreateClub extends Component<ClubProps, ClubState> {
               input={<OutlinedInput label="Category"/>}
               MenuProps={MenuProps}
             >
-              {this.categories.map((item) => (
+              {this.themes.map((item) => (
                 <MenuItem
                   key={item}
                   value={item}
@@ -188,6 +210,23 @@ class CreateClub extends Component<ClubProps, ClubState> {
               ))}
             </Select>
           </FormControl>
+
+          <Dropzone
+            accept="image/jpeg, image/jpg, image/png"
+            maxFiles={1}
+            onDrop={inputtedFile =>
+              this.handleInputImage(inputtedFile[0])
+            }
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Click here to upload a picture. JPG, JPEG, or PNG only.</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
 
           <div className ="input-field">
             <button className = "button">Create New Club</button>

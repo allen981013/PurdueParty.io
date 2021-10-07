@@ -6,7 +6,11 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Timestamp } from '@firebase/firestore';
 import { Redirect } from 'react-router-dom';
-
+import { Link } from 'react-router-dom';
+import {
+  Box, Button, CircularProgress, Grid, Card, CardActionArea,
+  CardMedia, CardContent, Typography
+} from '@mui/material'
 
 // Interface/type for Clubs State
 interface ClubState {
@@ -30,7 +34,6 @@ interface ClubProps {
 }
 
 class Clubs extends Component<ClubProps, ClubState> {
-
   // Initialize state
   constructor(props: ClubProps) {
     super(props);
@@ -75,18 +78,41 @@ class Clubs extends Component<ClubProps, ClubState> {
   }
 
   render() {
-
+    const { auth } = this.props;
+    if (!this.props.auth.uid) return <Redirect to='/signin' />
 
     console.log(this.props.clubs);
     console.log(this.state);
     return (
       <div>
-        <div>
-          <h1> Purdue Clubs </h1>
-        </div>
-        <div>
-          <a href="/clubs/create-club">Create a new club</a>
-        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Box
+            display="flex"
+            alignSelf="center"
+            flexDirection="column"
+            alignItems="center"
+            pt="8px"
+            width="100%"
+            maxWidth="1200px"
+            padding="48px 16px"
+          >
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              width="100%"
+              pb="16px"
+            >
+              <h1 style={{ fontWeight: 300, margin: "0px" }}>Clubs</h1>
+              <Button
+                component={Link}
+                to="/clubs/create-club"
+                variant="outlined"
+                sx={{ color: "black", border: "1px solid black" }}
+              > Create
+              </Button>
+            </Box>
+          </Box></div>
       </div>
     )
   }
@@ -95,6 +121,7 @@ class Clubs extends Component<ClubProps, ClubState> {
 const mapStateToProps = (state: RootState) => {
   return {
     clubs: state.firestore.ordered.clubs,
+    auth: state.firebase.auth
   }
 }
 

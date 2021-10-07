@@ -128,7 +128,7 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
     else if (this.state.type === "") {
         // Pop modal for no type error
         console.log("Please select type from dropdown");
-        window.alert("Please select type from dropdown")
+        window.alert("Please enter a type of sell-listing. Example types:\nAutomotive\nClothing\nTechnology\nMusic\netc")
     }
     else if (isNaN(this.state.price)) { //
         // Pop modal for no price error
