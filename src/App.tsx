@@ -19,6 +19,7 @@ import CreatePost from './components/forum/create-post';
 import Profile from './components/profile/Profile';
 import Classes from './components/forum/Classes';
 import PostsLanding from './components/forum/PostsLanding';
+import EditProfile from './components/profile/EditProfile';
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
@@ -45,6 +46,7 @@ function App() {
           <Route path = '/clubs/create-club' component = {CreateClub} />
           <Route path = '/forum/create-post' component = {CreatePost} />
           <Route path = '/profile' component={Profile} />
+          <Route path = '/edit-profile' component={EditProfile} />
           <Route exact path = '/classes' component = {Classes} />
           <Route path='/classes/:classID' component={PostsLanding} />
           <Route path = '/classes/create-post' component = {CreatePost} />
