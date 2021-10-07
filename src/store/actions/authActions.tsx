@@ -1,10 +1,12 @@
+import { Firestore, query, queryEqual, where } from 'firebase/firestore';
 import { isEmpty } from 'react-redux-firebase';
 import { Dispatch, Action } from 'redux';
-import { StringLiteralLike } from 'typescript';
+//import { StringLiteralLike } from 'typescript';
 import { RootState } from '..';
 import { getAuth, sendPasswordResetEmail, updatePassword } from "firebase/auth";
 import { current } from '@reduxjs/toolkit';
 import { firebaseStorageRef } from '../..';
+
 
 export const refreshUserData = () => {
     return (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
@@ -164,23 +166,19 @@ export const deleteAccount = () => {
 
 //May need adjustments
 export const signUp = (newUser: any) => {
-    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+    return async (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const firebase = getFirebase();
         const db = getFirestore();
         var imageURL = "";
 
         // Create a reference to the cities collection
-        const citiesRef = db.collection("users");
+        //var citiesRef = db.collection("users");
 
         // Create a query against the collection.
-        //const q = query(citiesRef, where("userName", "==", newUser.username));
-
-        if (q != null) {
+        var q = db.collection("users").where("userName", "==", newUser.username);
+        const snapshot = await db.collection("users").where("userName", "==", newUser.username).get();
+        if (!snapshot.empty) {
             dispatch({ type: 'SIGNUP_ERROR', string: "non-original username" })
-            return;
-        }
-        else {
-            //console.log(q);
             return;
         }
 
@@ -270,12 +268,15 @@ export const changePassword = (credentials: { newPassword: string }) => {
   return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
     const firebase = getFirebase();
     const user = firebase.auth().currentUser;
+    const useruid = user.uid;
     
     user.updatePassword(credentials.newPassword).then(() => {
+        console.log(user)
         dispatch({ type: 'SIGNUP_SUCCESS' })
         firebase.auth().signOut();
     }).catch((err: any) => {
         dispatch({ type: 'SIGNUP_ERROR', err })
+        console.log(err)
     });
   }
 }
