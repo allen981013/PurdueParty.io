@@ -1,7 +1,6 @@
 import './NavBar.css'
 import { Link } from 'react-router-dom'
-//remove deleteAccount
-import { refreshUserData, signOut, deleteAccount } from '../../store/actions/authActions'
+import { refreshUserData, signOut } from '../../store/actions/authActions'
 import { FirebaseReducer } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Component } from 'react';
@@ -14,8 +13,6 @@ interface NavBarProps {
   username: string;
   refreshUserData: () => void;
   signOut: () => void;
-  //remove this
-  deleteAccount: () => void;
 }
 
 interface NavBarState {
@@ -37,14 +34,6 @@ class NavBar extends Component<NavBarProps, NavBarState> {
   componentDidMount() {
     this.props.refreshUserData()
   }
-
-  //delete this later
-  handleDelete = (event: any) => {
-    event.preventDefault()
-    if (window.confirm('Are you sure you wish to delete your account?')){
-      this.props.deleteAccount();
-    }
-  } 
 
   isLoggedIn() {
     return this.props.auth.uid != undefined
@@ -76,7 +65,6 @@ class NavBar extends Component<NavBarProps, NavBarState> {
   }
 
   render() {
-
     return (
       <div id='topbar'>
         <div id='topbar__gold'>
@@ -87,10 +75,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             {this.isLoggedIn() && this.getGreetingOrAuthButton("Sign out", "/", this.handleSignOutClick)}
 
             {this.isLoggedIn() && <Link to="/changePassword">Change Password</Link>}
-            <form onSubmit={this.handleDelete}>
-              <button>Delete Account</button>
-            </form>
-
+          
           </div>
         </div>
         <div id="topbar__black" />
@@ -159,8 +144,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
     refreshUserData: () => dispatch(refreshUserData()),
     signOut: () => dispatch(signOut()),
-    //delete this later
-    deleteAccount: () => dispatch(deleteAccount())
+
   }
 }
 
