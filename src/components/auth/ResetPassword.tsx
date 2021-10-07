@@ -133,11 +133,11 @@ class ResetPassword extends Component<ResetPasswordProps, ResetPasswordState> {
           <p>
             Password:
           </p>
-          <input type="text" value={this.state.password} id="password" onChange={this.handlePasswordChange} />
+          <input type="password" value={this.state.password} id="password" onChange={this.handlePasswordChange} />
           <p>
             Confirm Password:
           </p>
-          <input type="text" value={this.state.confirmpassword} id="confirmPassword" onChange={this.handleConfirmPasswordChange} />
+          <input type="password" value={this.state.confirmpassword} id="confirmPassword" onChange={this.handleConfirmPasswordChange} />
           <p></p>
           <button>Reset Password</button>
         </form>
