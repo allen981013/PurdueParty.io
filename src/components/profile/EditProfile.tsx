@@ -29,12 +29,6 @@ interface EditProfileProps{
 
 class EditProfile extends Component<EditProfileProps, EditProfileState> {
 
-    themes = ["Arts & Music", "Athletics", "Charity/Service", "Cultural/Religious",
-    "Greek Life", "Social", "Technology", "Education/Professional", "Other"];
-    categories = ["Callout", "Informational", "Fundraiser", "Rush", "Performance",
-    "Hackathon", "Rally", "Party/Celebration", "Study-abroad", "Other"];
-    perks = ["Free food", "Free swag", "Credits", "None"];
-
     constructor(props:EditProfileProps){
         super(props);
         this.state = {

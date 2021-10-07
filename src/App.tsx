@@ -48,7 +48,7 @@ function App() {
           <Route path = '/profile' component = {Profile} />
           <Route exact path = '/classes' component = {Classes} />
           <Route path = '/classes/create-post' component = {CreatePost} />
-          <Route path = '/profile/edit-profile' component = {EditProfile} />
+          <Route path = '/profile/edit' component = {EditProfile} />
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
         <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px" }}>
