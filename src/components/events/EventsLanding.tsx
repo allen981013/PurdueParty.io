@@ -164,8 +164,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
   }
 
   render() {
-    const { auth } = this.props;
-    if (!auth) return <Redirect to='/signin' />
+    if (!this.props.auth.uid) return <Redirect to='/signin' />
     return (
       <Box
         display="flex"
@@ -309,6 +308,7 @@ const mapStateToProps = ((state: RootState) => {
     events: state.eventsLanding.events,
     isEventsFetched: state.eventsLanding.isEventsFetched,
     isLastPage: state.eventsLanding.isLastPage,
+    auth: state.firebase.auth,
   }
 })
 
