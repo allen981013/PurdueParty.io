@@ -124,6 +124,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 <strong style={{ paddingBottom: "8px" }}>Date and Time</strong>
                 <span style={{ paddingBottom: "4px" }}>{this.props.event.startTime} to</span>
                 <span style={{ paddingBottom: "4px" }}>{this.props.event.endTime}</span>
+                <span style={{ paddingBottom: "4px" }}>({this.props.event.duration})</span>
               </Box>
               <Box
                 display="flex"
