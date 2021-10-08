@@ -260,39 +260,11 @@ export const signUp = (newUser: any) => {
         })
     }
 }
-
-/*export const changePassword = (credentials: { newPassword: string }) => {
-    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-        const firebase = getFirebase();
-        const db = getFirestore();
-        const user = {
-            newPassword: credentials.newPassword,
-        };
-  
-        let uid;
-        db.doc(`/users/${firebase.auth().currentUser}`) //Access database by document
-        .get() //Accesses the user requested, returns the user as a doc
-        .then((doc) => {
-            uid = doc.data().userId;
-            firebase.auth().updateUser(uid, {
-                password: user.newPassword
-            })
-            .then(() => {
-                dispatch({ type: 'SIGNUP_SUCCESS' })
-                firebase.auth().signOut();
-            }).catch((err: any) => {
-                dispatch({ type: 'SIGNUP_ERROR', err })
-            });
-        })
-    }
-  }*/
   
 export const changePassword = (newPass: String) => {
   return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
     const firebase = getFirebase();
     const user = firebase.auth().currentUser;
-    //const auth = getAuth();
-    //const user = auth.currentUser;
 
     console.log(newPass);
     user.updatePassword(newPass).then(() => {
