@@ -181,7 +181,7 @@ export const deleteAccount = () => {
 
             dispatch({ type: 'DELETE_SUCCESS' });
         }).catch((err: any) => {
-            window.alert("Please make sure to reauthenticate to delete your account")
+            window.alert("Please make sure to reauthenticate to delete your account. Also make sure that your account is not already deleted")
             dispatch({ type: 'DELETE_ERROR', err });
         });
     }
