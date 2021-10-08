@@ -24,6 +24,14 @@ interface PostsLandingProps{
         content: string,
         owner: string,
         classID: string
+    }[],
+    classes:{
+      courseID: string,
+      department: string,
+      description: string,
+      instructorName: string,
+      profEmail: string,
+      title: string
     }[]
 }
 
@@ -75,15 +83,59 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
         )
     }
 
+    getClass(department: string, description: string, instructorName: string, profEmail: string, title: string){
+      return(
+        <Grid
+            item
+            id="image-container"
+            xs={12}
+            md={3}
+            >
+            <Card>
+                <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                <label htmlFor="title">Course:</label>
+                <Typography noWrap variant="body2" component="div" marginBottom="10px">
+                    {title}
+                </Typography>
+                <label htmlFor="title">Department:</label>
+                <Typography noWrap variant="body2" component="div" marginBottom="10px">
+                    {department}
+                </Typography>
+                <label htmlFor="title">Description:</label>
+                <Typography noWrap variant="body2" component="div" marginBottom="10px">
+                    {description}
+                </Typography>
+                <label htmlFor="title">Instructor:</label>
+                <Typography noWrap variant="body2" component="div" marginBottom="10px">
+                    {instructorName}
+                </Typography>
+                <label htmlFor="title">Class:</label>
+                <Typography noWrap variant="body2" component="div" marginBottom="10px">
+                    {profEmail}
+                </Typography>
+                </CardContent>
+            </Card>
+            </Grid>
+      )
+    }
+
     isInClass = (post:any) =>{
         if(this.props.post){
-            console.log(post.classID + " vs " + this.props.match.params.classID);
             return post.classID === this.props.match.params.classID;
         }
         else{
             return false;
         }
     }
+
+    isThisClass = (classes:any) =>{
+      if(this.props.classes){
+          return classes.courseID === this.props.match.params.classID;
+      }
+      else{
+          return false;
+      }
+  }
 
 
       render(){
@@ -108,9 +160,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
               > Create New Post
               </Button>
             </Box>
-
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1}}>
-                    <Box id="cropped-purdue-img" />
+            <Box sx={{ display: "flex", flexDirection: "row", justifyContent:"center", alignItems: "center", flexGrow: 1}}>
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
                     {(this.props.post != undefined && this.props.post.length != 0)
                     ?
@@ -119,7 +169,17 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
                     <div>No Post Here</div>
                     }
                     </Grid>
+
+                    <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
+                    {(this.props.classes != undefined)
+                    ?
+                    this.props.classes.filter(this.isThisClass).map((classes) => this.getClass(classes.department, classes.description, classes.instructorName, classes.profEmail,classes.title))
+                    :
+                    <div>No Class Here</div>
+                    }
+                    </Grid>
             </Box>
+            
       </div>
     )
       }
@@ -128,7 +188,8 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
 const mapStateToProps = (state: RootState) => {
     return {
         post: state.firestore.ordered.posts,
-        auth: state.firebase.auth,
+        classes: state.firestore.ordered.classes,
+        auth: state.firebase.auth
     }
 }
 
