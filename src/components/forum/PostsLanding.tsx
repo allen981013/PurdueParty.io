@@ -23,7 +23,7 @@ interface PostsLandingProps{
         title: string,
         content: string,
         owner: string,
-        classFrom: string
+        classID: string
     }[]
 }
 
@@ -39,7 +39,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
         };
       }
 
-    getPost(id: string, title: string, content: string, owner: string, classFrom: string){
+    getPost(id: string, title: string, content: string, owner: string, classID: string){
         return(
             <Grid
             item
@@ -67,23 +67,39 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
                 </Typography>
                 <label htmlFor="title">Class:</label>
                 <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {classFrom}
+                    {classID}
                 </Typography>
                 </CardContent>
             </Card>
             </Grid>
         )
     }
-    checkInClass(classFrom: string){
-        return classFrom == this.props.match.params.classID;
+
+    isInClass = (post:any) =>{
+        if(this.props.post){
+            console.log(post.classID + " vs " + this.props.match.params.classID);
+            return post.classID === this.props.match.params.classID;
+        }
+        else{
+            return false;
+        }
     }
+
 
       render(){
         const { auth } = this.props;
         if (!this.props.auth.uid) return <Redirect to='/signin' />
 
+        var curPost : any = "Post";
+        if(this.props.post){
+            curPost = this.props.post.find(this.isInClass)
+        }
+
         return (
             <div>
+                {console.log("curPost:" + curPost.length)}
+                {console.log(curPost)}
+                {console.log(this.props.post)}
             <Box
               display="flex"
               justifyContent="space-between"
@@ -103,9 +119,9 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1}}>
                     <Box id="cropped-purdue-img" />
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                    {this.props.post != undefined && this.props.post.length != 0 && this.props.post.map((post) => this.checkInClass(post.classFrom))
+                    {(this.props.post != undefined && this.props.post.length != 0 && curPost.length == undefined)
                     ?
-                    this.props.post.map((post) => this.getPost(post.id, post.title, post.content, post.owner, post.classFrom))
+                    this.props.post.map((post) => this.getPost(post.id, post.title, post.content, post.owner, post.classID))
                     :
                     <div>No Post Here</div>
                     }
