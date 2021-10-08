@@ -16,7 +16,7 @@ interface EventInfoProps {
   eventNotFound: boolean;
   event: EventInfoStatesRedux["event"];
   host: EventInfoStatesRedux["host"];
-  auth: any;
+  auth: any,
   fetchEventInfo: (eventID: string) => void;
 }
 
@@ -110,7 +110,12 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 pb="32px"
               >
                 <h1 style={{ fontWeight: 300, margin: "0px" }}>{this.props.event.title}</h1>
-                <Button sx={{ color: "black", height: "32px" }}>
+                <Button 
+                component={Link}
+                to={"/edit-event/" + this.props.eventID}
+                variant="outlined"
+                sx={{ color: "black", height: "32px" }}
+                >
                   <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
                   Edit
                 </Button>
@@ -124,6 +129,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 <strong style={{ paddingBottom: "8px" }}>Date and Time</strong>
                 <span style={{ paddingBottom: "4px" }}>{this.props.event.startTime} to</span>
                 <span style={{ paddingBottom: "4px" }}>{this.props.event.endTime}</span>
+                <span style={{ paddingBottom: "4px" }}>({this.props.event.duration})</span>
               </Box>
               <Box
                 display="flex"

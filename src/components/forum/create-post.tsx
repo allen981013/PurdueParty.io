@@ -33,6 +33,7 @@ interface PostState {
 interface PostProps {
   auth: any,
   posts: any,
+  match: any,
   addPost: (state: PostState) => void
 }
 
@@ -57,7 +58,8 @@ class CreatePost extends Component<PostProps, PostState> {
   // General purpose state updater during form modification
   handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      title: e.target.value
+      title: e.target.value,
+      classID: this.props.match.params.classID,
     })
   }
 
@@ -85,6 +87,7 @@ class CreatePost extends Component<PostProps, PostState> {
       console.log("Posted Successfully!");
       window.alert("Posted successfully!")
 
+
       this.props.addPost(this.state);
 
       this.setState({
@@ -100,10 +103,12 @@ class CreatePost extends Component<PostProps, PostState> {
       })
     }
   }
+  
 
   render() {
     return (
       <div>
+        {console.log(this.props.match.params.classID)}
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
           <Box id="cropped-purdue-img" />
         </Box>
@@ -150,6 +155,8 @@ const mapDispatchToProps = (dispatch: (action: any) => void) => {
 export default compose<React.ComponentType<PostProps>>(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect([
-    { collection: 'posts' }
+    { 
+      collection: 'posts'
+    }
   ])
 )(CreatePost)

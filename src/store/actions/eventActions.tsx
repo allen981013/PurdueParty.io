@@ -1,6 +1,7 @@
 import { Dispatch, Action } from 'redux';
 import { Timestamp } from '@firebase/firestore';
 import { firebaseStorageRef } from '../..';
+import { authIsReady } from 'react-redux-firebase';
 
 // Need to explicitly define these types at some point
 export const addEvent = (newEvent:any) => {
@@ -82,6 +83,30 @@ export const addEvent = (newEvent:any) => {
             dispatch({ type: 'ADD_EVENT_SUCCESS', newDocRef });
         }).catch((err:any) => {
             dispatch({ type: 'ADD_EVENT_ERR', err});
+        });
+    }
+}
+
+export const editEvent = (newEvent: any) =>{
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        console.log(newEvent.id);
+        var docref = db.collection('events').doc(newEvent.id);
+        
+        docref.update({
+            ownerID: getState().firebase.auth.uid,
+            editors: newEvent.editors,
+            orgID: newEvent.orgID,
+            title: newEvent.title,
+            description: newEvent.description,
+            location: newEvent.location,
+            startTime: newEvent.startTime,
+            endTime: newEvent.endTime,
+            postedDateTime: Timestamp.now(),
+            perks: newEvent.perks,
+            categories: newEvent.categories,
+            themes: newEvent.themes,
+            attendees: newEvent.attendees
         });
     }
 }

@@ -19,7 +19,7 @@ interface ClassesState {
 interface ClassesProps {
     class: {
         title: string,
-        id: string
+        courseID: string
     }[],
     auth: any,
     firebase: any
@@ -33,7 +33,7 @@ class Classes extends Component<ClassesProps, ClassesState> {
     }
   }
 
-  getClass(title: string, id: string){
+  getClass(title: string, courseID: string){
         
         return(
             <Grid
@@ -43,9 +43,9 @@ class Classes extends Component<ClassesProps, ClassesState> {
             md={3}
             >
             <Card>
-                <CardActionArea component={Link} to={"/classes/" + id}>
+                <CardActionArea component={Link} to={"/classes/" + courseID}>
                     <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                    <label htmlFor="title">{id}</label>
+                    <label htmlFor="title"> {courseID} </label>
                     <Typography noWrap variant="body2" color="text.secondary" component="div" marginBottom="10px">
                         {title}
                     </Typography>
@@ -69,6 +69,13 @@ class Classes extends Component<ClassesProps, ClassesState> {
               pb="16px"
             >
               <h1 style={{ fontWeight: 300, marginLeft: "20%", marginTop:"3%" }}>Classes</h1>
+              <Button
+                component={Link}
+                to="create-class"
+                variant="outlined"
+                sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+              > Create
+              </Button>
             </Box>
 
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
@@ -76,7 +83,7 @@ class Classes extends Component<ClassesProps, ClassesState> {
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
                     {this.props.class != undefined && this.props.class.length != 0 
                     ?
-                    this.props.class.map((classes) => this.getClass(classes.title, classes.id))
+                    this.props.class.map((classes) => this.getClass(classes.title, classes.courseID))
                     :
                     <div>Classes Missing</div>
                     }

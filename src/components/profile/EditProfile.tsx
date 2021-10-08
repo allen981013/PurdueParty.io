@@ -106,7 +106,7 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
   render() {
     const { auth } = this.props;
 
-    if (!auth.uid) return <Redirect to='/signin' />
+    if (!auth.uid) return <Redirect to='/' />
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
