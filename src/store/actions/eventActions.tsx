@@ -90,7 +90,9 @@ export const addEvent = (newEvent:any) => {
 export const editEvent = (newEvent: any) =>{
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
-        var docref = db.collection('events').doc();
+        console.log(newEvent.id);
+        var docref = db.collection('events').doc(newEvent.id);
+        
         docref.update({
             ownerID: getState().firebase.auth.uid,
             editors: newEvent.editors,

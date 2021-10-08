@@ -187,11 +187,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
         console.log("Event Edit Successfully!");
         window.alert("Event Edit Successfully!")
 
-        this.setState({
-          id: this.props.match.params.eventID
-        })
-
-        this.props.editEvent(this.state);
+        this.props.editEvent({...this.state, id: this.props.match.params.eventID});
 
         this.setState({
             id: "",
