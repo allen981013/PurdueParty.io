@@ -170,14 +170,12 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
                     }
                     </Grid>
 
-                    <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
                     {(this.props.classes != undefined)
                     ?
                     this.props.classes.filter(this.isThisClass).map((classes) => this.getClass(classes.department, classes.description, classes.instructorName, classes.profEmail,classes.title))
                     :
                     <div>No Class Here</div>
                     }
-                    </Grid>
             </Box>
             
       </div>
