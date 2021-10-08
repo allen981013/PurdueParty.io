@@ -3,12 +3,14 @@ import { Action, Dispatch } from 'redux'
 import { Timestamp } from 'firebase/firestore'
 import { Description, TagSharp } from '@mui/icons-material'
 import { firebaseStorageRef } from '../..'
+import moment from 'moment'
 
 // type for states returned by reducer
 export interface EventInfoStatesRedux {
   event: {
     title: string,
     startTime: string,
+    duration: string,
     endTime: string,
     location: string,
     description: string,
@@ -30,6 +32,7 @@ const initState: EventInfoStatesRedux = {
     title: "My Event",
     startTime: new Date().toLocaleString("en-US"),
     endTime: new Date().toLocaleString("en-US"),
+    duration: "",
     location: "Purdue University",
     description: "This is my event description",
     categories: ["social", "event"],
@@ -96,6 +99,10 @@ export const fetchEventInfo = (eventID: string) => {
         var startTime = doc.data().startTime.toDate().toLocaleString("en-US")
         var endTime = doc.data().endTime.toDate().toLocaleString("en-US")
         var location = doc.data().location
+        var duration = moment.duration(
+          moment(doc.data().endTime.toDate())
+          .diff(doc.data().startTime.toDate())
+        ).humanize()
         var description = doc.data().description
         var categories = doc.data().categories
         var perks = doc.data().perks
@@ -128,6 +135,7 @@ export const fetchEventInfo = (eventID: string) => {
                 title: title,
                 startTime: startTime,
                 endTime: endTime,
+                duration: duration,
                 location: location,
                 description: description,
                 tags: categories,
