@@ -21,6 +21,7 @@ import Classes from './components/forum/Classes';
 import PostsLanding from './components/forum/PostsLanding';
 import EditProfile from './components/profile/EditProfile';
 import EditEvent from './components/events/EditEvent';
+import CreateClass from './components/forum/CreateClass';
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
@@ -52,6 +53,9 @@ function App() {
           <Route path='/classes/:classID' component={PostsLanding} />
           <Route path = '/classes/create-post' component = {CreatePost} />
           <Route path = '/edit-event/:eventID' component = {EditEvent} />
+          <Route path='/create-class' component={CreateClass} />
+          <Route path = '/create-post/:classID' component = {CreatePost} />
+
 
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}

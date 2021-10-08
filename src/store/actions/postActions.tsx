@@ -12,17 +12,37 @@ export const addPost = (newPost:any) => {
             classID: newPost.classID,
             title: newPost.title,
             description: newPost.description,
-            postedDateTime: new Timestamp(0,0),
+            postedDateTime: Timestamp.now(),
             upvotes: 1,
             downvotes: 0,
             comments: [],
         }).then((newDocRef:any) => {
             newDocRef.update({
                 postId: newDocRef.id
+
             })
             dispatch({ type: 'ADD_POST_SUCCESS', newDocRef });
         }).catch((err:any) => {
             dispatch({ type: 'ADD_POST_ERR', err});
+        });
+    }
+}
+
+export const addClass = (newClass:any) => {
+    return(dispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {
+        const db = getFirestore();
+        var docref = db.collection('classes');
+
+        docref.add({
+            courseID: newClass.courseID,
+            title: newClass.title,
+        }).then((newDocRef:any) => {
+            newDocRef.update({
+                ID: newDocRef.id
+            })
+            dispatch({ type: 'ADD_CLASS_SUCCESS', newDocRef });
+        }).catch((err:any) => {
+            dispatch({ type: 'ADD_CLASS_ERR', err});
         });
     }
 }
