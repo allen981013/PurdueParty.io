@@ -90,15 +90,8 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
         const { auth } = this.props;
         if (!this.props.auth.uid) return <Redirect to='/signin' />
 
-        var curPost : any = "Post";
-        if(this.props.post){
-            curPost = this.props.post.find(this.isInClass)
-        }
-
         return (
             <div>
-                {console.log("curPost:" + curPost.length)}
-                {console.log(curPost)}
                 {console.log(this.props.post)}
             <Box
               display="flex"
@@ -119,9 +112,9 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1}}>
                     <Box id="cropped-purdue-img" />
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                    {(this.props.post != undefined && this.props.post.length != 0 && curPost.length == undefined)
+                    {(this.props.post != undefined && this.props.post.length != 0)
                     ?
-                    this.props.post.map((post) => this.getPost(post.id, post.title, post.content, post.owner, post.classID))
+                    this.props.post.filter(this.isInClass).map((post) => this.getPost(post.id, post.title, post.content, post.owner, post.classID))
                     :
                     <div>No Post Here</div>
                     }
