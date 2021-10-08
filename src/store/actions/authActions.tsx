@@ -298,7 +298,7 @@ export const changePassword = (newPass: String) => {
     user.updatePassword(newPass).then(() => {
         console.log(user);
         //dispatch({ type: 'SIGNUP_SUCCESS' })
-        firebase.auth().signOut()
+        firebase.auth().signOut();
     }).catch((err: any) => {
         dispatch({ type: 'SIGNUP_ERROR', err })
         console.log(err)
