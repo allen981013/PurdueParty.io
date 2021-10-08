@@ -181,7 +181,7 @@ export const deleteAccount = () => {
 
             dispatch({ type: 'DELETE_SUCCESS' });
         }).catch((err: any) => {
-            window.alert("Please log out and log back in to delete your account")
+            window.alert("Please make sure to reauthenticate to delete your account")
             dispatch({ type: 'DELETE_ERROR', err });
         });
     }
@@ -272,6 +272,7 @@ export const changePassword = (newPass: String) => {
         //dispatch({ type: 'SIGNUP_SUCCESS' })
         firebase.auth().signOut();
     }).catch((err: any) => {
+        window.alert("Please make sure to reauthenticate to change your password")
         dispatch({ type: 'SIGNUP_ERROR', err })
         console.log(err)
     });
