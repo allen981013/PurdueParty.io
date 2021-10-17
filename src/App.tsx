@@ -23,6 +23,8 @@ import EditProfile from './components/profile/EditProfile';
 import EditEvent from './components/events/EditEvent';
 import CreateClass from './components/forum/CreateClass';
 
+import SearchProfiles from './components/profile/SearchProfiles';
+
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
   return (
@@ -55,6 +57,8 @@ function App() {
           <Route path = '/edit-event/:eventID' component = {EditEvent} />
           <Route path='/create-class' component={CreateClass} />
           <Route path = '/create-post/:classID' component = {CreatePost} />
+
+          <Route path = '/search-profiles' component = {SearchProfiles} />
 
 
         </Switch>
