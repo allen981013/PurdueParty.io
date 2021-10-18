@@ -11,10 +11,11 @@ export const addPost = (newPost:any) => {
             owner: getState().firebase.auth.uid,
             classID: newPost.classID,
             title: newPost.title,
-            description: newPost.description,
+            content: newPost.description,
             postedDateTime: Timestamp.now(),
-            upvotes: 1,
+            upvotes: 0,
             downvotes: 0,
+            numComments: 0,
             comments: [],
         }).then((newDocRef:any) => {
             newDocRef.update({
