@@ -11,6 +11,14 @@ import {
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import moment from 'moment';
 
+interface Post {
+  title: string;
+  content: string;
+  poster: string;
+  numComments: number;
+  timeSincePosted: string;
+  href: string;
+}
 
 interface PostsLandingState {
 }
@@ -19,15 +27,8 @@ interface PostsLandingProps {
   auth?: FirebaseReducer.AuthState;
   classID: string;
   isDataFetched?: boolean;
-  posts?: {
-    title: string;
-    content: string;
-    poster: string;
-    numComments: number;
-    timeSincePosted: string;
-  }[];
+  posts?: Post[];
   classInfo?: {
-    courseID: string,
     title: string
     description: string,
     department: string,
@@ -45,7 +46,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
     };
   }
 
-  getPost(post: any) {
+  getPost(post: Post) {
     return (
       <Grid
         item
@@ -108,7 +109,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
     )
   }
 
-  getClass(class_: any) {
+  getClass(class_: PostsLandingProps["classInfo"]) {
     return (
       <Card>
         <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
@@ -212,7 +213,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
 
 const mapStateToProps = (state: RootState) => {
   // Map posts objects to meet the UI's needs
-  var posts = state.firestore.ordered.posts
+  var posts: PostsLandingProps["posts"] = state.firestore.ordered.posts
     ? state.firestore.ordered.posts.map((post: any) => {
       return {
         title: post.title,
@@ -228,7 +229,7 @@ const mapStateToProps = (state: RootState) => {
     : undefined
   // Map class object to meet the UI's need
   var classes = state.firestore.ordered.classes
-  var classInfo = (classes !== undefined && classes.length > 0)
+  var classInfo: PostsLandingProps["classInfo"] = (classes !== undefined && classes.length > 0)
     ? classes.map((class_: any) => {
       return {
         title: class_.title,
