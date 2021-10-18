@@ -5,6 +5,9 @@ import { firestoreConnect } from 'react-redux-firebase';
 import {RootState, AppDispatch} from '../../store';
 import { Timestamp} from 'firebase/firestore';
 import { Redirect } from 'react-router-dom';
+import { Button } from '@mui/material';
+import { EditOutlined } from '@mui/icons-material';
+import { Link } from 'react-router-dom';
 import './MarketPlace.css';
 
 // Interface/type for Events State
@@ -70,9 +73,27 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
       console.log(this.props.marketplace[0].image);
     }
 
-    var curUser : any = "User";
+    var curUser : any = undefined;
     if (this.props.users) {
       curUser = this.props.users.find(this.isOwner);
+    }
+
+    var renderEdit : boolean = false;
+    if (curUser && (curUser.id == auth.uid)) {
+      renderEdit = true;
+    }
+
+    var editCode : any = <div></div>;
+    if (renderEdit) {
+      editCode = <Button 
+                component={Link}
+                to={"/edit-sellListing/" + curUser.id + "/" + this.props.match.params.itemID}
+                variant="outlined"
+                sx={{ color: "black", height: "48px" }}
+                >
+              <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+              Edit
+            </Button>
     }
 
     return (
@@ -105,6 +126,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
                   <div className="container-card__desc">
                     <img src = {this.props.marketplace[0].image} style = {{ width : "95%"}} />
                   </div>
+                  {editCode}
                   <div className="container-card__dateTime">
                     <p>Posted On: {postDate.toString()}</p>
                   </div>
