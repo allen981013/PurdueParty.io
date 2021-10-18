@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from '../../store';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
-import { editSellListing, deleteSellListing } from '../../store/actions/sellListingActions';
+import { editListingTitle, editListingDescription, editListingPrice, editListingContact, editListingImage, editListingType, deleteSellListing } from '../../store/actions/sellListingActions';
 import Dropzone from 'react-dropzone';
 
 
@@ -25,7 +25,13 @@ interface EditSellListingProps {
     auth: any,
     firebase: any,
     match: any,
-    editSellListing: (state: EditSellListingState) => void,
+    history: any,
+    editListingTitle: (state: EditSellListingState) => void,
+    editListingDescription: (state: EditSellListingState) => void,
+    editListingPrice: (state: EditSellListingState) => void,
+    editListingContact: (state: EditSellListingState) => void,
+    editListingImage: (state: EditSellListingState) => void,
+    editListingType: (state: EditSellListingState) => void,
     deleteSellListing : (state: EditSellListingState) => void
 }
 
@@ -37,13 +43,19 @@ class EditSellListing extends Component<EditSellListingProps, EditSellListingSta
             contactInfo: "",
             description: "",
             id: "",
-            image: undefined,
+            image: null,
             owner: "",
             postedDateTime: undefined,
             price: -1,
             title: "",
             type: ""
         }
+    }
+
+    componentDidMount() {
+        this.setState({
+            id: this.props.match.params.listingID
+        })
     }
 
     handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +109,7 @@ class EditSellListing extends Component<EditSellListingProps, EditSellListingSta
 
         if (this.state.title.length > 0 && this.state.title.length < 3) { 
             // Pop modal for title length error
-            window.alert("Minimum title length required: 3 characters")
+            window.alert("Minimum title length required: 3 characters");
         }
         else if (this.state.description.length > 0 && this.state.description.length < 10) {
             // Pop modal for description length error
@@ -107,25 +119,48 @@ class EditSellListing extends Component<EditSellListingProps, EditSellListingSta
         else if (this.state.price > 0 && isNaN(this.state.price)) { //
             window.alert("Please enter a valid price");
         }
-        else if (this.state.contactInfo.length != 0 && !this.state.contactInfo.match(phoneno)) {
+        else if (this.state.contactInfo.length > 0 && !this.state.contactInfo.match(phoneno)) {
             window.alert("Please enter a valid phone #. Example Formats:\nXXX-XXX-XXX\nXXX.XXX.XXXX\nXXX XXX XXXX\nXXXXXXXXXX\netc");
         }
         else {
             window.alert("Listing updated successfully!")
+            
+
+            this.setState({ id: this.props.match.params.listingID}, () => {
+                //Figure out what needs updating and call accordingly
+                console.log(this.state);
+                if (this.state.title.length > 0) {
+                    this.props.editListingTitle(this.state);
+                }
+                if (this.state.description.length > 0) {
+                    this.props.editListingDescription(this.state);
+                }
+                if (this.state.price > 0) {
+                    this.props.editListingPrice(this.state);
+                }
+                if (this.state.contactInfo.length > 0) {
+                    this.props.editListingContact(this.state);
+                }
+                if (this.state.image != null) {
+                    this.props.editListingImage(this.state);
+                }
+                if (this.state.type.length > 0) {
+                    this.props.editListingType(this.state);
+                }
+
+                this.setState({
+                    contactInfo: "",
+                    description: "",
+                    id: "",
+                    image: undefined,
+                    owner: "",
+                    postedDateTime: undefined,
+                    price: -1,
+                    title: "",
+                    type: ""
+                })
     
-            this.props.editSellListing(this.state);
-    
-            this.setState({
-                contactInfo: "",
-                description: "",
-                id: "",
-                image: undefined,
-                owner: "",
-                postedDateTime: undefined,
-                price: -1,
-                title: "",
-                type: ""
-            })
+            });
         }
     }
 
@@ -134,13 +169,13 @@ class EditSellListing extends Component<EditSellListingProps, EditSellListingSta
         var result : boolean = window.confirm("Are you sure you want to delete your sell listing?");
         if (result) {
             //user said yes
-
             this.props.deleteSellListing(this.state);
+
             this.setState({
                 contactInfo: "",
                 description: "",
                 id: "",
-                image: undefined,
+                image: null,
                 owner: "",
                 postedDateTime: undefined,
                 price: -1,
@@ -148,7 +183,9 @@ class EditSellListing extends Component<EditSellListingProps, EditSellListingSta
                 type: ""
             })
             //Maybe use this.props.history.push()
-            return <Redirect to ='/marketplace'/>
+
+            window.alert("Listing Deleted Successfully!");
+            this.props.history.push("/marketplace");
         }
         // User said no, do nothing
     }
@@ -184,7 +221,7 @@ class EditSellListing extends Component<EditSellListingProps, EditSellListingSta
                     <h3>Update Price</h3>
                     <div className = "input-field">
                         <label htmlFor="price">Sell-Listing Price: </label>
-                        <input type="number" value={this.state.price} id="price" onChange={this.handleChangePrice}/>
+                        <input type="number" id="price" onChange={this.handleChangePrice}/>
                     </div>
                     <h3>Update Phone Number</h3>
                     <div>
@@ -234,7 +271,12 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
     // Insert functions from actions folder in similar syntax
     return {
-        editSellListing: (sellListing : any) => dispatch(editSellListing(sellListing)),
+        editListingTitle: (sellListing : any) => dispatch(editListingTitle(sellListing)),
+        editListingDescription: (sellListing : any) => dispatch(editListingDescription(sellListing)),
+        editListingPrice: (sellListing : any) => dispatch(editListingPrice(sellListing)),
+        editListingContact: (sellListing : any) => dispatch(editListingContact(sellListing)),
+        editListingImage: (sellListing : any) => dispatch(editListingImage(sellListing)),
+        editListingType: (sellListing : any) => dispatch(editListingType(sellListing)),
         deleteSellListing: (sellListing : any) => dispatch(deleteSellListing(sellListing))
     }
 }
