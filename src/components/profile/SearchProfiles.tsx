@@ -9,7 +9,9 @@ import { Box, Button, Grid, Card, CardContent, Typography } from '@mui/material'
 
 // Interface/type for Profile State
 interface SearchProfilesState {
-    searchField: string
+    searchField: string,
+    searchStarted: boolean,
+
 }
 
 // Interface/type for Profile Props
@@ -17,8 +19,8 @@ interface SearchProfilesProps {
     profile: {
         bio: string,
         userName: string,
-        major: string,
-        year: number
+        email: string,
+        hide: boolean
     }[],
     currentUser: string,
     auth: any,
@@ -30,13 +32,16 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
     constructor(props: SearchProfilesProps) {
         super(props);
         this.state = {
-            searchField: ""
+            searchField: "",
+            searchStarted: false
         }
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSearchChange = this.handleSearchChange.bind(this);
     }
 
-    getUser(bio: string, userName: string, major: string, year: number) {
+    getUser(bio: string, userName: string, hide: boolean, email: string) {
 
-        if (userName == this.props.currentUser) {
+        if (!hide) {
             return (
                 <Grid
                     item
@@ -50,18 +55,15 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                             <Typography gutterBottom noWrap component="div" marginBottom="10px">
                                 {userName}
                             </Typography>
+                            <label htmlFor="title">Email: </label>
+                            <Typography gutterBottom noWrap component="div" marginBottom="10px">
+                                {email}
+                            </Typography>
                             <label htmlFor="title">Bio: </label>
                             <Typography gutterBottom noWrap component="div" marginBottom="10px">
                                 {bio}
                             </Typography>
-                            <label htmlFor="title">Major: </label>
-                            <Typography gutterBottom noWrap component="div" marginBottom="10px">
-                                {major}
-                            </Typography>
-                            <label htmlFor="title">Year: </label>
-                            <Typography gutterBottom noWrap component="div" marginBottom="10px">
-                                {year}
-                            </Typography>
+                            
                         </CardContent>
                     </Card>
                 </Grid>
@@ -70,13 +72,10 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
         return null
     }
 
-    checkUser(userName: string) {
-        if (userName == this.props.currentUser) {
-            return true;
-        }
-        return false;
-    }
 
+    sortResults(){
+
+    }
 
     handleSearchChange(e: React.ChangeEvent<HTMLInputElement>){
         this.setState({
@@ -86,8 +85,10 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
 
     handleSubmit(event: any){
         event.preventDefault();
-
-
+        this.sortResults()
+        this.setState({
+            searchStarted: true
+        })
     }
 
     render() {
@@ -101,7 +102,7 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                     <p>
                         Search For Profiles:
                     </p>
-                    <input type="profileSearch" value={this.state.searchField} id="profileSearchWord" onChange={this.handleSearchChange} />
+                    <input type="profileSearch" value={this.state.searchField} id="searchField" onChange={this.handleSearchChange} />
                     <p></p>
                     <button>Search</button>
                 </form>
@@ -109,11 +110,11 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
                     <Box id="cropped-purdue-img" />
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                        {this.props.profile != undefined && this.props.profile.length != 0
+                        {this.props.profile != undefined && this.props.profile.length != 0 && this.state.searchStarted
                             ?
-                            this.props.profile.map((users) => this.getUser(users.bio, users.userName, users.major, users.year))
+                            this.props.profile.map((users) => this.getUser(users.bio, users.userName, users.hide, users.email))
                             :
-                            <div>Profile Missing</div>
+                            <div>Type in a username or email to search for profiles.</div>
                         }
                     </Grid>
                 </Box>
