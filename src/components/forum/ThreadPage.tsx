@@ -37,6 +37,16 @@ interface ThreadPageStates {
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
+  componentDidMount() {
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
+    const postIsEmptyOrExpired = () => !this.props.post
+      || (this.props.post
+          && this.props.post.ID !== this.props.postID)
+    if (postIsEmptyOrExpired()) {
+      this.props.clearFirestoreState()
+    }
+  }
+
   getPost(post: Post) {
     return (
       <Grid

@@ -18,6 +18,7 @@ interface Post {
   numComments: number;
   timeSincePosted: string;
   href: string;
+  classID: string;
 }
 
 interface PostsLandingState {
@@ -44,6 +45,19 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
     super(props);
     this.state = {
     };
+  }
+  
+  componentDidMount() {    
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
+    const classInfoIsEmptyOrExpired = () => !this.props.classInfo 
+      || (this.props.classInfo 
+          && this.props.classInfo.classID !== this.props.classID)
+    const postsIsEmptyOrExpired = () => !this.props.posts 
+      || this.props.posts.length == 0 
+      || (this.props.posts.length > 0 && this.props.posts[0].classID !== this.props.classID)
+    if (classInfoIsEmptyOrExpired() || postsIsEmptyOrExpired()) {
+      this.props.clearFirestoreState()
+    }
   }
 
   getPost(post: Post) {
@@ -223,7 +237,8 @@ const mapStateToProps = (state: RootState) => {
         // just gonna wait until we've denormalized our DB.
         numComments: post.numComments,
         href: "/classes/" + post.classID + "/" + post.postId,
-        timeSincePosted: moment(post.postedDateTime.toDate()).fromNow()
+        timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
+        classID: post.classID,
       }
     })
     : undefined
