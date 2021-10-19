@@ -4,9 +4,10 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 import { AppDispatch, RootState } from '../../store'
 import { connect } from 'react-redux'
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase'
-import { compose } from 'redux'
+import { Action, compose, Dispatch } from 'redux'
 import { Redirect } from 'react-router-dom'
 import moment from 'moment';
+import { actionTypes } from 'redux-firestore';
 
 
 interface Post {
@@ -29,6 +30,7 @@ interface ThreadPageProps {
   postID: string;
   post?: Post;
   isDataFetched?: boolean;
+  clearFirestoreState?: () => void;
 }
 
 interface ThreadPageStates {
@@ -41,7 +43,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
     const postIsEmptyOrExpired = () => !this.props.post
       || (this.props.post
-          && this.props.post.ID !== this.props.postID)
+        && this.props.post.ID !== this.props.postID)
     if (postIsEmptyOrExpired()) {
       this.props.clearFirestoreState()
     }
@@ -163,6 +165,12 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore query?
+    clearFirestoreState: () => dispatch(
+      (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        reduxDispatch({ type: actionTypes.CLEAR_DATA })
+      }
+    )
   }
 }
 
