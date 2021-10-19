@@ -149,9 +149,10 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
               id="title" onChange={this.handleChangeYear} />
           </div>
 
-          <h1>Hide Your Profile</h1>
-          <input type="checkbox" checked={this.state.hide} placeholder=""
-            id="title" onChange={this.handleChangeHide} />
+          <h1>Hide Your Profile
+            <input type="checkbox" checked={this.state.hide} placeholder=""
+              id="title" onChange={this.handleChangeHide} style={{marginLeft: "15px"}} />
+          </h1>
 
           <div className="input-field">
             <button className="button">Save</button>
