@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { compose } from 'redux';
+import { Action, compose, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
 import { RootState, AppDispatch } from '../../store';
@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import moment from 'moment';
+import { actionTypes } from 'redux-firestore';
 
 interface Post {
   title: string;
@@ -35,7 +36,9 @@ interface PostsLandingProps {
     department: string,
     instructorName: string,
     instructorEmail: string,
+    classID: string;
   };
+  clearFirestoreState?: () => void;
 }
 
 
@@ -252,6 +255,7 @@ const mapStateToProps = (state: RootState) => {
         department: class_.department,
         instructorName: class_.instructorName,
         instructorEmail: class_.profEmail,
+        classID: class_.classID,
       }
     })[0]
     : undefined
@@ -266,6 +270,12 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore query?
+    clearFirestoreState: () => dispatch(
+      (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        reduxDispatch({ type: actionTypes.CLEAR_DATA })
+      }
+    )
   }
 }
 
