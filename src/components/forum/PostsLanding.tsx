@@ -1,212 +1,308 @@
 import React, { Component } from 'react';
-import { compose } from 'redux';
+import { Action, compose, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { firestoreConnect } from 'react-redux-firebase';
-import {RootState, AppDispatch} from '../../store';
-import { Redirect } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
+import { RootState, AppDispatch } from '../../store';
+import { Redirect, Link } from 'react-router-dom';
 import {
-    Box, Button, CircularProgress, Grid, Card, CardActionArea,
-    CardMedia, CardContent, Typography
-  } from '@mui/material'
-import { produceWithPatches } from 'immer';
+  Box, Button, CircularProgress, Grid, Card, CardActionArea,
+  CardContent, Typography
+} from '@mui/material'
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import moment from 'moment';
+import { actionTypes } from 'redux-firestore';
 
-interface PostsLandingState{
-
+interface Post {
+  title: string;
+  content: string;
+  poster: string;
+  numComments: number;
+  timeSincePosted: string;
+  href: string;
+  classID: string;
 }
 
-interface PostsLandingProps{
-    auth: any,
-    match: any,
-    post:{
-        id: string,
-        title: string,
-        content: string,
-        owner: string,
-        classID: string
-    }[],
-    classes:{
-      courseID: string,
-      department: string,
-      description: string,
-      instructorName: string,
-      profEmail: string,
-      title: string
-    }[]
+interface PostsLandingState {
 }
 
-const boldText = {
-    fontWeight: 'bold' as 'bold'
-  }
+interface PostsLandingProps {
+  auth?: FirebaseReducer.AuthState;
+  classID: string;
+  isDataFetched?: boolean;
+  posts?: Post[];
+  classInfo?: {
+    title: string
+    description: string,
+    department: string,
+    instructorName: string,
+    instructorEmail: string,
+    classID: string;
+  };
+  clearFirestoreState?: () => void;
+}
+
 
 class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
-    // Initialize state
-    constructor(props:PostsLandingProps) {
-        super(props);
-        this.state = {
-        };
-      }
-
-    getPost(id: string, title: string, content: string, owner: string, classID: string){
-        return(
-            <Grid
-            item
-            id="image-container"
-            xs={12}
-            md={3}
-            >
-            <Card>
-                <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                <label htmlFor="title">Post ID:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {id}
-                </Typography>
-                <label htmlFor="title">Title:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {title}
-                </Typography>
-                <label htmlFor="title">Content:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {content}
-                </Typography>
-                <label htmlFor="title">Post by:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {owner}
-                </Typography>
-                <label htmlFor="title">Class:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {classID}
-                </Typography>
-                </CardContent>
-            </Card>
-            </Grid>
-        )
+  // Initialize state
+  constructor(props: PostsLandingProps) {
+    super(props);
+    this.state = {
+    };
+  }
+  
+  componentDidMount() {    
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
+    const classInfoIsEmptyOrExpired = () => !this.props.classInfo 
+      || (this.props.classInfo 
+          && this.props.classInfo.classID !== this.props.classID)
+    const postsIsEmptyOrExpired = () => !this.props.posts 
+      || this.props.posts.length == 0 
+      || (this.props.posts.length > 0 && this.props.posts[0].classID !== this.props.classID)
+    if (classInfoIsEmptyOrExpired() || postsIsEmptyOrExpired()) {
+      this.props.clearFirestoreState()
     }
-
-    getClass(department: string, description: string, instructorName: string, profEmail: string, title: string){
-      return(
-        <Grid
-            item
-            id="image-container"
-            xs={12}
-            md={3}
-            >
-            <Card>
-                <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                <label htmlFor="title">Course:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {title}
-                </Typography>
-                <label htmlFor="title">Department:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {department}
-                </Typography>
-                <label htmlFor="title">Description:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {description}
-                </Typography>
-                <label htmlFor="title">Instructor:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {instructorName}
-                </Typography>
-                <label htmlFor="title">Class:</label>
-                <Typography noWrap variant="body2" component="div" marginBottom="10px">
-                    {profEmail}
-                </Typography>
-                </CardContent>
-            </Card>
-            </Grid>
-      )
-    }
-
-    isInClass = (post:any) =>{
-        if(this.props.post){
-            return post.classID === this.props.match.params.classID;
-        }
-        else{
-            return false;
-        }
-    }
-
-    isThisClass = (classes:any) =>{
-      if(this.props.classes){
-          return classes.courseID === this.props.match.params.classID;
-      }
-      else{
-          return false;
-      }
   }
 
-
-      render(){
-        const { auth } = this.props;
-        if (!this.props.auth.uid) return <Redirect to='/signin' />
-
-        return (
-            <div>
-                {console.log(this.props.post)}
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              width="100%"
-              pb="16px"
+  getPost(post: Post) {
+    return (
+      <Grid
+        item
+        xs={12}
+        md={12}
+      >
+        <Card sx={{ marginBottom: "16px" }}>
+          <CardActionArea disableRipple component={Link} to={post.href}>
+            <CardContent
+              sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}
             >
-              <h1 style={{ fontWeight: 300, marginLeft: "20%", marginTop:"3%" }}>{this.props.match.params.classID}</h1>
-              <Button
-                component={Link}
-                to={ "/create-post/" + this.props.match.params.classID}
-                variant="outlined"
-                sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-              > Create New Post
-              </Button>
-            </Box>
-            <Box sx={{ display: "flex", flexDirection: "row", justifyContent:"center", alignItems: "center", flexGrow: 1}}>
-                    <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                    {(this.props.post != undefined && this.props.post.length != 0)
-                    ?
-                    this.props.post.filter(this.isInClass).map((post) => this.getPost(post.id, post.title, post.content, post.owner, post.classID))
-                    :
-                    <div>No Post Here</div>
-                    }
-                    </Grid>
-
-                    {(this.props.classes != undefined)
-                    ?
-                    this.props.classes.filter(this.isThisClass).map((classes) => this.getClass(classes.department, classes.description, classes.instructorName, classes.profEmail,classes.title))
-                    :
-                    <div>No Class Here</div>
-                    }
-            </Box>
-            
-      </div>
+              <Box display="flex" flexDirection="row" pb="4px">
+                {/* Note: We split the following text into separate tags in case we want to 
+                  proceed with the idea of making username & time clickable` */}
+                <Typography
+                  variant="subtitle2"
+                  sx={{ color: "#787c7e", fontSize: "12px" }}
+                >Posted by&nbsp;
+                </Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ color: "#787c7e", fontSize: "12px" }}
+                >{post.poster}&nbsp;
+                </Typography>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ color: "#787c7e", fontSize: "12px" }}
+                >{post.timeSincePosted}
+                </Typography>
+              </Box>
+              <Typography
+                noWrap
+                variant="h6"
+                sx={{ fontSize: "18px", paddingBottom: "4px" }}
+              >
+                {post.title}
+              </Typography>
+              <Typography
+                noWrap
+                variant="body2"
+                sx={{ paddingBottom: "0px" }}
+              >
+                {post.content}
+              </Typography>
+              <Box pt="8px" position="relative">
+                <Button
+                  onClick={e => { e.stopPropagation(); e.preventDefault() }}
+                  sx={{ textTransform: "none", color: "#787c7e", fontWeight: "bold", fontSize: "12px" }}
+                >
+                  <ChatBubbleOutlineOutlinedIcon
+                    sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
+                  />
+                  {post.numComments} Comments
+                </Button>
+              </Box>
+            </CardContent>
+          </CardActionArea>
+        </Card>
+      </Grid >
     )
-      }
+  }
+
+  getClass(class_: PostsLandingProps["classInfo"]) {
+    return (
+      <Card>
+        <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
+          Class Info
+        </Box>
+        <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+          <label htmlFor="title">Course:</label>
+          <Typography noWrap variant="body2" component="div" marginBottom="8px">
+            {class_.title}
+          </Typography>
+          <label htmlFor="title">Department:</label>
+          <Typography noWrap variant="body2" component="div" marginBottom="8px">
+            {class_.department}
+          </Typography>
+          <label htmlFor="title">Description:</label>
+          <Typography noWrap variant="body2" component="div" marginBottom="8px">
+            {class_.description}
+          </Typography>
+          <label htmlFor="title">Instructor:</label>
+          <Typography noWrap variant="body2" component="div" marginBottom="8px">
+            {class_.instructorName}
+          </Typography>
+          <label htmlFor="title">Instructor Email:</label>
+          <Typography noWrap variant="body2" component="div">
+            {class_.instructorEmail}
+          </Typography>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  render() {
+    if (!this.props.auth.uid) return <Redirect to='/signin' />
+    if (!this.props.isDataFetched)
+      return (
+        <Box pt="32px"><CircularProgress /></Box>
+      )
+    if (this.props.isDataFetched && this.props.classInfo === undefined)
+      return (
+        <Box pt="32px">Class not found</Box>
+      )
+
+    return (
+      <Box
+        display="flex"
+        flexDirection="column"
+        width="100%"
+        maxWidth="1200px"
+        alignSelf="center"
+        p="2rem"
+      >
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+        >
+          <h1 style={{ fontWeight: 300 }}>
+            {this.props.classID}
+          </h1>
+          <Button
+            component={Link}
+            to={"/create-post/" + this.props.classID}
+            variant="outlined"
+            sx={{ color: "black", border: "1px solid black", height: "38px" }}
+          > New Post
+          </Button>
+        </Box>
+        <Grid
+          container
+          spacing={3}
+        >
+          <Grid item xs={12} md={9} >
+            {this.props.posts === undefined
+              && <CircularProgress />
+            }
+            {this.props.posts != undefined
+              && this.props.posts.length != 0
+              && this.props.posts.map((post) => this.getPost(post))
+            }
+            {this.props.posts != undefined
+              && this.props.posts.length == 0
+              && <Box pt="32px">There are no posts yet in this class</Box>
+            }
+          </Grid>
+          <Grid item xs={1} md={3}>
+            {this.props.classInfo === undefined
+              && <div>Class was not found</div>
+            }
+            {
+              // TODO: Fix this
+              this.props.classInfo !== undefined
+              && this.getClass(this.props.classInfo)
+            }
+          </Grid>
+        </Grid>
+      </Box>
+    )
+  }
 }
 
 const mapStateToProps = (state: RootState) => {
-    return {
-        post: state.firestore.ordered.posts,
-        classes: state.firestore.ordered.classes,
-        auth: state.firebase.auth
-    }
+  // Map posts objects to meet the UI's needs
+  var posts: PostsLandingProps["posts"] = state.firestore.ordered.posts
+    ? state.firestore.ordered.posts.map((post: any) => {
+      return {
+        title: post.title,
+        content: post.content,
+        poster: "raziqraif",    // TODO: Our post object only contains poster ID for now, and not 
+        // username. While we can do some hacks here to get username from ID, I'm 
+        // just gonna wait until we've denormalized our DB.
+        numComments: post.numComments,
+        href: "/classes/" + post.classID + "/" + post.postId,
+        timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
+        classID: post.classID,
+      }
+    })
+    : undefined
+  // Map class object to meet the UI's need
+  var classes = state.firestore.ordered.classes
+  var classInfo: PostsLandingProps["classInfo"] = (classes !== undefined && classes.length > 0)
+    ? classes.map((class_: any) => {
+      return {
+        title: class_.title,
+        description: class_.description,
+        department: class_.department,
+        instructorName: class_.instructorName,
+        instructorEmail: class_.profEmail,
+        classID: class_.classID,
+      }
+    })[0]
+    : undefined
+  // Return mapped redux states  
+  return {
+    auth: state.firebase.auth,
+    posts: posts,
+    classInfo: classInfo,
+    isDataFetched: posts !== undefined && classes !== undefined,
+  }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
-    return {
-    }
+  return {
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore query?
+    clearFirestoreState: () => dispatch(
+      (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        reduxDispatch({ type: actionTypes.CLEAR_DATA })
+      }
+    )
   }
+}
 
-  export default compose<React.ComponentType<PostsLandingProps>>(
-    connect(mapStateToProps, mapDispatchToProps),
-    firestoreConnect((props:PostsLandingProps) => {
-        if (typeof props.match.params != "undefined") {
-          return [
-            { 
-              collection: 'posts',
-            }
-          ]
-        } else {
-          return []
-        }
-      })
-    )(PostsLanding)
+export default compose<React.ComponentType<PostsLandingProps>>(
+  connect(mapStateToProps, mapDispatchToProps),
+  firestoreConnect((props: PostsLandingProps) => {
+    return [
+      {
+        collection: 'posts',
+        where: [
+          ["classID", "==", props.classID]
+        ],
+        orderBy: [
+          ["postedDateTime", "desc"],
+        ],
+        // We're not doing dynamic rendering in this page, but if we were to, we can manipulate
+        // the number of documents we are requesting by using props like the following (and to 
+        // manipulate the props, we can use reducers)
+        // limit: props.postsPerPage * props.pageNum + 1
+      },
+      {
+        collection: "classes",
+        where: [
+          ["courseID", "==", props.classID],
+        ],
+        limit: 1,
+      }
+    ]
+  })
+)(PostsLanding)

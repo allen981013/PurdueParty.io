@@ -22,6 +22,9 @@ import PostsLanding from './components/forum/PostsLanding';
 import EditProfile from './components/profile/EditProfile';
 import EditEvent from './components/events/EditEvent';
 import CreateClass from './components/forum/CreateClass';
+import EditSellListing from './components/marketplace/EditSellListing';
+import ThreadPage from './components/forum/ThreadPage'
+
 
 import SearchProfiles from './components/profile/SearchProfiles';
 
@@ -35,32 +38,39 @@ function App() {
           <Route exact path='/' component={Landing} />
           <Route path='/signin' component={SignIn} />
           <Route path='/createaccount' component={CreateAccount} />
-          <Route path = '/changePassword' component = {ChangePassword} />
-          <Route path = '/resetPassword' component = {ResetPassword} />
-          <Route path = '/resetPasswordRequest' component = {ResetPasswordRequest} />
+          <Route path='/changePassword' component={ChangePassword} />
+          <Route path='/resetPassword' component={ResetPassword} />
+          <Route path='/resetPasswordRequest' component={ResetPasswordRequest} />
           <Route exact path='/marketplace' component={MarketPlace} />
           <Route path='/marketplace/create-listing' component={createSellListing} />
           <Route path='/sellListing/:itemID' component={GenericSellListing} />
-          <Route path = '/events/create' component = {CreateEvent} />
-          <Route path='/events/:eventID' render={({match}) => {
+          <Route path='/events/create' component={CreateEvent} />
+          <Route path='/events/:eventID' render={({ match }) => {
             return <EventInfo eventID={match.params.eventID} />
-          }}/>
+          }} />
           <Route path='/events' component={EventsLanding} />
-          <Route exact path = '/clubs' component = {Clubs} />
-          <Route path = '/clubs/create-club' component = {CreateClub} />
-          <Route path = '/forum/create-post' component = {CreatePost} />
-          <Route path = '/profile' component={Profile} />
-          <Route path = '/edit-profile' component={EditProfile} />
-          <Route exact path = '/classes' component = {Classes} />
-          <Route path='/classes/:classID' component={PostsLanding} />
-          <Route path = '/classes/create-post' component = {CreatePost} />
-          <Route path = '/edit-event/:eventID' component = {EditEvent} />
+          <Route exact path='/clubs' component={Clubs} />
+          <Route path='/clubs/create-club' component={CreateClub} />
+          <Route path='/forum/create-post' component={CreatePost} />
+          <Route path='/profile' component={Profile} />
+          <Route path='/edit-profile' component={EditProfile} />
+          <Route exact path='/classes' component={Classes} />
+          <Route path='/classes/:classID/:postID' render={({ match }) => {
+            return <ThreadPage classID={match.params.classID} postID={match.params.postID} isDataFetched={false}/>
+          }} />
+          <Route path='/classes/:classID' render={({ match }) => {
+            return <PostsLanding classID={match.params.classID} />
+          }} />
+          <Route path='/classes/create-post' component={CreatePost} />
+          <Route path='/edit-event/:eventID' component={EditEvent} />
           <Route path='/create-class' component={CreateClass} />
           <Route path = '/create-post/:classID' component = {CreatePost} />
 
           <Route path = '/search-profiles' component = {SearchProfiles} />
 
 
+          <Route path='/create-post/:classID' component={CreatePost} />
+          <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
         <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px" }}>
