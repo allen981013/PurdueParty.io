@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { compose } from 'redux';
+import { Action, compose, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
+import { actionTypes } from 'redux-firestore';
 import { RootState, AppDispatch } from '../../store';
 import { Redirect, Link } from 'react-router-dom';
 import {
@@ -29,12 +30,14 @@ interface PostsLandingProps {
   isDataFetched?: boolean;
   posts?: Post[];
   classInfo?: {
-    title: string
-    description: string,
-    department: string,
-    instructorName: string,
-    instructorEmail: string,
+    title: string;
+    description: string;
+    department: string;
+    instructorName: string;
+    instructorEmail: string;
+    classID: string;
   };
+  clearFirestoreState?: () => void;
 }
 
 
@@ -44,6 +47,13 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
     super(props);
     this.state = {
     };
+  }
+
+  componentDidMount() {
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
+    if (!this.props.classInfo || (this.props.classInfo.classID !== this.props.classID)) {
+      this.props.clearFirestoreState()
+    }
   }
 
   getPost(post: Post) {
@@ -211,7 +221,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
   }
 }
 
-const mapStateToProps = (state: RootState) => {
+const mapStateToProps = (state: RootState, props: PostsLandingProps) => {
   // Map posts objects to meet the UI's needs
   var posts: PostsLandingProps["posts"] = state.firestore.ordered.posts
     ? state.firestore.ordered.posts.map((post: any) => {
@@ -237,6 +247,7 @@ const mapStateToProps = (state: RootState) => {
         department: class_.department,
         instructorName: class_.instructorName,
         instructorEmail: class_.profEmail,
+        classID: class_.courseID,
       }
     })[0]
     : undefined
@@ -245,12 +256,19 @@ const mapStateToProps = (state: RootState) => {
     auth: state.firebase.auth,
     posts: posts,
     classInfo: classInfo,
-    isDataFetched: posts !== undefined && classes !== undefined,
+    isDataFetched: posts !== undefined   
+      && classes !== undefined,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore query?
+    clearFirestoreState: () => dispatch(
+      (reduxDispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {   
+        reduxDispatch({ type: actionTypes.CLEAR_DATA })
+      }
+    )
   }
 }
 
