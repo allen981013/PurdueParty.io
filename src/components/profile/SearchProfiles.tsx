@@ -11,7 +11,12 @@ import { Box, Button, Grid, Card, CardContent, Typography } from '@mui/material'
 interface SearchProfilesState {
     searchField: string,
     searchStarted: boolean,
-
+    sortedProfiles: {
+        bio: string,
+        userName: string,
+        email: string,
+        hide: boolean
+    }[]
 }
 
 // Interface/type for Profile Props
@@ -33,7 +38,8 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
         super(props);
         this.state = {
             searchField: "",
-            searchStarted: false
+            searchStarted: false,
+            sortedProfiles: []
         }
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSearchChange = this.handleSearchChange.bind(this);
@@ -63,7 +69,7 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                             <Typography gutterBottom noWrap component="div" marginBottom="10px">
                                 {bio}
                             </Typography>
-                            
+
                         </CardContent>
                     </Card>
                 </Grid>
@@ -73,17 +79,51 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
     }
 
 
-    sortResults(){
+    sortResults() {
+        let profiles = [...this.props.profile]
 
+        var email1;
+        var username1;
+        var email2;
+        var username2;
+        var searchText;
+        for (let i = 0; i < profiles.length - 1; i++) {
+            for (let j = 0; j < profiles.length - i - 1; j++) {
+                email1 = profiles[j].email.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
+                username1 = profiles[j].userName.toLowerCase();
+                email2 = profiles[j + 1].email.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
+                username2 = profiles[j + 1].userName.toLowerCase();
+
+                if(this.state.searchField.indexOf('@') == -1){
+                    searchText = this.state.searchField.toLowerCase();
+                } else {
+                    searchText = this.state.searchField.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
+                }
+
+                if ((username2 === searchText || email2 === searchText)
+                 || ((username2.includes(searchText) || email2.includes(searchText)) && (!username1.includes(searchText) && !email1.includes(searchText)))
+                 || ((username2.includes(searchText) && email2.includes(searchText)) && (username1.includes(searchText) ? !email1.includes(searchText) : email1.includes(searchText)))) {
+                    let hold = profiles[j];
+                    profiles[j] = profiles[j + 1];
+                    profiles[j + 1] = hold;
+                }
+            }
+        }
+
+        this.setState({
+            sortedProfiles: profiles
+        })
     }
 
-    handleSearchChange(e: React.ChangeEvent<HTMLInputElement>){
+
+
+    handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
         this.setState({
             searchField: e.target.value
         })
     }
 
-    handleSubmit(event: any){
+    handleSubmit(event: any) {
         event.preventDefault();
         this.sortResults()
         this.setState({
@@ -112,7 +152,7 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
                         {this.props.profile != undefined && this.props.profile.length != 0 && this.state.searchStarted
                             ?
-                            this.props.profile.map((users) => this.getUser(users.bio, users.userName, users.hide, users.email))
+                            this.state.sortedProfiles.map((users) => this.getUser(users.bio, users.userName, users.hide, users.email))
                             :
                             <div>Type in a username or email to search for profiles.</div>
                         }
