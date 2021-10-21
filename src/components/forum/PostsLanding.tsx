@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { compose } from 'redux';
+import { Action, compose, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
 import { RootState, AppDispatch } from '../../store';
@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import moment from 'moment';
+import { actionTypes } from 'redux-firestore';
 
 interface Post {
   title: string;
@@ -18,6 +19,7 @@ interface Post {
   numComments: number;
   timeSincePosted: string;
   href: string;
+  classID: string;
 }
 
 interface PostsLandingState {
@@ -34,7 +36,9 @@ interface PostsLandingProps {
     department: string,
     instructorName: string,
     instructorEmail: string,
+    classID: string;
   };
+  clearFirestoreState?: () => void;
 }
 
 
@@ -44,6 +48,19 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
     super(props);
     this.state = {
     };
+  }
+  
+  componentDidMount() {    
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
+    const classInfoIsEmptyOrExpired = () => !this.props.classInfo 
+      || (this.props.classInfo 
+          && this.props.classInfo.classID !== this.props.classID)
+    const postsIsEmptyOrExpired = () => !this.props.posts 
+      || this.props.posts.length == 0 
+      || (this.props.posts.length > 0 && this.props.posts[0].classID !== this.props.classID)
+    if (classInfoIsEmptyOrExpired() || postsIsEmptyOrExpired()) {
+      this.props.clearFirestoreState()
+    }
   }
 
   getPost(post: Post) {
@@ -223,7 +240,8 @@ const mapStateToProps = (state: RootState) => {
         // just gonna wait until we've denormalized our DB.
         numComments: post.numComments,
         href: "/classes/" + post.classID + "/" + post.postId,
-        timeSincePosted: moment(post.postedDateTime.toDate()).fromNow()
+        timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
+        classID: post.classID,
       }
     })
     : undefined
@@ -237,6 +255,7 @@ const mapStateToProps = (state: RootState) => {
         department: class_.department,
         instructorName: class_.instructorName,
         instructorEmail: class_.profEmail,
+        classID: class_.classID,
       }
     })[0]
     : undefined
@@ -251,6 +270,12 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
+    // TODO: Is there a better way to reset isDataFetched without clearing firestore query?
+    clearFirestoreState: () => dispatch(
+      (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        reduxDispatch({ type: actionTypes.CLEAR_DATA })
+      }
+    )
   }
 }
 
