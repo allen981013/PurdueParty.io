@@ -4,7 +4,6 @@ import { addClub } from '../../store/actions/clubActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
-import { Timestamp } from '@firebase/firestore';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import {
@@ -23,6 +22,7 @@ interface ClubProps {
     title: string,
     description: string,
     image: string,
+    id: string,
   }[],
   auth: any,
   firebase: any
@@ -38,7 +38,7 @@ class Clubs extends Component<ClubProps, ClubState> {
   }
 
 
-  getClub(title:string, description:string, imageURL:string){
+  getClub(title:string, description:string, imageURL:string, id:string){
     return(
       <Grid 
           item
@@ -51,6 +51,9 @@ class Clubs extends Component<ClubProps, ClubState> {
           flexDirection="row"
           alignItems="center"
       >
+        <CardActionArea component={Link} to={"/clubs/" + id} 
+        sx={{display:"inline-flex"}}>
+
           <Card style={{width:"20%"}}>
           <CardMedia
                 component="img"
@@ -71,6 +74,8 @@ class Clubs extends Component<ClubProps, ClubState> {
               </Typography>
               </CardContent>
           </Card>
+
+          </CardActionArea>
       </Grid>
   )
   }
@@ -114,7 +119,7 @@ class Clubs extends Component<ClubProps, ClubState> {
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
                     {this.props.club != undefined && this.props.club.length != 0 
                     ?
-                    this.props.club.map((clubs) => this.getClub(clubs.title, clubs.description,clubs.image))
+                    this.props.club.map((clubs) => this.getClub(clubs.title, clubs.description,clubs.image, clubs.id))
                     :
                     <div>Club Missing</div>
                     }
