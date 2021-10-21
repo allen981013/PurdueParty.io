@@ -14,23 +14,18 @@ import {
 
 // Interface/type for Clubs State
 interface ClubState {
-  id: string,
-  owner: string,
-  editors: string[],
-  title: string
-  description: string,
-  contactInfo: string,
-  postedDateTime: Timestamp,
-  attendees: string[],
-  type: string,
-  event: string[]
+  imageURL: string
 }
 
 // Interface/type for Clubs Props
 interface ClubProps {
+  club:{
+    title: string,
+    description: string,
+    image: string,
+  }[],
   auth: any,
-  clubs: any,
-  addClub: (state: ClubState) => void
+  firebase: any
 }
 
 class Clubs extends Component<ClubProps, ClubState> {
@@ -38,51 +33,51 @@ class Clubs extends Component<ClubProps, ClubState> {
   constructor(props: ClubProps) {
     super(props);
     this.state = {
-      id: "",
-      owner: "",
-      editors: [""],
-      title: "",
-      description: "",
-      contactInfo: "",
-      postedDateTime: new Timestamp(0, 0),
-      attendees: [""],
-      type: "",
-      event: [""]
-    };
+      imageURL: ""
+    }
   }
 
-  // General purpose state updater during form modification
-  handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      title: e.target.value
-    })
-  }
 
-  // Handle user submit
-  handleSubmit = (event: any) => {
-    event.preventDefault();
-    this.props.addClub(this.state);
-
-    this.setState({
-      id: "",
-      owner: "",
-      editors: [""],
-      title: "",
-      description: "",
-      contactInfo: "",
-      postedDateTime: new Timestamp(0, 0),
-      attendees: [""],
-      type: "",
-      event: [""]
-    })
+  getClub(title:string, description:string, imageURL:string){
+    return(
+      <Grid 
+          item
+          id="image-container"
+          xs={12} 
+          md={12}
+          display="inline-flex"
+          list-style="none"
+          alignSelf="center"
+          flexDirection="row"
+          alignItems="center"
+      >
+          <Card style={{width:"20%"}}>
+          <CardMedia
+                component="img"
+                height="140"
+                image={imageURL}
+              />
+          </Card>
+          
+          <Card style={{width:"80%"}}>
+              <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+              <label htmlFor="title">Club Name: </label>
+              <Typography gutterBottom noWrap component="div" marginBottom="10px">
+                  {title}
+              </Typography>
+              <label htmlFor="title">Description: </label>
+              <Typography gutterBottom noWrap component="div" marginBottom="10px">
+                  {description}
+              </Typography>
+              </CardContent>
+          </Card>
+      </Grid>
+  )
   }
 
   render() {
-    const { auth } = this.props;
     if (!this.props.auth.uid) return <Redirect to='/signin' />
 
-    console.log(this.props.clubs);
-    console.log(this.state);
     return (
       <div>
 
@@ -113,6 +108,18 @@ class Clubs extends Component<ClubProps, ClubState> {
               </Button>
             </Box>
           </Box></div>
+
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
+                    <Box id="cropped-purdue-img" />
+                    <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
+                    {this.props.club != undefined && this.props.club.length != 0 
+                    ?
+                    this.props.club.map((clubs) => this.getClub(clubs.title, clubs.description,clubs.image))
+                    :
+                    <div>Club Missing</div>
+                    }
+                    </Grid>
+          </Box>
       </div>
     )
   }
@@ -120,7 +127,7 @@ class Clubs extends Component<ClubProps, ClubState> {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    clubs: state.firestore.ordered.clubs,
+    club: state.firestore.ordered.clubs,
     auth: state.firebase.auth
   }
 }
@@ -128,7 +135,6 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
-    addClub: (club: any) => dispatch(addClub(club))
   }
 }
 
