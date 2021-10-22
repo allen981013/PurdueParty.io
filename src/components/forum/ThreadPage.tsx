@@ -30,7 +30,7 @@ interface ThreadPageProps {
   postID: string;
   post?: Post;
   isDataFetched?: boolean;
-  clearFirestoreState?: () => void;
+  clearFetchedDocs?: () => void;
 }
 
 interface ThreadPageStates {
@@ -40,12 +40,11 @@ interface ThreadPageStates {
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   componentDidMount() {
-    // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
-    const postIsEmptyOrExpired = () => !this.props.post
+    const postIsEmptyOrObsolete = () => !this.props.post
       || (this.props.post
         && this.props.post.ID !== this.props.postID)
-    if (postIsEmptyOrExpired()) {
-      this.props.clearFirestoreState()
+    if (postIsEmptyOrObsolete()) {
+      this.props.clearFetchedDocs()
     }
   }
 
@@ -142,7 +141,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  const posts = state.firestore.ordered.posts;
+  const posts = state.firestore.ordered.threadPagePosts;
   return {
     auth: state.firebase.auth,
     post: (posts && posts.length > 0)
@@ -163,12 +162,20 @@ const mapStateToProps = (state: RootState) => {
   }
 }
 
-const mapDispatchToProps = (dispatch: AppDispatch) => {
+const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
+  console.log({ props })
   return {
-    // TODO: Is there a better way to reset isDataFetched without clearing firestore query?
-    clearFirestoreState: () => dispatch(
+    clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-        reduxDispatch({ type: actionTypes.CLEAR_DATA })
+        reduxDispatch({
+          type: actionTypes.LISTENER_RESPONSE,
+          meta: {
+            collection: 'posts',
+            doc: props.postID,
+            storeAs: "threadPagePosts"
+          },
+          payload: {}
+        })
       }
     )
   }
@@ -183,6 +190,7 @@ export default compose<React.ComponentType<ThreadPageProps>>(
       {
         collection: 'posts',
         doc: props.postID,
+        storeAs: 'threadPagePosts'
       }
     ]
   })
