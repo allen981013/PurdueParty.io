@@ -5,9 +5,10 @@ import { AppDispatch, RootState } from '../../store'
 import { connect } from 'react-redux'
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase'
 import { Action, compose, Dispatch } from 'redux'
-import { Redirect } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import moment from 'moment';
 import { actionTypes } from 'redux-firestore';
+import { EditOutlined } from '@mui/icons-material';
 
 
 interface Post {
@@ -31,13 +32,33 @@ interface ThreadPageProps {
   post?: Post;
   isDataFetched?: boolean;
   clearFirestoreState?: () => void;
+  deletePost : (state: Post) => void;
 }
 
 interface ThreadPageStates {
 
 }
 
+
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
+
+  handleDelete = (event: any) => {
+    event.preventDefault();
+    var result : boolean = window.confirm("Are you sure you want to delete your sell listing?");
+    if (result) {
+        //user said yes
+        this.props.deletePost(this.props.post);
+
+        this.setState({
+            
+        })
+        //Maybe use this.props.history.push()
+
+        window.alert("Post Deleted Successfully!");
+        return <Redirect to='/classes' />
+    }
+    // User said no, do nothing
+  }
 
   componentDidMount() {
     // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
@@ -60,6 +81,24 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
           <CardContent
             sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}
           >
+            <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+                pb="32px"
+              >
+                <h1 style={{ fontWeight: 300, margin: "0px" }}>{this.props.post.title}</h1>
+                <Button 
+                component={Link}
+                to={"/edit-post/" + this.props.postID}
+                variant="outlined"
+                sx={{ color: "black", height: "32px" }}
+                >
+                <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+                  Edit
+              </Button>
+            </Box>
             <Box display="flex" flexDirection="row" pb="4px">
               {/* Note: We split the following text into separate tags in case we want to 
                 proceed with the idea of making username & time clickable` */}
@@ -108,6 +147,22 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                   sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
                 />
                 {post.numComments} Comments
+              </Button>
+            </Box>
+            <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+                pb="32px"
+              >
+                <h1 style={{ fontWeight: 300, margin: "0px" }}></h1>
+                <Button 
+                onClick={this.handleDelete}
+                variant="outlined"
+                sx={{ color: "black", height: "32px" }}
+                >
+                  Delete
               </Button>
             </Box>
           </CardContent>

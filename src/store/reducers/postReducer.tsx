@@ -28,6 +28,18 @@ const postReducer = (state=initState, action: Action) => {
         case 'ADD_POST_ERR':
             console.log('error adding new post');
             return state;
+        case 'EDIT_POST_SUCCESS':
+            console.log('edited post');
+            return state;
+        case 'EDIT_POST_ERR':
+            console.log('error editing post');
+            return state;
+        case 'DELETE_POST_SUCCESS':
+            console.log('deleted post');
+            return state;
+        case 'DELETE_POST_ERR':
+            console.log('error deleting post');
+            return state;
         case 'ADD_CLASS_SUCCESS':
             console.log('added new class');
             return state;
