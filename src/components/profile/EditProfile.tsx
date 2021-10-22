@@ -7,6 +7,7 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom'
 import { Box } from '@mui/material';
+import { refreshUserData } from '../../store/actions/authActions'
 
 // Interface/type for EditProfile State
 interface EditProfileState {
@@ -15,7 +16,8 @@ interface EditProfileState {
   userName: string,
   major: string,
   year: string,
-  hide: boolean
+  hide: boolean,
+ 
 }
 
 // Interface/type for EditProfile Props
@@ -23,8 +25,9 @@ interface EditProfileProps {
   auth: any,
   firebase: any,
   uid: string,
-  deleteAccount: () => void;
-  editUser: (state: EditProfileState) => void
+  deleteAccount: () => void
+  refreshUserData: () => void
+  editUser: (state: EditProfileState) => void;
 }
 
 class EditProfile extends Component<EditProfileProps, EditProfileState> {
@@ -110,6 +113,11 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
         year: "",
         hide: false
       })
+
+      this.props.refreshUserData()
+      window.location.reload()
+      window.history.back()
+
     }
   }
 
@@ -176,7 +184,8 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
     editUser: (profile: any) => dispatch(editUser(profile)),
-    deleteAccount: () => dispatch(deleteAccount())
+    deleteAccount: () => dispatch(deleteAccount()),
+    refreshUserData: () => dispatch(refreshUserData())
   }
 }
 
