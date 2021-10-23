@@ -38,7 +38,7 @@ interface PostsLandingProps {
     instructorEmail: string,
     classID: string;
   };
-  clearFirestoreState?: () => void;
+  clearFetchedDocs?: () => void;
 }
 
 
@@ -52,14 +52,14 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
   
   componentDidMount() {    
     // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
-    const classInfoIsEmptyOrExpired = () => !this.props.classInfo 
+    const classInfoIsEmptyOrObsolete = () => !this.props.classInfo 
       || (this.props.classInfo 
           && this.props.classInfo.classID !== this.props.classID)
-    const postsIsEmptyOrExpired = () => !this.props.posts 
+    const postsIsEmptyOrObsolete = () => !this.props.posts 
       || this.props.posts.length == 0 
       || (this.props.posts.length > 0 && this.props.posts[0].classID !== this.props.classID)
-    if (classInfoIsEmptyOrExpired() || postsIsEmptyOrExpired()) {
-      this.props.clearFirestoreState()
+    if (classInfoIsEmptyOrObsolete() || postsIsEmptyOrObsolete()) {
+      this.props.clearFetchedDocs()
     }
   }
 
@@ -230,8 +230,8 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
 
 const mapStateToProps = (state: RootState) => {
   // Map posts objects to meet the UI's needs
-  var posts: PostsLandingProps["posts"] = state.firestore.ordered.posts
-    ? state.firestore.ordered.posts.map((post: any) => {
+  var posts: PostsLandingProps["posts"] = state.firestore.ordered.classPagePosts
+    ? state.firestore.ordered.classPagePosts.map((post: any) => {
       return {
         title: post.title,
         content: post.content,
@@ -246,7 +246,7 @@ const mapStateToProps = (state: RootState) => {
     })
     : undefined
   // Map class object to meet the UI's need
-  var classes = state.firestore.ordered.classes
+  var classes = state.firestore.ordered.classPageClasses
   var classInfo: PostsLandingProps["classInfo"] = (classes !== undefined && classes.length > 0)
     ? classes.map((class_: any) => {
       return {
@@ -268,12 +268,36 @@ const mapStateToProps = (state: RootState) => {
   }
 }
 
-const mapDispatchToProps = (dispatch: AppDispatch) => {
+const mapDispatchToProps = (dispatch: AppDispatch, props: PostsLandingProps) => {
   return {
-    // TODO: Is there a better way to reset isDataFetched without clearing firestore query?
-    clearFirestoreState: () => dispatch(
+    clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-        reduxDispatch({ type: actionTypes.CLEAR_DATA })
+        reduxDispatch({
+          type: actionTypes.LISTENER_RESPONSE,
+          meta: {
+            collection: 'posts',
+            where: [
+              ["classID", "==", props.classID]
+            ],
+            orderBy: [
+              ["postedDateTime", "desc"],
+            ],
+            storeAs: "classPagePosts"
+          },
+          payload: {}
+        })
+        reduxDispatch({
+          type: actionTypes.LISTENER_RESPONSE,
+          meta: {
+            collection: "classes",
+            where: [
+              ["courseID", "==", props.classID],
+            ],
+            storeAs: "classPageClasses",
+            limit: 1,
+          },
+          payload: {}
+        })
       }
     )
   }
@@ -286,21 +310,20 @@ export default compose<React.ComponentType<PostsLandingProps>>(
       {
         collection: 'posts',
         where: [
-          ["classID", "==", props.classID]
+          ["classID", "==", props.classID],
+          ["ancestorsIDs", "==", []]
         ],
         orderBy: [
           ["postedDateTime", "desc"],
         ],
-        // We're not doing dynamic rendering in this page, but if we were to, we can manipulate
-        // the number of documents we are requesting by using props like the following (and to 
-        // manipulate the props, we can use reducers)
-        // limit: props.postsPerPage * props.pageNum + 1
+        storeAs: "classPagePosts"
       },
       {
         collection: "classes",
         where: [
           ["courseID", "==", props.classID],
         ],
+        storeAs: "classPageClasses",
         limit: 1,
       }
     ]
