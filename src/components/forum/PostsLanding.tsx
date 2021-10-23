@@ -212,7 +212,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
               && <Box pt="32px">There are no posts yet in this class</Box>
             }
           </Grid>
-          <Grid item xs={1} md={3}>
+          <Grid item xs={12} md={3}>
             {this.props.classInfo === undefined
               && <div>Class was not found</div>
             }
