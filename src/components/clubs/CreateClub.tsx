@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, KeyboardEventHandler } from 'react';
 import { Dispatch, Action, compose } from 'redux';
 import { addClub } from '../../store/actions/clubActions'
 import { connect } from 'react-redux';
@@ -6,8 +6,8 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Timestamp } from '@firebase/firestore';
 import Dropzone from 'react-dropzone'
-
-
+import CreatableSelect from 'react-select/creatable';
+import { ActionMeta, OnChangeValue } from 'react-select';
 import FormControl from '@mui/material/FormControl';
 import { useTheme } from '@mui/material/styles';
 import InputLabel from '@mui/material/InputLabel';
@@ -26,10 +26,22 @@ const MenuProps = {
   },
 };
 
+
+interface Option {
+  readonly label: string;
+  readonly value: string;
+}
+
+const createOption = (label: string) => ({
+  label,
+  value: label.toLowerCase(),
+});
+
+
 // Interface/type for Clubs State
 interface ClubState {
   orgId: string,
-  owner: string,    
+  owner: string,
   editors: string[],
   title: string
   description: string,
@@ -38,14 +50,17 @@ interface ClubState {
   image: File,
   attendees: string[],
   category: string[],
-  event: string[]
+  events: string[],
+  readonly inputValue: string,
+  readonly value: readonly Option[],
 }
 
 // Interface/type for Clubs Props
 interface ClubProps {
-    auth: any,
-    clubs: any,
-    addClub: (state:ClubState) => void
+  auth: any,
+  clubs: any,
+  addClub: (state: ClubState) => void,
+  users: any,
 }
 
 class CreateClub extends Component<ClubProps, ClubState> {
@@ -54,50 +69,84 @@ class CreateClub extends Component<ClubProps, ClubState> {
     "Greek Life", "Social", "Technology", "Education/Professional", "Other"];
 
   // Initialize state
-  constructor(props:ClubProps) {
+  constructor(props: ClubProps) {
     super(props);
     this.state = {
       orgId: "",
       owner: "",
-      editors: [""],
+      editors: [],
       title: "",
       description: "",
       contactInfo: "",
-      postedDateTime: new Timestamp(0,0),
+      postedDateTime: new Timestamp(0, 0),
       image: null as any,
       attendees: [""],
       category: [],
-      event: [""]
+      events: [],
+      inputValue: "",
+      value: []
     };
   }
+
+  handleChange = (
+    value: OnChangeValue<Option, true>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    console.group('Value Changed');
+    console.log(value);
+    console.log(`action: ${actionMeta.action}`);
+    console.groupEnd();
+
+    this.setState({ value });
+  };
+
+  handleInputChange = (inputValue: string) => {
+    this.setState({ inputValue });
+  };
+
+  handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
+    const { inputValue, value } = this.state;
+    if (!inputValue) return;
+    switch (event.key) {
+      case 'Enter':
+      case 'Tab':
+
+        this.setState({
+          inputValue: '',
+          value: [...value, createOption(inputValue)],
+        });
+
+        event.preventDefault();
+    }
+  };
 
   // General purpose state updater during form modification
   handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      title : e.target.value
+      title: e.target.value
     })
   }
 
-    // General purpose state updater during form modification
-    handleChangeCategory = (e: any) => {
-      this.setState({
-        category : e.target.value
-      })
-    }
+  // General purpose state updater during form modification
+  handleChangeCategory = (e: any) => {
+    this.setState({
+      category: e.target.value
+    })
+  }
 
-      // General purpose state updater during form modification
+  // General purpose state updater during form modification
   handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      description : e.target.value
+      description: e.target.value
     })
   }
 
-    // General purpose state updater during form modification
-    handleChangeContactInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
-      this.setState({
-        contactInfo : e.target.value
-      })
-    }
+  // General purpose state updater during form modification
+  handleChangeContactInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      contactInfo: e.target.value
+    })
+  }
 
 
   // General purpose state updater during form modification
@@ -117,33 +166,57 @@ class CreateClub extends Component<ClubProps, ClubState> {
   }
 
   // Handle user submit
-  handleSubmit = (event:any) => {
+  handleSubmit = (event: any) => {
     event.preventDefault();
 
-     if (this.state.title.length < 3) {
-        // Pop modal for title length error
-        console.log("Minimum title length required: 3 characters");
-        window.alert("Minimum title length required: 3 characters")
+    if (this.state.title.length < 3) {
+      // Pop modal for title length error
+      console.log("Minimum title length required: 3 characters");
+      window.alert("Minimum title length required: 3 characters")
+    }
+    else if (this.state.description.length < 10) {
+      // Pop modal for description length error
+      console.log("Minimum description Length Required: 10 characters");
+      window.alert("Minimum description length required: 10 characters")
+    }
+    else if (!this.state.contactInfo.includes("@purdue.edu")
+      || this.state.contactInfo.split("@purdue.edu")[0].length < 1) { //
+      // Pop modal if category is not selected
+      window.alert("Please enter contact info that's a valid purdue email.");
+    }
+    else if (this.state.category.length < 1) { //
+      // Pop modal if category is not selected
+      window.alert("Please select at least 1 category relating to your club.");
+    }
+    else {
+      // Create temp array
+      var uid_arr = [this.props.auth.uid];
+
+      console.log("STATE NOW ON SUBMIT");
+      console.log(this.state);
+
+      if (this.state.value.length > 0) {
+        // For each editor in the editors arr
+        for (let i = 0; i < this.state.value.length; i++) {
+          // Get the user object from users array with matching username
+          var result = this.props.users.find(({ userName }: any) => userName === this.state.value[i].value);
+
+          // Check if result if valid
+          if (result == undefined) {
+            window.alert("There was an invalid username that was entered. Please enter a valid username.")
+            return;
+          }
+          else {
+            // Push the uid onto a new array
+            uid_arr.push(result.id);
+          }
+        }
       }
-      else if (this.state.description.length < 10) {
-        // Pop modal for description length error
-        console.log("Minimum description Length Required: 10 characters");
-        window.alert("Minimum description length required: 10 characters")
-      }
-      else if (!this.state.contactInfo.includes("@purdue.edu") 
-                || this.state.contactInfo.split("@purdue.edu")[0].length < 1) { //
-        // Pop modal if category is not selected
-        window.alert("Please enter contact info that's a valid purdue email.");
-      }
-      else if (this.state.category.length < 1) { //
-        // Pop modal if category is not selected
-        window.alert("Please select at least 1 category relating to your club.");
-      }
-      else {
-        console.log("I AM HERE!!!!!!!!!!!!!!!!!!!");
-        console.log(this.state);
+
+      // Change the editors state
+      this.setState({ editors: uid_arr }, () => {
         this.props.addClub(this.state);
-    
+
         window.alert("Club posted successfully!")
 
         this.setState({
@@ -153,39 +226,58 @@ class CreateClub extends Component<ClubProps, ClubState> {
           title: "",
           description: "",
           contactInfo: "",
-          postedDateTime: new Timestamp(0,0),
+          postedDateTime: new Timestamp(0, 0),
           attendees: [""],
           category: [],
-          event: [""]
+          events: [],
+          inputValue: "",
+          value: []
         })
-      }
+      })
+    }
   }
 
   render() {
     console.log(this.props.clubs);
     console.log(this.state);
+    console.log("USERS");
+    console.log(this.props.users);
+
     return (
       <div>
-        <form onSubmit = {this.handleSubmit}>
+        <form onSubmit={this.handleSubmit}>
           <h1>Enter Club name:</h1>
-          <div className = "input-field">
+          <div className="input-field">
             <label htmlFor="title">Club Title: </label>
-            <input type ="text" value={this.state.title} id="title" 
-                   placeholder="Ex: Computer Science Club" onChange={this.handleChangeTitle}/>
+            <input type="text" value={this.state.title} id="title"
+              placeholder="Ex: Computer Science Club" onChange={this.handleChangeTitle} />
           </div>
 
           <h1>Enter Club description:</h1>
-          <div className = "input-field">
+          <div className="input-field">
             <label htmlFor="description">Club description: </label>
-            <input type ="text" value={this.state.description} id="description"
-                   placeholder="Ex: We're a group of students who..."  onChange={this.handleChangeDescription}/>
+            <input type="text" value={this.state.description} id="description"
+              placeholder="Ex: We're a group of students who..." onChange={this.handleChangeDescription} />
           </div>
 
+          <h1>List username of club editors:</h1>
+          <CreatableSelect
+            inputValue={this.state.inputValue}
+            isClearable
+            isMulti
+            menuIsOpen={false}
+            onChange={this.handleChange}
+            onInputChange={this.handleInputChange}
+            onKeyDown={this.handleKeyDown}
+            placeholder="Enter usernames and hit enter/tab after each..."
+            value={this.state.value}
+          />
+
           <h1>Enter Club contact information:</h1>
-          <div className = "input-field">
+          <div className="input-field">
             <label htmlFor="contactInfo">Club Contact Information: </label>
-            <input type ="text" value={this.state.contactInfo} id="contactInfo"
-                   placeholder="Ex: Email: x@purdue.edu / Discord: discord.com/SlQj81LX" onChange={this.handleChangeContactInfo}/>
+            <input type="text" value={this.state.contactInfo} id="contactInfo"
+              placeholder="Ex: Email: x@purdue.edu / Discord: discord.com/SlQj81LX" onChange={this.handleChangeContactInfo} />
           </div>
 
           <h1>Enter Club category:</h1>
@@ -197,7 +289,7 @@ class CreateClub extends Component<ClubProps, ClubState> {
               multiple
               value={this.state.category}
               onChange={this.handleChangeCategory}
-              input={<OutlinedInput label="Category"/>}
+              input={<OutlinedInput label="Category" />}
               MenuProps={MenuProps}
             >
               {this.themes.map((item) => (
@@ -228,8 +320,8 @@ class CreateClub extends Component<ClubProps, ClubState> {
             )}
           </Dropzone>
 
-          <div className ="input-field">
-            <button className = "button">Create New Club</button>
+          <div className="input-field">
+            <button className="button">Create New Club</button>
           </div>
         </form>
       </div>
@@ -239,20 +331,29 @@ class CreateClub extends Component<ClubProps, ClubState> {
 
 const mapStateToProps = (state: RootState) => {
   return {
+    auth: state.firebase.auth,
     clubs: state.firestore.ordered.clubs,
+    users: state.firestore.ordered.users,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
-    addClub: (club:any) => dispatch(addClub(club))
+    addClub: (club: any) => dispatch(addClub(club))
   }
 }
 
 export default compose<React.ComponentType<ClubProps>>(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect([
-    { collection: 'clubs'}
-  ])
+  firestoreConnect(() => {
+    return [
+      {
+        collection: 'clubs',
+      },
+      {
+        collection: 'users'
+      }
+    ]
+  })
 )(CreateClub)
