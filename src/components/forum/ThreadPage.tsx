@@ -11,11 +11,11 @@ import { actionTypes } from 'redux-firestore';
 import { deepOrange } from '@mui/material/colors';
 
 
-interface Post {
+interface ThreadElement { // Thread element refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
   ID: string;
   ancestorsIDs: [];
-  replies: Post[];
+  replies: ThreadElement[];
   // Data to be displayed
   title: string;
   content: string;
@@ -23,13 +23,14 @@ interface Post {
   posterImgUrl: string;
   numComments: number;
   timeSincePosted: string;
+  isDeleted: boolean;
 }
 
 interface ThreadPageProps {
   auth?: FirebaseReducer.AuthState;
   classID: string;
   postID: string;
-  post?: Post;
+  post?: ThreadElement;
   isDataFetched?: boolean;
   clearFetchedDocs?: () => void;
 }
@@ -48,7 +49,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     }
   }
 
-  getPost = (post: Post) => {
+  getPost = (post: ThreadElement) => {
     return (
       <Box
         sx={{
@@ -112,7 +113,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     )
   }
 
-  getReply = (reply: Post) => {
+  getReply = (reply: ThreadElement) => {
     return (
       <Box display="flex" flexDirection="row" pt="16px">
         <Box display="flex" flexDirection="column" p="0px 8px 0px 0px">
@@ -203,53 +204,77 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 }
 
 const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
-  var posts = state.firestore.ordered.threadPagePosts
+  // TODO: Move all these logic into a redux action
+  var posts = state.firestore.ordered.threadPagePosts // posts array contains only 1 object
   var replies = state.firestore.ordered.threadPageReplies
-  var threadItems: Post[] = posts && replies ? posts.concat(replies) : undefined  
-  var post: Post = undefined
+  var threadElements: ThreadElement[] = posts && replies ? posts.concat(replies) : undefined
+  var post: ThreadElement = undefined
   // Build post object
-  if (threadItems && threadItems.length > 0) {
+  if (threadElements && threadElements.length > 0) {
     // Map all thread items to the expected schema
-    threadItems = threadItems.map((threadItem: any): Post => {
+    threadElements = threadElements.map((threadEl: any): ThreadElement => {
       return {
-        ID: threadItem.id,
-        ancestorsIDs: threadItem.ancestorsIDs,
-        title: threadItem.title,
-        content: threadItem.content,
+        ID: threadEl.id,
+        ancestorsIDs: threadEl.ancestorsIDs,
+        title: threadEl.title,
+        content: threadEl.content,
         poster: "raziqraif",    // TODO: Our post object only contains poster ID for now, and not 
         // username. While we can do some hacks here to get username from ID, I'm 
         // just gonna wait until we've denormalized our DB.
         posterImgUrl: "",
         replies: [],
-        numComments: threadItem.numComments,
-        timeSincePosted: moment(threadItem.postedDateTime.toDate()).fromNow()
+        numComments: threadEl.numComments,
+        timeSincePosted: moment(threadEl.postedDateTime.toDate()).fromNow(),
+        isDeleted: false,
       }
     })
-    // Create dict of all thread items
-    var idToThreadItemDict = Object.assign({},
-      ...threadItems.map(threadItem => (
-        { [threadItem.ID]: threadItem }
+    // Get the set of all ancestor IDs
+    var allAncestorsIDs = threadElements.reduce((prevVal, curVal) => {
+      curVal.ancestorsIDs.forEach(id => prevVal.add(id))
+      return prevVal
+    }, new Set<string>())
+    // Create dict of all IDs to thread items 
+    // - create entries for all ancestors (assume they all have been deleted)
+    var idToThreadElementDict: {[key: string]: ThreadElement} = {}
+    allAncestorsIDs.forEach(id => {idToThreadElementDict[id] = {
+      ID: id,
+      ancestorsIDs: [],
+      title: "",
+      content: "",
+      poster: "",
+      posterImgUrl: "",
+      replies: [],
+      numComments: 0,
+      timeSincePosted: "",
+      isDeleted: true,
+    }})
+    // - create/replace entries for fetched thread items
+    idToThreadElementDict = Object.assign(idToThreadElementDict,
+      ...threadElements.map(threadEl => (
+        { [threadEl.ID]: threadEl }
       ))
     )
-    // TODO: Cater to deleted parent comments
-    // let combinedAncestorsIDs = 
-    // var idToThreadItemDict = Object.assign({},
-    //   ...threadItems.map(threadItem => ({ [threadItem.ID]: threadItem }))
-    // )
-    // Populate the replies field of all thread items
-    threadItems.forEach(threadItem => {
-      let ancestorsNum = threadItem.ancestorsIDs.length
-      if (ancestorsNum == 0) return
-      let parentThreadItem: Post = idToThreadItemDict[threadItem.ancestorsIDs[ancestorsNum - 1]]
-      parentThreadItem.replies.push(threadItem)
+    // Transform thread structure from flat to the correct hierarchical structure
+    threadElements.forEach(threadEl => {
+      let ancestorIdx = threadEl.ancestorsIDs.length - 1
+      if (ancestorIdx == -1) return
+      let ancestor: ThreadElement = idToThreadElementDict[threadEl.ancestorsIDs[ancestorIdx]]
+      ancestor.replies.push(threadEl)
+      // Cater to the situation where the current ancestor was deleted
+      while (ancestor.isDeleted) {
+        // NOTE: It is assumed that the top-most ancestor (the main post) is not deleted
+        let olderAncestor = idToThreadElementDict[threadEl.ancestorsIDs[--ancestorIdx]]
+        olderAncestor.replies.push(ancestor)
+        ancestor = olderAncestor
+      }
     })
-    post = idToThreadItemDict[props.postID]
+    post = idToThreadElementDict[props.postID]
   }
   // Return processed data
   return {
     auth: state.firebase.auth,
     post: post,
-    isDataFetched: threadItems != undefined,
+    isDataFetched: threadElements != undefined,
   }
 }
 
