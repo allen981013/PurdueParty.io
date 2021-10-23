@@ -310,7 +310,8 @@ export default compose<React.ComponentType<PostsLandingProps>>(
       {
         collection: 'posts',
         where: [
-          ["classID", "==", props.classID]
+          ["classID", "==", props.classID],
+          ["ancestorsIDs", "==", []]
         ],
         orderBy: [
           ["postedDateTime", "desc"],
