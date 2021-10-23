@@ -9,6 +9,8 @@ import moment from 'moment'
 export interface EventInfoStatesRedux {
   event: {
     title: string,
+    ownerID: string,
+    editors: string[],
     startTime: string,
     duration: string,
     endTime: string,
@@ -30,6 +32,8 @@ export interface EventInfoStatesRedux {
 const initState: EventInfoStatesRedux = {
   event: {
     title: "My Event",
+    ownerID: "",
+    editors: [],
     startTime: new Date().toLocaleString("en-US"),
     endTime: new Date().toLocaleString("en-US"),
     duration: "",
@@ -96,6 +100,8 @@ export const fetchEventInfo = (eventID: string) => {
         }
         // Map event info
         var title = doc.data().title
+        var ownerID = doc.data().ownerID
+        var editors = doc.data().editors
         var startTime = doc.data().startTime.toDate().toLocaleString("en-US")
         var endTime = doc.data().endTime.toDate().toLocaleString("en-US")
         var location = doc.data().location
@@ -133,6 +139,8 @@ export const fetchEventInfo = (eventID: string) => {
             const payload = {
               event: {
                 title: title,
+                ownerID: ownerID,
+                editors: editors,
                 startTime: startTime,
                 endTime: endTime,
                 duration: duration,

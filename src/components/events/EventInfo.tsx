@@ -1,6 +1,6 @@
 import { Box, Button, Grid, Chip, CircularProgress } from '@mui/material'
 import { Link } from 'react-router-dom'
-import { EditOutlined } from '@mui/icons-material'
+import { EditOutlined, DeleteOutlined } from '@mui/icons-material'
 import React from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom';
@@ -109,8 +109,11 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 width="100%"
                 pb="32px"
               >
+                
                 <h1 style={{ fontWeight: 300, margin: "0px" }}>{this.props.event.title}</h1>
-                <Button 
+
+
+                {this.props.event.editors.includes(this.props.auth.uid) && <Button 
                 component={Link}
                 to={"/edit-event/" + this.props.eventID}
                 variant="outlined"
@@ -118,7 +121,22 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 >
                   <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
                   Edit
-                </Button>
+                </Button>}
+
+                  {console.log("CONSOLE LOG HERE")}
+                  {console.log(this.props.event.ownerID)}
+                  {console.log(this.props.auth.uid)}
+
+                {this.props.event.ownerID === this.props.auth.uid && <Button 
+                component={Link}
+                to={"/delete-event/" + this.props.eventID}
+                variant="outlined"
+                sx={{ color: "black", height: "32px" }}
+                >
+                  <DeleteOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+                  Delete
+                </Button>}
+
               </Box>
               <Box
                 display="flex"
