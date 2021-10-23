@@ -14,10 +14,10 @@ interface CreateAccountState {
   password: string,
   confirmpassword: string,
   bio: string,
+  canEditClubs: string[],
   profilePic: File,
   redirect: boolean,
   errormsg: string,
-  
 }
 
 // Interface/type for create account Props
@@ -39,6 +39,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
       password: "",
       confirmpassword: "",
       bio: "",
+      canEditClubs: [],
       profilePic: null as any,
       redirect: false,
       errormsg: ""
@@ -151,6 +152,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
         password: "",
         confirmpassword: "",
         bio: "",
+        canEditClubs: [],
         profilePic: null as any,
         redirect: false
       })

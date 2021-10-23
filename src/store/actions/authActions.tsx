@@ -250,7 +250,8 @@ export const signUp = (newUser: any) => {
             return db.collection('users').doc(newUserRef.user.uid).set({
                 userName: newUser.username,
                 bio: newUser.bio,
-                email: newUser.email
+                email: newUser.email,
+                canEditClubs: []
                 // profilePicURL: imageURL
             })
         }).then(() => {
