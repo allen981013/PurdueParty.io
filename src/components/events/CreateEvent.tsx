@@ -6,7 +6,7 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom';
 import { Timestamp } from '@firebase/firestore';
-import { IconButton, Grid, Box } from '@mui/material';
+import { IconButton, Grid, Box, CircularProgress } from '@mui/material';
 import ReactModal from 'react-modal';
 import Dropzone from 'react-dropzone';
 
@@ -65,7 +65,13 @@ interface EventState {
 // Interface/type for Events Props
 interface EventProps {
   auth: any,
+  users: any,
   events: any,
+  clubs: any,
+
+  createWasSuccessful: boolean,
+  isDataFetched: boolean
+
   addEvent: (state: EventState) => void
 }
 
@@ -83,7 +89,7 @@ class CreateEvent extends Component<EventProps, EventState> {
       id: "",
       ownerID: "",
       editors: [],
-      orgID: "",
+      orgID: "None",
       title: "",
       description: "",
       location: "",
@@ -266,10 +272,78 @@ class CreateEvent extends Component<EventProps, EventState> {
     )
   }
 
+  handleClubSelect = (event: any) => {
+    this.setState({
+      orgID: event.target.value
+    })
+  }
 
   render() {
-    //const {auth} = this.props;
-    //if(!auth.uid) return <Redirect to= '/'/>
+    // Check if user has access to this page
+    const { auth } = this.props;
+    if (!auth.uid) return <Redirect to='/signin' />
+
+    // Check if props has loaded correctly
+    if (!(this.props.users && this.props.clubs)) {
+     return(<CircularProgress sx={{alignSelf: "center", padding: "164px"}}></CircularProgress>)
+    }
+
+    // Set variables we need
+    var curUser = this.props.users[0];
+    var clubs = [];
+
+    // Check if vars we need are defined again
+    if (curUser != null) {
+      if (curUser.canEditClubs != undefined) {
+
+        // If the length of the user's canEditClubsList
+        if (curUser.canEditClubs.length > 0) {
+          // For each clubID in the canEditClubs arr
+          for (let i = 0; i < curUser.canEditClubs.length; i++) {
+            // Get the user object from users array with matching username
+            var result = this.props.clubs.find(({ id }: any) => id === curUser.canEditClubs[i]);
+
+            // Check if result if valid
+            if (result == undefined) {
+              console.log("There was an error. A club id that was added was invalid")
+              return;
+            }
+            else {
+              // Push the uid onto a new array
+              clubs.push(result);
+            }
+          }
+        }
+      }
+    }
+
+    var renderEdit: boolean = false;
+    if (clubs.length > 0) {
+      renderEdit = true;
+    }
+
+    var editCode: any = <div></div>;
+    if (renderEdit) {
+      editCode = <div>
+        <h1>Enter the associated club for this event</h1>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Clubs</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={this.state.orgID}
+            label="selectedOrg"
+            onChange={this.handleClubSelect}
+          >
+
+            {clubs.map((club) => (
+              <MenuItem value={club.id}>{club.title}</MenuItem>
+            ))}
+            <MenuItem value={"None"}>None</MenuItem>
+          </Select>
+        </FormControl></div>
+    }
+
     return (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
         <form onSubmit={this.handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -294,7 +368,7 @@ class CreateEvent extends Component<EventProps, EventState> {
               onChange={this.handleChangeDateTime}
               isValidDate={(current) => current.isAfter(moment().subtract(1, 'day'))}
               className="custom-datetime-picker"
-              renderInput={(props, openCalendar, closeCalendar) => <input {...props} readOnly/>}
+              renderInput={(props, openCalendar, closeCalendar) => <input {...props} readOnly />}
             />
           </Box>
           <h1>Enter event ending date and time:</h1>
@@ -304,7 +378,7 @@ class CreateEvent extends Component<EventProps, EventState> {
               onChange={this.handleChangeDateTimeEnd}
               isValidDate={(current) => current.isAfter(moment().subtract(1, 'day'))}
               className="custom-datetime-picker"
-              renderInput={(props, openCalendar, closeCalendar) => <input {...props} readOnly/>}
+              renderInput={(props, openCalendar, closeCalendar) => <input {...props} readOnly />}
             />
           </Box>
 
@@ -315,13 +389,7 @@ class CreateEvent extends Component<EventProps, EventState> {
               onChange={this.handleChangeLocation} />
           </div>
 
-          {/* 
-          <h1>Enter associated organization:</h1>
-          <div className = "input-field">
-            <label htmlFor="type">Organization: </label>
-            <input type ="text" value={this.state.orgID} placeholder="Who's hosting the party?" id="type" onChange={this.handleChangeOrgID}/>
-          </div> */}
-
+          {editCode}
 
           <h1>Enter event theme:</h1>
           {this.getMultipleSelect(this.state.themes, this.themes, this.handleChangeThemes, "Themes")}
@@ -351,7 +419,6 @@ class CreateEvent extends Component<EventProps, EventState> {
 
           <h1>Enter event perks:</h1>
           {this.getMultipleSelect(this.state.perks, this.perks, this.handleChangePerks, "Perks")}
-
 
           <Dropzone
             accept="image/jpeg, image/jpg, image/png"
@@ -383,8 +450,10 @@ class CreateEvent extends Component<EventProps, EventState> {
 const mapStateToProps = (state: any) => {
   return {
     auth: state.firebase.auth,
-
-    events: state.firestore.ordered.events
+    createWasSuccessful: state.event.createWasSuccessful,
+    users: state.firestore.ordered.users,
+    events: state.firestore.ordered.events,
+    clubs: state.firestore.ordered.clubs
   }
 }
 
@@ -397,7 +466,22 @@ const mapDispatchToProps = (dispatch: (action: any) => void) => {
 
 export default compose<React.ComponentType<EventProps>>(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect([
-    { collection: 'events' }
-  ])
-)(CreateEvent)
+  firestoreConnect((props: EventProps) => {
+    if (props.auth != undefined) {
+      return [
+        {
+          collection: 'users',
+          doc: props.auth.uid
+        },
+        {
+          collection: 'events'
+        },
+        {
+          collection: 'clubs'
+        }
+      ]
+    } else {
+      return []
+    }
+  })
+)(CreateEvent) 
