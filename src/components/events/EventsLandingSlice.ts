@@ -3,6 +3,7 @@ import { Action, Dispatch } from 'redux'
 import { Timestamp } from 'firebase/firestore'
 import { RootState } from '../../store'
 import { EventsFetchParameter } from './EventsLanding'
+import HOST_OPTIONS  from './EventsLanding'
 
 // type for states returned by reducer
 export interface EventsLandingStatesRedux {
@@ -63,6 +64,10 @@ export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
     if (fetchParameter.startTimeUpperBound) {
       queryEventsPromise = queryEventsPromise
         .where("startTime", "<", Timestamp.fromDate(fetchParameter.startTimeUpperBound))
+    }
+    if (fetchParameter.host == "ME") {
+      console.log("LOOKING FOR MY EVENTS RN")
+      queryEventsPromise = queryEventsPromise.where("editors", "array-contains", getState().firebase.auth.uid)
     }
     queryEventsPromise = queryEventsPromise
       .orderBy("startTime", "asc")
