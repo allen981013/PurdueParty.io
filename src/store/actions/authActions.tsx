@@ -90,7 +90,7 @@ const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, f
         });
 }
 
-const deleteFromStorage = (deletePath: any) => {
+export const deleteFromStorage = (deletePath: any) => {
     firebaseStorageRef.child(deletePath + '.png').getDownloadURL().then(() => {
         firebaseStorageRef.child(deletePath + '.png')
             .delete().then(() => {

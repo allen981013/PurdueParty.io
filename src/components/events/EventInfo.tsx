@@ -7,27 +7,32 @@ import { Redirect } from 'react-router-dom';
 import { firebaseStorageRef } from '../..'
 import { AppDispatch, RootState } from '../../store'
 import { EventInfoStatesRedux, fetchEventInfo } from './EventInfoSlice'
-
+import { deleteEvent } from '../../store/actions/eventActions'
 
 interface EventInfoProps {
   eventID: string;
   // The following props will be passed by redux
-  hasInfoFetched: boolean;
-  eventNotFound: boolean;
-  event: EventInfoStatesRedux["event"];
-  host: EventInfoStatesRedux["host"];
+  hasInfoFetched: boolean,
+  eventNotFound: boolean,
+  event: EventInfoStatesRedux["event"],
+  host: EventInfoStatesRedux["host"],
   auth: any,
-  fetchEventInfo: (eventID: string) => void;
+  fetchEventInfo: (eventID: string) => void,
+  deleteEvent: (eventID: string) => void,
 }
 
 interface EventInfoStates {
-
+  deleteEventError: boolean,
 }
 
 class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
 
   constructor(props: EventInfoProps) {
     super(props)
+    
+    this.state = {
+      deleteEventError: true
+    };
   }
 
   getChips(texts: string[]) {
@@ -47,6 +52,26 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
     )
   }
 
+  handleDelete = (event: any) => {
+    event.preventDefault();
+    var result: boolean = window.confirm("Are you sure you want to delete your event?");
+    if (result) {
+      console.log("DELETING EVENT")
+
+      //user said yes
+      this.props.deleteEvent(this.props.eventID);
+
+      if (!this.state.deleteEventError) {
+        // Alert the user
+        window.alert("Listing Deleted Successfully!");
+
+        // Redirect them to another page
+        //window.location.href = "./";
+      }
+    }
+    // User said no, do nothing
+  }
+
   componentDidMount() {
     this.props.fetchEventInfo(this.props.eventID)
   }
@@ -54,7 +79,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
   render() {
     const { auth } = this.props;
     if (!auth.uid) return <Redirect to='/signin' />
-    
+
     if (!this.props.hasInfoFetched)
       return (
         <Box pt="32px"><CircularProgress /></Box>
@@ -77,16 +102,16 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
           container
           id="top-page-container"
           spacing={2}
-          sx={{ minWidth: {md:"900px"} }}
+          sx={{ minWidth: { md: "900px" } }}
         >
           <Grid
             item
             id="image-container"
             xs={12}
             md={6}
-            // sx={{minWidth:"450px"}}
+          // sx={{minWidth:"450px"}}
           >
-            <img width="100%" height="100%" src={this.props.event.imageUrl}/>
+            <img width="100%" height="100%" src={this.props.event.imageUrl} />
           </Grid>
           <Grid
             item
@@ -109,33 +134,39 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 width="100%"
                 pb="32px"
               >
-                
+
                 <h1 style={{ fontWeight: 300, margin: "0px" }}>{this.props.event.title}</h1>
 
 
-                {this.props.event.editors.includes(this.props.auth.uid) && <Button 
-                component={Link}
-                to={"/edit-event/" + this.props.eventID}
-                variant="outlined"
-                sx={{ color: "black", height: "32px" }}
+                {this.props.event.editors.includes(this.props.auth.uid) && <Button
+                  component={Link}
+                  to={"/edit-event/" + this.props.eventID}
+                  variant="outlined"
+                  sx={{ color: "black", height: "32px" }}
                 >
                   <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-                  Edit
+                  Edit Event
                 </Button>}
 
-                  {console.log("CONSOLE LOG HERE")}
-                  {console.log(this.props.event.ownerID)}
-                  {console.log(this.props.auth.uid)}
+                {console.log("CONSOLE LOG HERE")}
+                {console.log(this.props.event.ownerID)}
+                {console.log(this.props.auth.uid)}
 
-                {this.props.event.ownerID === this.props.auth.uid && <Button 
-                component={Link}
-                to={"/delete-event/" + this.props.eventID}
-                variant="outlined"
-                sx={{ color: "black", height: "32px" }}
-                >
-                  <DeleteOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-                  Delete
-                </Button>}
+                {this.props.event.ownerID === this.props.auth.uid &&
+                  <form onSubmit={this.handleDelete}>
+                    <div>
+                      <Button
+                        variant="outlined"
+                        sx={{ color: "black", height: "32px" }}
+                        onClick={this.handleDelete}
+                      >
+                        <DeleteOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+                        Delete Event
+                      </Button>
+                    </div>
+                  </form>}
+
+                  {!this.state.deleteEventError ? <Redirect to='/events'/> : <div></div>}
 
               </Box>
               <Box
@@ -211,7 +242,8 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
-    fetchEventInfo: (eventID: string) => dispatch(fetchEventInfo(eventID))
+    fetchEventInfo: (eventID: string) => dispatch(fetchEventInfo(eventID)),
+    deleteEvent: (eventID: string) => dispatch(deleteEvent(eventID))
   }
 }
 

@@ -23,6 +23,18 @@ const eventReducer = (state=initState, action: Action) => {
         case 'ADD_EVENT_ERR':
             console.log('error adding new event');
             return state;
+        case 'DELETE_EVENT_SUCCESS':
+            console.log("deleted event");
+            return {
+                ...state,
+                deleteEventError: false,
+              }
+        case 'DELETE_EVENT_ERROR':
+            console.log("error during delete event");
+            return {
+                ...state,
+                deleteEventError: true,
+              }
         default :
             return state;
     }
