@@ -11,12 +11,24 @@ import { Box, Button, Grid, Card, CardContent, Typography } from '@mui/material'
 interface SearchProfilesState {
     searchField: string,
     searchStarted: boolean,
+    profileSelected: boolean,
     sortedProfiles: {
         bio: string,
         userName: string,
         email: string,
-        hide: boolean
-    }[]
+        hide: boolean,
+        year: number,
+        major: string
+    }[],
+    displayProfile: {
+        bio: string,
+        userName: string,
+        email: string,
+        hide: boolean,
+        year: number,
+        major: string
+    }
+
 }
 
 // Interface/type for Profile Props
@@ -25,7 +37,9 @@ interface SearchProfilesProps {
         bio: string,
         userName: string,
         email: string,
-        hide: boolean
+        hide: boolean,
+        year: number,
+        major: string
     }[],
     currentUser: string,
     auth: any,
@@ -39,15 +53,51 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
         this.state = {
             searchField: "",
             searchStarted: false,
+            profileSelected: false,
+            displayProfile: {
+                bio: "null",
+                userName: "null",
+                email: "null",
+                hide: false,
+                year: 0,
+                major: "null"
+            },
             sortedProfiles: []
+
         }
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSearchChange = this.handleSearchChange.bind(this);
     }
 
-    getUser(bio: string, userName: string, hide: boolean, email: string) {
+    handleProfileClick(bio: string, userName: string, email: string, hide: boolean, year: number, major: string) {
+        //event.preventDefault();
+        // this.setState({
+        //     profileSelected: true
+        // })
 
-        if (!hide) {
+        let profile = {
+            bio: bio,
+            userName: userName,
+            email: email,
+            hide: hide,
+            year: year,
+            major: major
+        }
+
+        this.setState({
+            displayProfile: profile,
+            profileSelected: true
+        })
+
+
+
+    }
+
+    displayUserProfile(bio: string, userName: string, major: string, year: number) {
+        if (userName === 'null' && year == 0) {
+            return (<div></div>)
+        }
+        else {
             return (
                 <Grid
                     item
@@ -61,18 +111,43 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                             <Typography gutterBottom noWrap component="div" marginBottom="10px">
                                 {userName}
                             </Typography>
-                            <label htmlFor="title">Email: </label>
-                            <Typography gutterBottom noWrap component="div" marginBottom="10px">
-                                {email}
-                            </Typography>
                             <label htmlFor="title">Bio: </label>
                             <Typography gutterBottom noWrap component="div" marginBottom="10px">
                                 {bio}
                             </Typography>
-
+                            <label htmlFor="title">Major: </label>
+                            <Typography gutterBottom noWrap component="div" marginBottom="10px">
+                                {major}
+                            </Typography>
+                            <label htmlFor="title">Year: </label>
+                            <Typography gutterBottom noWrap component="div" marginBottom="10px">
+                                {year}
+                            </Typography>
                         </CardContent>
                     </Card>
                 </Grid>
+            )
+        }
+    }
+
+    getUser(year: number, userName: string, hide: boolean, email: string, bio: string, major: string) {
+        if (!hide) {
+            return (
+                <Button
+                    onClick={() => this.handleProfileClick(bio, userName, email, hide, year, major)}
+                    title={email}
+                    className="item-card"
+                    sx={{ color: "black", fontWeight: "light", textTransform: "unset" }}
+                >
+                    <div className="item-card__stripe" />
+                    <div className="item-card__body">
+                        <p></p>
+                        <p>Username: {userName}</p>
+                        <p></p>
+                        <p>Email: {email}</p>
+                        <p></p>
+                    </div>
+                </Button>
             )
         }
         return null
@@ -94,15 +169,17 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                 email2 = profiles[j + 1].email.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
                 username2 = profiles[j + 1].userName.toLowerCase();
 
-                if(this.state.searchField.indexOf('@') == -1){
+                if (this.state.searchField.indexOf('@') == -1) {
                     searchText = this.state.searchField.toLowerCase();
                 } else {
                     searchText = this.state.searchField.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
                 }
 
                 if ((username2 === searchText || email2 === searchText)
-                 || ((username2.includes(searchText) || email2.includes(searchText)) && (!username1.includes(searchText) && !email1.includes(searchText)))
-                 || ((username2.includes(searchText) && email2.includes(searchText)) && (username1.includes(searchText) ? !email1.includes(searchText) : email1.includes(searchText)))) {
+                    || ((username2.includes(searchText) || email2.includes(searchText))
+                        && (!username1.includes(searchText) && !email1.includes(searchText)))
+                    || ((username2.includes(searchText) && email2.includes(searchText))
+                        && (username1.includes(searchText) ? !email1.includes(searchText) : email1.includes(searchText)))) {
                     let hold = profiles[j];
                     profiles[j] = profiles[j + 1];
                     profiles[j + 1] = hold;
@@ -127,7 +204,8 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
         event.preventDefault();
         this.sortResults()
         this.setState({
-            searchStarted: true
+            searchStarted: true,
+            profileSelected: false
         })
     }
 
@@ -150,11 +228,11 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
                     <Box id="cropped-purdue-img" />
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                        {this.props.profile != undefined && this.props.profile.length != 0 && this.state.searchStarted
+                        {this.props.profile != undefined && this.props.profile.length != 0 && this.state.searchStarted && !this.state.profileSelected
                             ?
-                            this.state.sortedProfiles.map((users) => this.getUser(users.bio, users.userName, users.hide, users.email))
+                            this.state.sortedProfiles.map((users) => this.getUser(users.year, users.userName, users.hide, users.email, users.bio, users.major))
                             :
-                            <div>Type in a username or email to search for profiles.</div>
+                            this.displayUserProfile(this.state.displayProfile.bio, this.state.displayProfile.userName, this.state.displayProfile.major, this.state.displayProfile.year)
                         }
                     </Grid>
                 </Box>
