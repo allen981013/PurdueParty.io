@@ -13,6 +13,8 @@ import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
 import Datetime from 'react-datetime'
 import moment from 'moment'
 import { Redirect } from 'react-router-dom';
@@ -29,6 +31,11 @@ interface EventsLandingProps {
 interface EventsLandingStates {
   startTime: Date;
   startDayRadioValue: string;
+  myEventsChecked: boolean;
+}
+
+export const HOST_OPTIONS = {
+  ME: "ME",
 }
 
 const DATE_FILTERING_OPTIONS = {
@@ -43,6 +50,7 @@ export interface EventsFetchParameter {
   searchKeyword: string;
   startTimeLowerBound: Date;
   startTimeUpperBound?: Date;
+  host: string;
 }
 
 
@@ -52,14 +60,16 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
     furthestPage: 1,
     searchKeyword: "",
     startTimeLowerBound: new Date(),
-    startTimeUpperBound: undefined
+    startTimeUpperBound: undefined,
+    host: undefined,
   }
 
   constructor(props: EventsLandingProps) {
     super(props)
     this.state = {
       startTime: new Date(),
-      startDayRadioValue: ""
+      startDayRadioValue: "",
+      myEventsChecked: false,
     }
   }
 
@@ -85,6 +95,21 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
   handleLoadMoreClick = (e: any) => {
     this.fetchParameter.furthestPage += 1
     this.props.fetchEvents(this.fetchParameter)
+  }
+
+  handleHostChange = (e: any) => {
+    this.setState({
+      myEventsChecked: e.target.checked
+    })
+
+    if (e.target.checked) {
+      this.fetchParameter.host = HOST_OPTIONS.ME;
+    }
+    else {
+      this.fetchParameter.host = undefined;
+    }
+
+    this.props.fetchEvents(this.fetchParameter);
   }
 
   handleStartTimeChange = (e: any) => {
@@ -118,9 +143,10 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
   }
 
   handleResetFiltersClick = (e: any) => {
-    this.setState({ startDayRadioValue: "" })
+    this.setState({ startDayRadioValue: "", myEventsChecked: false })
     this.fetchParameter.startTimeLowerBound = new Date()
     this.fetchParameter.startTimeUpperBound = undefined
+    this.fetchParameter.host = undefined;
     this.props.fetchEvents(this.fetchParameter)
   }
 
@@ -259,6 +285,12 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
                 renderInput={(props, openCalendar, closeCalendar) => <input {...props} readOnly />}
                 timeFormat={false}
               />
+
+              <Typography style={{ color: "#00000099", alignSelf: "flex-start", padding: "20px 0px 12px" }}>Filter by Host</Typography>
+              <FormGroup>
+                <FormControlLabel control={<Checkbox onChange={this.handleHostChange} checked={this.state.myEventsChecked} />} label="My Events" />
+              </FormGroup>
+
               <Button
                 variant="outlined"
                 sx={{ margin: "16px 0px" }}
@@ -268,33 +300,33 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
               </Button>
             </Box>
           </Grid>
-            <Grid
-              item
-              xs={12}
-              md={9}
-            >
-              {
-                this.props.events.length != 0 &&
-                  <Grid
-                    container
-                    spacing={2}
-                  >
-                    {this.getCards(this.props.events)}
-                  </Grid>
-              }
-              {
-                this.props.events.length != 0 && !this.props.isLastPage &&
-                <Button
-                  variant="outlined"
-                  sx={{ color: "black", border: "1px solid black", margin: "32px 0px" }}
-                  onClick={this.handleLoadMoreClick}
-                >
-                  Load more
-                </Button>
-              }
-              { this.props.isEventsFetched && this.props.events.length == 0 && <div>No events found</div>}
-              {!this.props.isEventsFetched && <CircularProgress />}
-            </Grid>
+          <Grid
+            item
+            xs={12}
+            md={9}
+          >
+            {
+              this.props.events.length != 0 &&
+              <Grid
+                container
+                spacing={2}
+              >
+                {this.getCards(this.props.events)}
+              </Grid>
+            }
+            {
+              this.props.events.length != 0 && !this.props.isLastPage &&
+              <Button
+                variant="outlined"
+                sx={{ color: "black", border: "1px solid black", margin: "32px 0px" }}
+                onClick={this.handleLoadMoreClick}
+              >
+                Load more
+              </Button>
+            }
+            {this.props.isEventsFetched && this.props.events.length == 0 && <div>No events found</div>}
+            {!this.props.isEventsFetched && <CircularProgress />}
+          </Grid>
         </Grid>
       </Box>
     )

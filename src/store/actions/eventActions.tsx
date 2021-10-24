@@ -30,7 +30,7 @@ export const addEvent = (newEvent: any) => {
             })
 
             // If the event is part of a club, attach the eventID to the club
-            if (!(newEvent.orgID == "None")) {
+            if (!(newEvent.orgID == "")) {
 
                 // Get the club object that the event is for
                 var docRef = db.collection("clubs").doc(newEvent.orgID).get().then(function (doc: any) {
