@@ -8,6 +8,7 @@ import moment from 'moment'
 // type for states returned by reducer
 export interface EventInfoStatesRedux {
   event: {
+    id: string,
     title: string,
     ownerID: string,
     editors: string[],
@@ -31,6 +32,7 @@ export interface EventInfoStatesRedux {
 // initial states
 const initState: EventInfoStatesRedux = {
   event: {
+    id: "",
     title: "My Event",
     ownerID: "",
     editors: [],
@@ -99,6 +101,7 @@ export const fetchEventInfo = (eventID: string) => {
           return
         }
         // Map event info
+        var id = doc.data().id
         var title = doc.data().title
         var ownerID = doc.data().ownerID
         var editors = doc.data().editors
@@ -138,6 +141,7 @@ export const fetchEventInfo = (eventID: string) => {
             }
             const payload = {
               event: {
+                id: id,
                 title: title,
                 ownerID: ownerID,
                 editors: editors,
