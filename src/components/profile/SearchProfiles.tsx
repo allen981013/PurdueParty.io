@@ -95,7 +95,7 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
 
     displayUserProfile(bio: string, userName: string, major: string, year: number) {
         if (userName === 'null' && year == 0) {
-            return (<div></div>)
+            return (<div>Type in a user's email or username.</div>)
         }
         else {
             return (

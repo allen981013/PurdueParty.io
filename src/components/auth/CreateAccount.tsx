@@ -165,6 +165,14 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
       })
     }
 
+    const renderimage = () => {
+      if (this.state.profilePic == null as any) {
+        return;
+      } else {
+        return <img src={URL.createObjectURL(this.state.profilePic)}/>;
+      }
+    }
+
     return (
       <div className="createaccount">
         <h1>If you like to party, create your account!</h1>
@@ -208,6 +216,9 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
             )}
           </Dropzone>
 
+          <p></p>
+
+          {renderimage()}
 
           <p></p>
           <button>Create Account</button>
