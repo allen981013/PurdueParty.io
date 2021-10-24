@@ -8,8 +8,8 @@ import { Action, compose, Dispatch } from 'redux'
 import { Redirect } from 'react-router-dom'
 import moment from 'moment';
 import { actionTypes } from 'redux-firestore';
-import { deepOrange } from '@mui/material/colors';
 import { PostsLandingProps } from './PostsLanding';
+import { firestoreDb } from '../..';
 
 
 interface ThreadElement { // Thread element refers to a post or a reply
@@ -234,7 +234,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
   }
 
   render() {
-    if (!this.props.auth.uid) return <Redirect to='/signin' />
+    if (this.props.auth && !this.props.auth.uid) return <Redirect to='/signin' />
     if (!this.props.isDataFetched)
       return (
         <Box pt="32px"><CircularProgress /></Box>
@@ -256,10 +256,10 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         <Grid container spacing={3}>
           <Grid item xs={12} md={9}>
             <Card sx={{ minHeight: "100vh" }}>
-              <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black", textAlign: "left"}}>
+              <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black", textAlign: "left" }}>
                 Thread
               </Box>
-              <CardContent sx={{textAlign: "left"}}>
+              <CardContent sx={{ textAlign: "left" }}>
                 {this.getPost(this.props.post)}
                 {this.props.post.replies.map((reply) => this.getReply(reply))}
               </CardContent>
@@ -279,19 +279,15 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
   var posts = state.firestore.ordered.threadPagePosts // posts array contains only 1 object
   var replies = state.firestore.ordered.threadPageReplies
   var threadElements: ThreadElement[] = posts && replies ? posts.concat(replies) : undefined
-  var post: ThreadElement = undefined
-  // Build post object
-  if (threadElements && threadElements.length > 0) {
-    // Map all thread items to the expected schema
-    threadElements = threadElements.map((threadEl: any): ThreadElement => {
+  // Map all thread elements to the expected schema
+  threadElements = threadElements
+    ? threadElements.map((threadEl: any): ThreadElement => {
       return {
         ID: threadEl.id,
         ancestorsIDs: threadEl.ancestorsIDs,
         title: threadEl.title,
         content: threadEl.content,
-        poster: "raziqraif",    // TODO: Our post object only contains poster ID for now, and not 
-        // username. While we can do some hacks here to get username from ID, I'm 
-        // just gonna wait until we've denormalized our DB.
+        poster: threadEl.owner,
         posterImgUrl: "",
         replies: [],
         numComments: threadEl.numComments,
@@ -299,12 +295,26 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
         isDeleted: false,
       }
     })
+    : undefined
+  // Populate user data into thread elements 
+  var getUsersPromises = threadElements
+    ? threadElements.map(threadEl => firestoreDb.collection("users").doc(threadEl.poster).get())
+    : []
+  Promise.all(getUsersPromises).then(docSnapshots => {
+    var idToUserDict = docSnapshots.reduce((prevVal: any, curVal) => {
+      prevVal[curVal.id] = curVal.data()
+      return prevVal
+    }, {})
+  });
+  // Build post object
+  var post: ThreadElement = undefined
+  if (threadElements && threadElements.length > 0) {
     // Get the set of all ancestor IDs
     var allAncestorsIDs = threadElements.reduce((prevVal, curVal) => {
       curVal.ancestorsIDs.forEach(id => prevVal.add(id))
       return prevVal
     }, new Set<string>())
-    // Create dict of all IDs to thread items 
+    // Create dict of ID-to-thread elements 
     // - create entries for all ancestors (assume they all have been deleted)
     var idToThreadElementDict: { [key: string]: ThreadElement } = {}
     allAncestorsIDs.forEach(id => {

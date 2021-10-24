@@ -51,7 +51,6 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
   }
   
   componentDidMount() {    
-    // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
     const classInfoIsEmptyOrObsolete = () => !this.props.classInfo 
       || (this.props.classInfo 
           && this.props.classInfo.classID !== this.props.classID)
@@ -217,7 +216,6 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
               && <div>Class was not found</div>
             }
             {
-              // TODO: Fix this
               this.props.classInfo !== undefined
               && this.getClass(this.props.classInfo)
             }
