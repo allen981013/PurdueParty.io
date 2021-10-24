@@ -25,7 +25,7 @@ interface Post {
 interface PostsLandingState {
 }
 
-interface PostsLandingProps {
+export interface PostsLandingProps {
   auth?: FirebaseReducer.AuthState;
   classID: string;
   isDataFetched?: boolean;

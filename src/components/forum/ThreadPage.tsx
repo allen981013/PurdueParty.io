@@ -9,6 +9,7 @@ import { Redirect } from 'react-router-dom'
 import moment from 'moment';
 import { actionTypes } from 'redux-firestore';
 import { deepOrange } from '@mui/material/colors';
+import { PostsLandingProps } from './PostsLanding';
 
 
 interface ThreadElement { // Thread element refers to a post or a reply
@@ -31,6 +32,7 @@ interface ThreadPageProps {
   classID: string;
   postID: string;
   post?: ThreadElement;
+  classInfo?: PostsLandingProps["classInfo"]
   isDataFetched?: boolean;
   clearFetchedDocs?: () => void;
 }
@@ -199,6 +201,38 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     )
   }
 
+  getClass(class_: PostsLandingProps["classInfo"]) {
+    return (
+      <Card>
+        <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
+          Class Info
+        </Box>
+        <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+          <label htmlFor="title">Course:</label>
+          <Typography noWrap variant="body2" component="div" marginBottom="8px">
+            {class_.title}
+          </Typography>
+          <label htmlFor="title">Department:</label>
+          <Typography noWrap variant="body2" component="div" marginBottom="8px">
+            {class_.department}
+          </Typography>
+          <label htmlFor="title">Description:</label>
+          <Typography noWrap variant="body2" component="div" marginBottom="8px">
+            {class_.description}
+          </Typography>
+          <label htmlFor="title">Instructor:</label>
+          <Typography noWrap variant="body2" component="div" marginBottom="8px">
+            {class_.instructorName}
+          </Typography>
+          <label htmlFor="title">Instructor Email:</label>
+          <Typography noWrap variant="body2" component="div">
+            {class_.instructorEmail}
+          </Typography>
+        </CardContent>
+      </Card>
+    )
+  }
+
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     if (!this.props.isDataFetched)
@@ -213,14 +247,28 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       <Box
         display="flex"
         flexDirection="column"
-        // width="100%"
+        width="100%"
         // minWidth="800px"
-        maxWidth="1300px"
+        maxWidth="1200px"
         alignSelf="center"
         p="2rem"
       >
-        {this.getPost(this.props.post)}
-        {this.props.post.replies.map((reply) => this.getReply(reply))}
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={9}>
+            <Card sx={{ minHeight: "100vh" }}>
+              <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black", textAlign: "left"}}>
+                Thread
+              </Box>
+              <CardContent sx={{textAlign: "left"}}>
+                {this.getPost(this.props.post)}
+                {this.props.post.replies.map((reply) => this.getReply(reply))}
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            {this.getClass(this.props.classInfo)}
+          </Grid>
+        </Grid>
       </Box>
     )
   }
@@ -295,11 +343,26 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
     })
     post = idToThreadElementDict[props.postID]
   }
+  // Map class object to meet the UI's need
+  var classes = state.firestore.ordered.classPageClasses
+  var classInfo: PostsLandingProps["classInfo"] = (classes !== undefined && classes.length > 0)
+    ? classes.map((class_: any) => {
+      return {
+        title: class_.title,
+        description: class_.description,
+        department: class_.department,
+        instructorName: class_.instructorName,
+        instructorEmail: class_.profEmail,
+        classID: class_.classID,
+      }
+    })[0]
+    : undefined
   // Return processed data
   return {
     auth: state.firebase.auth,
     post: post,
-    isDataFetched: threadElements != undefined,
+    classInfo: classInfo,
+    isDataFetched: threadElements != undefined && classes != undefined,
   }
 }
 
@@ -338,7 +401,16 @@ export default compose<React.ComponentType<ThreadPageProps>>(
         collection: 'posts',
         doc: props.postID,
         storeAs: 'threadPagePosts'
+      },
+      {
+        collection: "classes",
+        where: [
+          ["courseID", "==", props.classID],
+        ],
+        storeAs: "classPageClasses",
+        limit: 1,
       }
+
     ]
   })
 )(ThreadPage)
