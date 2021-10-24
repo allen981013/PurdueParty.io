@@ -205,6 +205,8 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
             postedDateTime: new Timestamp(0, 0),
             attendees: [""]
         })
+
+        window.history.back()
         }
     }
 

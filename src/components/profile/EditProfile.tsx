@@ -14,7 +14,8 @@ interface EditProfileState {
   bio: string,
   userName: string,
   major: string,
-  year: string
+  year: string,
+  hide: boolean
 }
 
 // Interface/type for EditProfile Props
@@ -35,7 +36,8 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
       bio: "",
       userName: "",
       major: "",
-      year: ""
+      year: "",
+      hide: false
     }
   }
 
@@ -62,6 +64,13 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
       year: e.target.value
     })
   }
+
+  handleChangeHide = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      hide: e.target.checked
+    })
+  }
+
 
   handleDelete = (event: any) => {
     event.preventDefault()
@@ -98,7 +107,8 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
         bio: "",
         userName: "",
         major: "",
-        year: ""
+        year: "",
+        hide: false
       })
     }
   }
@@ -138,6 +148,11 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
             <input type="text" value={this.state.year} placeholder=""
               id="title" onChange={this.handleChangeYear} />
           </div>
+
+          <h1>Hide Your Profile
+            <input type="checkbox" checked={this.state.hide} placeholder=""
+              id="title" onChange={this.handleChangeHide} style={{marginLeft: "15px"}} />
+          </h1>
 
           <div className="input-field">
             <button className="button">Save</button>

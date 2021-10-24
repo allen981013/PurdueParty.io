@@ -12,7 +12,8 @@ export const editUser = (newProfile: any) =>{
             userName: newProfile.userName,
             major: newProfile.major,
             bio: newProfile.bio,
-            year: newProfile.year
+            year: newProfile.year,
+            hide: newProfile.hide
         });
     }
 }
