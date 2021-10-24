@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  text-align: center;
+  /* text-align: center; */
   min-height: 105vh;
 }
 

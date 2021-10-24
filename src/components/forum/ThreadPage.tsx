@@ -1,5 +1,5 @@
 import React from 'react'
-import { Avatar, Box, Button, Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material'
+import { Avatar, Box, Button, Card, CardContent, CircularProgress, Divider, Grid, Typography } from '@mui/material'
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import { AppDispatch, RootState } from '../../store'
 import { connect } from 'react-redux'
@@ -95,12 +95,12 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         >
           {post.content}
         </Typography>
-        <Box pt="8px" position="relative">
+        <Box pt="8px">
           <Button
             onClick={e => { e.stopPropagation(); e.preventDefault() }}
             sx={{
               textTransform: "none", color: "#787c7e", fontWeight: "bold",
-              fontSize: "12px", padding: "4px"
+              fontSize: "12px", padding: "4px 4px"
             }}
           >
             <ChatBubbleOutlineOutlinedIcon
@@ -115,62 +115,85 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   getReply = (reply: ThreadElement) => {
     return (
-      <Box display="flex" flexDirection="row" pt="16px">
-        <Box display="flex" flexDirection="column" p="0px 8px 0px 0px">
+      <Box display="flex" flexDirection="column" pt="16px">
+        {/* Avatar, poster name, & time since posted */}
+        <Box display="flex" flexDirection="row" alignItems="center">
           <Avatar
-            sx={{ width: "28px", height: "28px", fontSize: "14px", bgcolor: "#cfd8dc" }}
+            sx={{
+              width: "28px", height: "28px", fontSize: "14px", bgcolor: "#cfd8dc",
+              margin: "4px 8px"
+            }}
           >
             {reply.poster[0]}
           </Avatar>
-          <Box
-            height="100%"
-            alignSelf="center"
-            mt="8px"
-            sx={{ borderLeft: "1px solid #cfd8dc" }}
-          />
-        </Box>
-        <Box
-          sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}
-        >
-          <Box display="flex" flexDirection="row" pb="4px">
-            {/* Note: We split the following text into separate tags in case we want to 
-              proceed with the idea of making username & time clickable` */}
-            <Typography
-              variant="subtitle2"
-              sx={{ color: "#000000", fontSize: "12px", fontWeight: "bold" }}
-            >{reply.poster}&nbsp;
-            </Typography>
-            <Typography
-              variant="subtitle2"
-              sx={{ color: "#787c7e", fontSize: "12px" }}
-            >{reply.timeSincePosted}
-            </Typography>
-          </Box>
           <Typography
-            noWrap
-            variant="body2"
-            sx={{ paddingBottom: "0px" }}
+            variant="subtitle2"
+            sx={{ color: "#000000", fontSize: "12px", fontWeight: "bold" }}
           >
-            {reply.content}
+            {reply.isDeleted ? "[ deleted ]" : reply.poster} &nbsp;
           </Typography>
-          <Box pt="8px" position="relative">
-            <Button
-              onClick={e => { e.stopPropagation(); e.preventDefault() }}
-              sx={{
-                textTransform: "none", color: "#787c7e", fontWeight: "bold",
-                fontSize: "12px", padding: "4px"
-              }}
-            >
-              <ChatBubbleOutlineOutlinedIcon
-                sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
-              />
-              Reply
-            </Button>
+          <Typography
+            variant="subtitle2"
+            sx={{ color: "#787c7e", fontSize: "12px" }}
+          >{reply.timeSincePosted}
+          </Typography>
+        </Box>
+        <Box display="flex" flexDirection="row">
+          {/* Vertical line */}
+          <Divider orientation="vertical" flexItem sx={{ margin: "0px 0px 0px 22px" }} ></Divider>
+          <Box display="flex" flexDirection="column">
+            {/* Main content */}
+            {
+              reply.isDeleted
+                ? (
+                  <Box>
+                    <Typography
+                      noWrap
+                      variant="body2"
+                      sx={{ marginLeft: "22px" }}
+                    >
+                      [ deleted ]
+                    </Typography>
+                  </Box>
+                )
+                : (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="flex-start"
+                    ml="22px"
+                  >
+                    <Typography
+                      noWrap
+                      variant="body2"
+                      sx={{ paddingBottom: "0px" }}
+                    >
+                      {reply.content}
+                    </Typography>
+                    {/* Interaction widgets */}
+                    <Box pt="8px">
+                      <Button
+                        onClick={e => { e.stopPropagation(); e.preventDefault() }}
+                        sx={{
+                          textTransform: "none", color: "#787c7e", fontWeight: "bold",
+                          fontSize: "12px", padding: "4px 0px"
+                        }}
+                      >
+                        <ChatBubbleOutlineOutlinedIcon
+                          sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
+                        />
+                        Reply
+                      </Button>
+                    </Box>
+                  </Box>
+
+                )
+            }
+            {
+              (reply.replies.length > 0)
+              && reply.replies.map((reply_) => this.getReply(reply_))
+            }
           </Box>
-          {
-            (reply.replies.length > 0)
-            && reply.replies.map((reply_) => this.getReply(reply_))
-          }
         </Box>
       </Box>
     )
@@ -235,26 +258,28 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
     }, new Set<string>())
     // Create dict of all IDs to thread items 
     // - create entries for all ancestors (assume they all have been deleted)
-    var idToThreadElementDict: {[key: string]: ThreadElement} = {}
-    allAncestorsIDs.forEach(id => {idToThreadElementDict[id] = {
-      ID: id,
-      ancestorsIDs: [],
-      title: "",
-      content: "",
-      poster: "",
-      posterImgUrl: "",
-      replies: [],
-      numComments: 0,
-      timeSincePosted: "",
-      isDeleted: true,
-    }})
+    var idToThreadElementDict: { [key: string]: ThreadElement } = {}
+    allAncestorsIDs.forEach(id => {
+      idToThreadElementDict[id] = {
+        ID: id,
+        ancestorsIDs: [],
+        title: "",
+        content: "",
+        poster: "",
+        posterImgUrl: "",
+        replies: [],
+        numComments: 0,
+        timeSincePosted: "",
+        isDeleted: true,
+      }
+    })
     // - create/replace entries for fetched thread items
     idToThreadElementDict = Object.assign(idToThreadElementDict,
       ...threadElements.map(threadEl => (
         { [threadEl.ID]: threadEl }
       ))
     )
-    // Transform thread structure from flat to the correct hierarchical structure
+    // Transform thread into the correct hierarchical structure
     threadElements.forEach(threadEl => {
       let ancestorIdx = threadEl.ancestorsIDs.length - 1
       if (ancestorIdx == -1) return
