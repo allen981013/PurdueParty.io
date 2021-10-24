@@ -89,7 +89,7 @@ class CreateEvent extends Component<EventProps, EventState> {
       id: "",
       ownerID: "",
       editors: [this.props.auth.uid],
-      orgID: "None",
+      orgID: "",
       title: "",
       description: "",
       location: "",
