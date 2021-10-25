@@ -10,18 +10,18 @@ import moment from 'moment';
 import { actionTypes } from 'redux-firestore';
 import { PostsLandingProps } from './PostsLanding';
 import { firestoreDb } from '../..';
+import { fetchPost, threadPageSlice } from './ThreadPageSlice';
 
-
-interface ThreadElement { // Thread element refers to a post or a reply
+export interface ThreadNode { // Refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
   ID: string;
   ancestorsIDs: [];
-  replies: ThreadElement[];
+  replies: ThreadNode[];
   // Data to be displayed
   title: string;
   content: string;
-  poster: string;
-  posterImgUrl: string;
+  poster?: string;
+  posterImgUrl?: string;
   numComments: number;
   timeSincePosted: string;
   isDeleted: boolean;
@@ -31,10 +31,11 @@ interface ThreadPageProps {
   auth?: FirebaseReducer.AuthState;
   classID: string;
   postID: string;
-  post?: ThreadElement;
   classInfo?: PostsLandingProps["classInfo"]
+  post?: ThreadNode;
   isDataFetched?: boolean;
   clearFetchedDocs?: () => void;
+  fetchPost?: (postID: string) => void;
 }
 
 interface ThreadPageStates {
@@ -43,6 +44,7 @@ interface ThreadPageStates {
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   componentDidMount() {
+    this.props.fetchPost(this.props.postID)
     const postIsEmptyOrObsolete = () => !this.props.post
       || (this.props.post
         && this.props.post.ID !== this.props.postID)
@@ -51,7 +53,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     }
   }
 
-  getPost = (post: ThreadElement) => {
+  getPost = (post: ThreadNode) => {
     return (
       <Box
         sx={{
@@ -115,7 +117,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     )
   }
 
-  getReply = (reply: ThreadElement) => {
+  getReply = (reply: ThreadNode) => {
     return (
       <Box display="flex" flexDirection="column" pt="16px">
         {/* Avatar, poster name, & time since posted */}
@@ -281,84 +283,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 }
 
 const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
-  // TODO: Move all these logic into a redux action
-  var posts = state.firestore.ordered.threadPagePosts // posts array contains only 1 object
-  var replies = state.firestore.ordered.threadPageReplies
-  var threadElements: ThreadElement[] = posts && replies ? posts.concat(replies) : undefined
-  // Map all thread elements to the expected schema
-  threadElements = threadElements
-    ? threadElements.map((threadEl: any): ThreadElement => {
-      return {
-        ID: threadEl.id,
-        ancestorsIDs: threadEl.ancestorsIDs,
-        title: threadEl.title,
-        content: threadEl.content,
-        poster: threadEl.owner,
-        posterImgUrl: "",
-        replies: [],
-        numComments: threadEl.numComments,
-        timeSincePosted: moment(threadEl.postedDateTime.toDate()).fromNow(),
-        isDeleted: false,
-      }
-    })
-    : undefined
-  // Populate user data into thread elements 
-  var getUsersPromises = threadElements
-    ? threadElements.map(threadEl => firestoreDb.collection("users").doc(threadEl.poster).get())
-    : []
-  Promise.all(getUsersPromises).then(docSnapshots => {
-    var idToUserDict = docSnapshots.reduce((prevVal: any, curVal) => {
-      prevVal[curVal.id] = curVal.data()
-      return prevVal
-    }, {})
-  });
-  // Build post object
-  var post: ThreadElement = undefined
-  if (threadElements && threadElements.length > 0) {
-    // Get the set of all ancestor IDs
-    var allAncestorsIDs = threadElements.reduce((prevVal, curVal) => {
-      curVal.ancestorsIDs.forEach(id => prevVal.add(id))
-      return prevVal
-    }, new Set<string>())
-    // Create dict of ID-to-thread elements 
-    // - create entries for all ancestors (assume they all have been deleted)
-    var idToThreadElementDict: { [key: string]: ThreadElement } = {}
-    allAncestorsIDs.forEach(id => {
-      idToThreadElementDict[id] = {
-        ID: id,
-        ancestorsIDs: [],
-        title: "",
-        content: "",
-        poster: "",
-        posterImgUrl: "",
-        replies: [],
-        numComments: 0,
-        timeSincePosted: "",
-        isDeleted: true,
-      }
-    })
-    // - create/replace entries for fetched thread items
-    idToThreadElementDict = Object.assign(idToThreadElementDict,
-      ...threadElements.map(threadEl => (
-        { [threadEl.ID]: threadEl }
-      ))
-    )
-    // Transform thread into the correct hierarchical structure
-    threadElements.forEach(threadEl => {
-      let ancestorIdx = threadEl.ancestorsIDs.length - 1
-      if (ancestorIdx == -1) return
-      let ancestor: ThreadElement = idToThreadElementDict[threadEl.ancestorsIDs[ancestorIdx]]
-      ancestor.replies.push(threadEl)
-      // Cater to the situation where the current ancestor was deleted
-      while (ancestor.isDeleted) {
-        // NOTE: It is assumed that the top-most ancestor (the main post) is not deleted
-        let olderAncestor = idToThreadElementDict[threadEl.ancestorsIDs[--ancestorIdx]]
-        olderAncestor.replies.push(ancestor)
-        ancestor = olderAncestor
-      }
-    })
-    post = idToThreadElementDict[props.postID]
-  }
   // Map class object to meet the UI's need
   var classes = state.firestore.ordered.classPageClasses
   var classInfo: PostsLandingProps["classInfo"] = (classes !== undefined && classes.length > 0)
@@ -376,25 +300,18 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
   // Return processed data
   return {
     auth: state.firebase.auth,
-    post: post,
+    post: state.threadPage.post,
     classInfo: classInfo,
-    isDataFetched: threadElements != undefined && classes != undefined,
+    isDataFetched: classes != undefined && state.threadPage.isPostFetched,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
   return {
+    fetchPost: (postID: string) => dispatch(fetchPost(postID)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-        reduxDispatch({
-          type: actionTypes.LISTENER_RESPONSE,
-          meta: {
-            collection: 'posts',
-            doc: props.postID,
-            storeAs: "threadPagePosts"
-          },
-          payload: {}
-        })
+        reduxDispatch(threadPageSlice.actions.fetchPostBegin())
       }
     )
   }
@@ -406,18 +323,6 @@ export default compose<React.ComponentType<ThreadPageProps>>(
     if (props.postID === undefined)
       return []
     return [
-      {
-        collection: 'posts',
-        where: [
-          ["ancestorsIDs", "array-contains", props.postID]
-        ],
-        storeAs: 'threadPageReplies'
-      },
-      {
-        collection: 'posts',
-        doc: props.postID,
-        storeAs: 'threadPagePosts'
-      },
       {
         collection: "classes",
         where: [
