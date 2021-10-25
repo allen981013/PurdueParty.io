@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import {Box, Button, Grid, Chip} from '@mui/material';
 import { EditOutlined, DeleteOutlined } from '@mui/icons-material'
+import { actionTypes } from 'redux-firestore';
+import { Action, compose, Dispatch } from 'redux';
+import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
 
 interface ClubInfoProps {
   clubID: string,
@@ -18,9 +19,7 @@ interface ClubInfoProps {
     owner: string,
     title: string
   },
-  ownerID: string,
-  auth: any,
-  firebase: any
+  auth?: any,
 }
 
 interface ClubInfoStates {
@@ -157,19 +156,57 @@ class ClubInfo extends React.Component<ClubInfoProps, ClubInfoStates> {
 }
 
 const mapStateToProps = (state: RootState) => {
+  var clubs = state.firestore.ordered.ClubPageClubs
+  var clubInfo: ClubInfoProps["clubInfo"] = (clubs !== undefined && clubs.length > 0)
+  ? clubs.map((club_: any) => {
+    return {
+      title: club_.title,
+      description: club_.description,
+      catgeory: club_.catgeory,
+      orgID: club_.orgID,
+      owner: club_.owner,
+      contactInfo: club_.contactInfo,
+    }
+  })[0]
+  : undefined
     return {
       auth: state.firebase.auth,
+      clubInfo: clubInfo
     }
   }
   
-const mapDispatchToProps = (dispatch: AppDispatch) => {
+const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
   return {
+    clearFetchedDocs: () => dispatch(
+      (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        reduxDispatch({
+          type: actionTypes.LISTENER_RESPONSE,
+          meta: {
+            collection: "clubs",
+            where: [
+              ["orgID", "==", props.clubID],
+            ],
+            storeAs: "ClubPageClubs",
+            limit: 1,
+          },
+          payload: {}
+        })
+      }
+    )
   }
 }
   
 export default compose<React.ComponentType<ClubInfo>>(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect([
-    { collection: 'clubs' }
-  ])
+  firestoreConnect((props: ClubInfoProps) => {
+    return [
+    { collection: "clubs",
+    where: [
+      ["orgID", "==", props.clubID],
+    ],
+    storeAs: "ClubPageClubs",
+    limit: 1,
+    }
+  ]
+  })
 )(ClubInfo);

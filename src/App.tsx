@@ -50,7 +50,9 @@ function App() {
           <Route path='/events' component={EventsLanding} />
           <Route exact path='/clubs' component={Clubs} />
           <Route path='/clubs/create-club' component={CreateClub} />
-          <Route path='/clubs/:clubID' component={ClubInfo}/>
+          <Route path='/clubs/:clubID' render={({ match }) => {
+            return <ClubInfo clubID={match.params.clubID} />
+          }} />
           <Route path='/forum/create-post' component={CreatePost} />
           <Route path='/profile' component={Profile} />
           <Route path='/edit-profile' component={EditProfile} />
