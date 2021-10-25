@@ -54,22 +54,28 @@ class Clubs extends Component<ClubProps, ClubState> {
         <CardActionArea component={Link} to={"/clubs/" + id} 
         sx={{display:"inline-flex"}}>
 
-          <Card style={{width:"20%"}}>
+          <Card style={{width:"10%"}}>
           <CardMedia
                 component="img"
-                height="140"
+                height="90"
                 image={imageURL}
               />
           </Card>
           
-          <Card style={{width:"80%"}}>
+          <Card style={{width : "90%" }}>
               <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
-              <label htmlFor="title">Club Name: </label>
-              <Typography gutterBottom noWrap component="div" marginBottom="10px">
+              <Typography
+                noWrap
+                variant="h6"
+                sx={{ fontSize: "18px", paddingBottom: "4px" }}
+              >
                   {title}
               </Typography>
-              <label htmlFor="title">Description: </label>
-              <Typography gutterBottom noWrap component="div" marginBottom="10px">
+              <Typography
+                noWrap
+                variant="body2"
+                sx={{ paddingBottom: "0px" }}
+              >
                   {description}
               </Typography>
               </CardContent>
