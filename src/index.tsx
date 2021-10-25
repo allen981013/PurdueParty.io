@@ -33,7 +33,7 @@ const rrfConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-firebase.firestore();
+export const firestoreDb = firebase.firestore();
 export const firebaseStorageRef = firebase.storage().ref()
 
 export const store = configureStore({
