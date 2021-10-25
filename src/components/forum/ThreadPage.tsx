@@ -86,6 +86,15 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             sx={{ color: "#787c7e", fontSize: "12px" }}
           >{post.timeSincePosted}
           </Typography>
+          <Button 
+            component={Link}
+            to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
+            variant="outlined"
+            sx={{ color: "black", height: "32px" }}
+          >
+            <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+              Edit
+          </Button>
         </Box>
         <Typography
           noWrap
@@ -109,16 +118,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
               fontSize: "12px", padding: "4px 4px"
             }}
           >
-            <h1 style={{ fontWeight: 300, margin: "0px" }}>{this.props.post.title}</h1>
-              <Button 
-              component={Link}
-              to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
-              variant="outlined"
-              sx={{ color: "black", height: "32px" }}
-              >
-              <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-                Edit
-              </Button>
             <ChatBubbleOutlineOutlinedIcon
               sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
             />
