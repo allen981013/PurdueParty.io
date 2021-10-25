@@ -6,11 +6,8 @@ import { connect } from 'react-redux'
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase'
 import { Action, compose, Dispatch } from 'redux'
 import { Link, Redirect } from 'react-router-dom'
-import moment from 'moment';
-import { actionTypes } from 'redux-firestore';
 import { EditOutlined } from '@mui/icons-material';
 import { PostsLandingProps } from './PostsLanding';
-import { firestoreDb } from '../..';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
 
 export interface ThreadNode { // Refers to a post or a reply
@@ -129,6 +126,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
   }
 
   getReply = (reply: ThreadNode) => {
+    // TODO: Abstract away some operations here into several util functions
     return (
       <Box display="flex" flexDirection="column" pt="16px">
         {/* Avatar, poster name, & time since posted */}
@@ -139,13 +137,13 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
               margin: "4px 8px"
             }}
           >
-            {reply.poster[0]}
+            {reply.poster ? reply.poster[0] : ""}
           </Avatar>
           <Typography
             variant="subtitle2"
             sx={{ color: "#000000", fontSize: "12px", fontWeight: "bold" }}
           >
-            {reply.isDeleted ? "[ deleted ]" : reply.poster} &nbsp;
+            {(reply.isDeleted || reply.poster === undefined) ? "[ deleted ]" : reply.poster} &nbsp;
           </Typography>
           <Typography
             variant="subtitle2"
