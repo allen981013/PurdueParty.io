@@ -3,6 +3,7 @@ import { Timestamp } from '@firebase/firestore';
 import { firebaseStorageRef } from '../..';
 import { authIsReady } from 'react-redux-firebase';
 import { valueContainerCSS } from 'react-select/dist/declarations/src/components/containers';
+import { deleteFromStorage } from './authActions'
 
 // Need to explicitly define these types at some point
 export const addEvent = (newEvent: any) => {
@@ -13,7 +14,7 @@ export const addEvent = (newEvent: any) => {
         docref.add({
             ownerID: getState().firebase.auth.uid,
             editors: newEvent.editors,
-            orgID: newEvent.orgID, 
+            orgID: newEvent.orgID,
             title: newEvent.title,
             description: newEvent.description,
             location: newEvent.location,
@@ -133,5 +134,47 @@ export const editEvent = (newEvent: any) => {
             themes: newEvent.themes,
             attendees: newEvent.attendees
         });
+    }
+}
+
+// eventToDelete is just an ID
+export const deleteEvent = (eventToDelete: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const firebase = getFirebase();
+        const db = getFirestore();
+
+        // Get the event object
+        var eventDocRef = db.collection("events").doc(eventToDelete);
+
+        // With that event object...
+        eventDocRef.get().then(function (doc: any) {
+            // delete event pic from storage
+            deleteFromStorage('profilePics/' + doc.data().id);
+
+            // Get the club object to remove eventID from events arr if orgID is not blank
+            if (doc.data().orgID != "") {
+                var clubDocRef = db.collection('clubs').doc(doc.data().orgID);
+
+                // Get the club object
+                clubDocRef.get().then(function (clubDoc: any) {
+
+                    // Create copy of canEditClubs arr to append new clubID onto
+                    var events = clubDoc.data().events;
+                    events.splice(events.indexOf(doc.data().id), 1);
+
+                    clubDocRef.update({
+                        events: events,
+                    })
+                }).catch(function (error: any) {
+                    console.log("Error getting document:", error);
+                });
+            }
+            // delete the event
+            eventDocRef.delete().then(() => {
+                dispatch({ type: 'DELETE_EVENT_SUCCESS'})
+            }).catch((err: any) => {
+                dispatch({ type: 'DELETE_EVENT_ERROR', err })
+            });;
+        })
     }
 }
