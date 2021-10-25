@@ -33,8 +33,8 @@ export const editPost = (newPost:any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         console.log(newPost);
-        console.log(newPost.id);
-        var docref = db.collection('posts').doc(newPost.id);
+        console.log(newPost.postId);
+        var docref = db.collection('posts').doc(newPost.postId);
         
         docref.update({
             owner: getState().firebase.auth.uid,
@@ -57,7 +57,9 @@ export const editPost = (newPost:any) => {
 export const deletePost = (newPost:any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
-        var docref = db.collection('sellListings').doc(newPost.id);
+        console.log(newPost);
+        console.log(newPost.postId);
+        var docref = db.collection('posts').doc(newPost.postId);
 
         docref.delete().then(() => {
             dispatch({ type: 'DELETE_POST_SUCCESS', docref });

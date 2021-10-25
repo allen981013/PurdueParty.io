@@ -32,7 +32,6 @@ interface ThreadPageProps {
   post?: Post;
   isDataFetched?: boolean;
   clearFirestoreState?: () => void;
-  deletePost : (state: Post) => void;
 }
 
 interface ThreadPageStates {
@@ -41,24 +40,6 @@ interface ThreadPageStates {
 
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
-
-  handleDelete = (event: any) => {
-    event.preventDefault();
-    var result : boolean = window.confirm("Are you sure you want to delete your sell listing?");
-    if (result) {
-        //user said yes
-        this.props.deletePost(this.props.post);
-
-        this.setState({
-            
-        })
-        //Maybe use this.props.history.push()
-
-        window.alert("Post Deleted Successfully!");
-        return <Redirect to='/classes' />
-    }
-    // User said no, do nothing
-  }
 
   componentDidMount() {
     // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
@@ -91,7 +72,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                 <h1 style={{ fontWeight: 300, margin: "0px" }}>{this.props.post.title}</h1>
                 <Button 
                 component={Link}
-                to={"/edit-post/" + this.props.postID}
+                to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
                 variant="outlined"
                 sx={{ color: "black", height: "32px" }}
                 >
@@ -156,14 +137,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                 width="100%"
                 pb="32px"
               >
-                <h1 style={{ fontWeight: 300, margin: "0px" }}></h1>
-                <Button 
-                onClick={this.handleDelete}
-                variant="outlined"
-                sx={{ color: "black", height: "32px" }}
-                >
-                  Delete
-              </Button>
             </Box>
           </CardContent>
         </Card>
