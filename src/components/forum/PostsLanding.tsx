@@ -25,7 +25,7 @@ interface Post {
 interface PostsLandingState {
 }
 
-interface PostsLandingProps {
+export interface PostsLandingProps {
   auth?: FirebaseReducer.AuthState;
   classID: string;
   isDataFetched?: boolean;
@@ -51,7 +51,6 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
   }
   
   componentDidMount() {    
-    // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
     const classInfoIsEmptyOrObsolete = () => !this.props.classInfo 
       || (this.props.classInfo 
           && this.props.classInfo.classID !== this.props.classID)
@@ -212,12 +211,11 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
               && <Box pt="32px">There are no posts yet in this class</Box>
             }
           </Grid>
-          <Grid item xs={1} md={3}>
+          <Grid item xs={12} md={3}>
             {this.props.classInfo === undefined
               && <div>Class was not found</div>
             }
             {
-              // TODO: Fix this
               this.props.classInfo !== undefined
               && this.getClass(this.props.classInfo)
             }

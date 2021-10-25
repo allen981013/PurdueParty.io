@@ -52,7 +52,6 @@ export const eventsLandingSlice = createSlice({
 
 // actions 
 
-/* Uncomment this if we're storing image paths instead of image url in firestore */
 export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     const db = getFirestore()

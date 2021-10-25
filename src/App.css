@@ -9,8 +9,8 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  text-align: center;
-  min-height: 105vh;
+  text-align: center; 
+  height: 105vh;
 }
 
 /* Custom CSS classes for Purdue Party */

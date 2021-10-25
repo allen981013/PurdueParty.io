@@ -15,6 +15,7 @@ import NavBar from './components/navbar/NavBar'
 import createSellListing from './components/marketplace/create-sell-listings';
 import GenericSellListing from './components/marketplace/GenericSellListing';
 import CreatePost from './components/forum/create-post';
+import EditPost from './components/forum/EditPost';
 import Profile from './components/profile/Profile';
 import Classes from './components/forum/Classes';
 import PostsLanding from './components/forum/PostsLanding';
@@ -24,6 +25,8 @@ import CreateClass from './components/forum/CreateClass';
 import EditSellListing from './components/marketplace/EditSellListing';
 import ThreadPage from './components/forum/ThreadPage'
 
+
+import SearchProfiles from './components/profile/SearchProfiles';
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
@@ -52,19 +55,26 @@ function App() {
           <Route path='/edit-profile' component={EditProfile} />
           <Route exact path='/classes' component={Classes} />
           <Route path='/classes/:classID/:postID' render={({ match }) => {
-            return <ThreadPage classID={match.params.classID} postID={match.params.postID} isDataFetched={false}/>
+            console.log(match)
+            return <ThreadPage classID={match.params.classID} postID={match.params.postID} isDataFetched={false} />
           }} />
           <Route path='/classes/:classID' render={({ match }) => {
             return <PostsLanding classID={match.params.classID} />
           }} />
           <Route path='/classes/create-post' component={CreatePost} />
+          <Route path='/edit-post/:classID/:postID' component={EditPost} />
           <Route path='/edit-event/:eventID' component={EditEvent} />
           <Route path='/create-class' component={CreateClass} />
+          <Route path = '/create-post/:classID' component = {CreatePost} />
+
+          <Route path = '/search-profiles' component = {SearchProfiles} />
+
+
           <Route path='/create-post/:classID' component={CreatePost} />
           <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
-        <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px" }}>
+        <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign:"center"}}>
           Purdue University, 100 North University Street, West Lafayette, IN, 47907
         </div>
       </div>
