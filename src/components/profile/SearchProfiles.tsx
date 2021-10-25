@@ -27,8 +27,8 @@ interface SearchProfilesState {
         hide: boolean,
         year: number,
         major: string
-    }
-
+    },
+    profileFound: boolean
 }
 
 // Interface/type for Profile Props
@@ -62,7 +62,8 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                 year: 0,
                 major: "null"
             },
-            sortedProfiles: []
+            sortedProfiles: [],
+            profileFound: false
 
         }
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -81,14 +82,17 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
 
         this.setState({
             displayProfile: profile,
-            profileSelected: true
+            profileSelected: true,
         })
 
     }
 
     displayUserProfile(bio: string, userName: string, major: string, year: number) {
-        if (userName === 'null' && year == 0) {
+        if (!this.state.searchStarted && (userName === 'null' && year == 0)) {
             return (<div>Type in a user's email or username.</div>)
+        }
+        else if(!this.state.profileFound){
+            return (<div>No profiles match your search.</div>)
         }
         else {
             return (
@@ -168,6 +172,13 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                     searchText = this.state.searchField.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
                 }
 
+                if(searchText != '' && (username1.includes(searchText) || username2.includes(searchText) 
+                || email1.includes(searchText) || email2.includes(searchText))){
+                    this.setState({
+                        profileFound: true
+                    })
+                }
+
                 if ((username2 === searchText || email2 === searchText)
                     || ((username2.includes(searchText) || email2.includes(searchText))
                         && (!username1.includes(searchText) && !email1.includes(searchText)))
@@ -195,11 +206,12 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
 
     handleSubmit(event: any) {
         event.preventDefault();
-        this.sortResults()
         this.setState({
             searchStarted: true,
-            profileSelected: false
+            profileSelected: false,
+            profileFound: false
         })
+        this.sortResults()
     }
 
     render() {
@@ -221,7 +233,7 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
                     <Box id="cropped-purdue-img" />
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                        {this.props.profile != undefined && this.props.profile.length != 0 && this.state.searchStarted && !this.state.profileSelected
+                        {this.props.profile != undefined && this.props.profile.length != 0 && this.state.searchStarted && !this.state.profileSelected && this.state.profileFound
                             ?
                             this.state.sortedProfiles.map((users) => this.getUser(users.year, users.userName, users.hide, users.email, users.bio, users.major))
                             :
