@@ -70,11 +70,6 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
     }
 
     handleProfileClick(bio: string, userName: string, email: string, hide: boolean, year: number, major: string) {
-        //event.preventDefault();
-        // this.setState({
-        //     profileSelected: true
-        // })
-
         let profile = {
             bio: bio,
             userName: userName,
@@ -88,8 +83,6 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
             displayProfile: profile,
             profileSelected: true
         })
-
-
 
     }
 

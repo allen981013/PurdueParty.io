@@ -169,7 +169,7 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
       if (this.state.profilePic == null as any) {
         return;
       } else {
-        return <img src={URL.createObjectURL(this.state.profilePic)}/>;
+        return <img width="10%" height="10%" src={URL.createObjectURL(this.state.profilePic)}/>;
       }
     }
 
