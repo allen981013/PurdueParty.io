@@ -42,22 +42,27 @@ export const threadPageSlice = createSlice({
 
 // actions 
 
-export const fetchPost = (postID: string) => {
+export const fetchPost = (classID: string, postID: string) => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     // TODO: Abstract some operations here into smaller helper functions
     const db = getFirestore()
     // Query post and its replies 
-    var postDocSnapshot = await db.collection("posts").doc(postID).get()
+    var postQuerySnapshot = await db.collection("posts")
+      .where('classID', "==", classID)
+      .where('postId', "==", postID)
+      .limit(1)
+      .get()
     var repliesQuerySnapshot = await db.collection("posts")
       .where('ancestorsIDs', "array-contains", postID)
+      .where('classID', "==", classID)
       .orderBy("postedDateTime", "desc")
       .get()
-    if (!postDocSnapshot.exists) {
+    if (postQuerySnapshot.empty) {
       dispatch(threadPageSlice.actions.fetchPostSuccess(undefined))
       return
     }
     // Build thread nodes array 
-    var threadNodes: ThreadNode[] = [...repliesQuerySnapshot.docs, postDocSnapshot]
+    var threadNodes: ThreadNode[] = [...repliesQuerySnapshot.docs, ...postQuerySnapshot.docs]
     // Transform individual thread node into the expected schema
     threadNodes = threadNodes.map((docSnapshot: any): ThreadNode => {
       let node = docSnapshot.data()

@@ -35,7 +35,7 @@ interface ThreadPageProps {
   post?: ThreadNode;
   isDataFetched?: boolean;
   clearFetchedDocs?: () => void;
-  fetchPost?: (postID: string) => void;
+  fetchPost?: (classID: string, postID: string) => void;
 }
 
 interface ThreadPageStates {
@@ -44,12 +44,12 @@ interface ThreadPageStates {
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   componentDidMount() {
-    this.props.fetchPost(this.props.postID)
     const postIsEmptyOrObsolete = () => !this.props.post
       || (this.props.post
         && this.props.post.ID !== this.props.postID)
     if (postIsEmptyOrObsolete()) {
       this.props.clearFetchedDocs()
+      this.props.fetchPost(this.props.classID, this.props.postID)
     }
   }
 
@@ -251,6 +251,10 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       return (
         <Box pt="32px">Post does not exists</Box>
       )
+    if (this.props.isDataFetched && this.props.classInfo === undefined)
+      return (
+        <Box pt="32px">Post does not exists</Box>
+      )
     return (
       <Box
         display="flex"
@@ -308,7 +312,7 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
   return {
-    fetchPost: (postID: string) => dispatch(fetchPost(postID)),
+    fetchPost: (classID: string, postID: string) => dispatch(fetchPost(classID, postID)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         reduxDispatch(threadPageSlice.actions.fetchPostBegin())
