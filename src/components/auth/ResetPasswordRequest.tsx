@@ -44,15 +44,14 @@ class ResetPassword extends Component<ResetPasswordProps, ResetPasswordState> {
     event.preventDefault();
 
     //check for empty requried fields
-    if (!this.state.email.includes('@purdue.edu', this.state.email.length - 11)) {
-        this.setState({
-          errormsg: "Only Purdue email addresses are allowed for Account Creation!"
-        })
+    if (this.state.email.length < 12) {
+      this.setState({
+        errormsg: "Please enter a valid email address."
+      })
     }
-    //check email is valid
-    else if (this.state.email.length < 12) {
+    else if (!this.state.email.includes('@purdue.edu', this.state.email.length - 11)) {
         this.setState({
-          errormsg: "Email must be valid!"
+          errormsg: "Only Purdue email addresses are allowed!"
         })
     }
     else {
@@ -78,9 +77,12 @@ class ResetPassword extends Component<ResetPasswordProps, ResetPasswordState> {
       //error message if account exists
     } else if (authError && this.state.redirect == true) {
       this.setState({
-        errormsg: "Please make sure your account does not already exist",
+        errormsg: "Please make sure your email is correct.",
         redirect: false
       })
+    } else if (!authError && this.state.redirect == true) {
+      window.alert('Reset password email sent successfully.');
+      return <Redirect to='/' />
     }
 
     return (

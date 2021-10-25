@@ -78,6 +78,31 @@ const authReducer = (state = initState, action: Action): AuthState => {
         lastCheckedUsername: action.payload.lastCheckedUsername,
         lastCheckedIsLoggedIn: action.payload.lastCheckedIsLoggedIn
       }
+    case 'RESET_PASS_SUCCESS':
+      return {
+        ...state,
+        authError: undefined
+      }
+    case 'RESET_PASS_ERR':
+      return {
+        ...state,
+        authError: "Reset user password error"
+      }
+    case 'CHANGE_PASS_ERR':
+      return {
+        ...state,
+        authError: "Change user password error"
+      }
+    case 'REAUTH_SUCCESS':
+      return {
+        ...state,
+        authError: undefined
+      }
+    case 'REAUTH_ERR':
+      return {
+        ...state,
+        authError: "Error during user reauthentication"
+      }
     default:
       return state;
   }
