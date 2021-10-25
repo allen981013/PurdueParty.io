@@ -73,7 +73,7 @@ function App() {
           <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
-        <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px" }}>
+        <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign:"center"}}>
           Purdue University, 100 North University Street, West Lafayette, IN, 47907
         </div>
       </div>

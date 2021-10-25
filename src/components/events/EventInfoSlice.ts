@@ -8,7 +8,10 @@ import moment from 'moment'
 // type for states returned by reducer
 export interface EventInfoStatesRedux {
   event: {
+    id: string,
     title: string,
+    ownerID: string,
+    editors: string[],
     startTime: string,
     duration: string,
     endTime: string,
@@ -29,7 +32,10 @@ export interface EventInfoStatesRedux {
 // initial states
 const initState: EventInfoStatesRedux = {
   event: {
+    id: "",
     title: "My Event",
+    ownerID: "",
+    editors: [],
     startTime: new Date().toLocaleString("en-US"),
     endTime: new Date().toLocaleString("en-US"),
     duration: "",
@@ -95,7 +101,10 @@ export const fetchEventInfo = (eventID: string) => {
           return
         }
         // Map event info
+        var id = doc.data().id
         var title = doc.data().title
+        var ownerID = doc.data().ownerID
+        var editors = doc.data().editors
         var startTime = doc.data().startTime.toDate().toLocaleString("en-US")
         var endTime = doc.data().endTime.toDate().toLocaleString("en-US")
         var location = doc.data().location
@@ -132,7 +141,10 @@ export const fetchEventInfo = (eventID: string) => {
             }
             const payload = {
               event: {
+                id: id,
                 title: title,
+                ownerID: ownerID,
+                editors: editors,
                 startTime: startTime,
                 endTime: endTime,
                 duration: duration,

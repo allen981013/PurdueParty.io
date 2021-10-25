@@ -3,6 +3,7 @@ import { Action, Dispatch } from 'redux'
 import { Timestamp } from 'firebase/firestore'
 import { RootState } from '../../store'
 import { EventsFetchParameter } from './EventsLanding'
+import HOST_OPTIONS  from './EventsLanding'
 
 // type for states returned by reducer
 export interface EventsLandingStatesRedux {
@@ -51,7 +52,6 @@ export const eventsLandingSlice = createSlice({
 
 // actions 
 
-/* Uncomment this if we're storing image paths instead of image url in firestore */
 export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     const db = getFirestore()
@@ -63,6 +63,10 @@ export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
     if (fetchParameter.startTimeUpperBound) {
       queryEventsPromise = queryEventsPromise
         .where("startTime", "<", Timestamp.fromDate(fetchParameter.startTimeUpperBound))
+    }
+    if (fetchParameter.host == "ME") {
+      console.log("LOOKING FOR MY EVENTS RN")
+      queryEventsPromise = queryEventsPromise.where("editors", "array-contains", getState().firebase.auth.uid)
     }
     queryEventsPromise = queryEventsPromise
       .orderBy("startTime", "asc")

@@ -8,6 +8,7 @@ import { combineReducers } from 'redux';
 import { landingSlice } from '../../components/landing/LandingSlice';
 import { eventInfoSlice } from '../../components/events/EventInfoSlice';
 import { eventsLandingSlice } from '../../components/events/EventsLandingSlice';
+import { threadPageSlice } from '../../components/forum/ThreadPageSlice';
 
 // Add it to this list
 const rootReducer = combineReducers({
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
     landing: landingSlice.reducer,
     marketplace: marketplaceReducer,
     eventInfo: eventInfoSlice.reducer,
-    eventsLanding: eventsLandingSlice.reducer
+    eventsLanding: eventsLandingSlice.reducer,
+    threadPage: threadPageSlice.reducer,
 });
 
 export default rootReducer;
