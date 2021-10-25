@@ -15,7 +15,8 @@ interface EditProfileState {
   userName: string,
   major: string,
   year: string,
-  hide: boolean
+  hide: boolean,
+  hasUpdated: boolean
 }
 
 // Interface/type for EditProfile Props
@@ -23,8 +24,10 @@ interface EditProfileProps {
   auth: any,
   firebase: any,
   uid: string,
+  profile: any,
   deleteAccount: () => void;
-  editUser: (state: EditProfileState) => void
+  editUser: (state: EditProfileState) => void,
+  editStatus: string
 }
 
 class EditProfile extends Component<EditProfileProps, EditProfileState> {
@@ -37,7 +40,8 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
       userName: "",
       major: "",
       year: "",
-      hide: false
+      hide: false,
+      hasUpdated: false
     }
   }
 
@@ -83,26 +87,35 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
   handleSubmit = (event: any) => {
     event.preventDefault();
 
-    if (this.state.bio.length > 280) {
+    if (this.state.bio.length > 0 && this.state.bio.length > 280) {
       // Pop modal for title length error
       console.log("Bio must be shorter than 280 characters.");
       window.alert("Bio must be shorter than 280 characters.")
     }
-    else if (this.state.userName.length < 3) {
+    else if (this.state.userName.length > 0 && this.state.userName.length < 3) {
       // Pop modal for description length error
       console.log("Minimum User Name Length Required: 3 characters");
       window.alert("Minimum User Name length required: 3 characters")
     }
     else {
-      console.log("Profile has been edited!");
-      window.alert("Profile has been edited!")
-
       this.setState({
         id: this.props.uid
       })
 
       this.props.editUser(this.state);
 
+      setTimeout(() => {
+        if (this.props.editStatus != undefined) {
+          if (this.props.editStatus.localeCompare('Edit profile success') == 0) {
+            console.log("Profile has been edited!");
+            window.alert("Profile has been edited!");
+          } else {
+            window.alert("Your chosen username is not unique. Please select a new one.");
+          }
+        }
+      }, 1000)
+
+      /*
       this.setState({
         bio: "",
         userName: "",
@@ -110,6 +123,7 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
         year: "",
         hide: false
       })
+      */
     }
   }
 
@@ -117,6 +131,36 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
     const { auth } = this.props;
 
     if (!auth.uid) return <Redirect to='/' />
+    var userProfile : any = undefined;
+
+    if (this.props.profile && this.props.profile.length == 1) {
+      //console.log(this.props.profile);
+      userProfile = this.props.profile[0];
+    }
+
+    if (!this.state.hasUpdated && userProfile != undefined) {
+      this.setState({
+        bio: userProfile.bio,
+        userName: userProfile.userName
+      })
+
+      if (userProfile.hasOwnProperty('major')) {
+        this.setState({
+          major: userProfile.major
+        })
+      }
+
+      
+      if (userProfile.hasOwnProperty('year')) {
+        this.setState({
+          year: userProfile.year
+        })
+      }
+
+      this.setState({
+        hasUpdated: true
+      })
+    }
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
@@ -170,6 +214,7 @@ const mapStateToProps = (state: RootState) => {
     auth: state.firebase.auth,
     profile: state.firestore.ordered.users,
     uid: state.firebase.auth.uid,
+    editStatus: state.profileReducer.editStatus
   }
 }
 
@@ -182,7 +227,16 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
 
 export default compose<React.ComponentType<EditProfileProps>>(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect([
-    { collection: 'users' }
-  ])
+  firestoreConnect((props:EditProfileProps) => {
+    if (typeof props.auth != undefined) {
+      return [
+        {
+          collection: 'users',
+          doc: props.auth.uid
+        }
+      ]
+    } else {
+      return []
+    }
+  })
 )(EditProfile)

@@ -4,7 +4,6 @@ import Landing from './components/landing/Landing';
 import SignIn from './components/auth/SignIn';
 import ChangePassword from './components/auth/ChangePassword';
 import ResetPasswordRequest from './components/auth/ResetPasswordRequest';
-import ResetPassword from './components/auth/ResetPassword';
 import CreateAccount from './components/auth/CreateAccount';
 import MarketPlace from './components/marketplace/MarketPlace';
 import EventsLanding from './components/events/EventsLanding';
@@ -40,7 +39,6 @@ function App() {
           <Route path='/signin' component={SignIn} />
           <Route path='/createaccount' component={CreateAccount} />
           <Route path='/changePassword' component={ChangePassword} />
-          <Route path='/resetPassword' component={ResetPassword} />
           <Route path='/resetPasswordRequest' component={ResetPasswordRequest} />
           <Route exact path='/marketplace' component={MarketPlace} />
           <Route path='/marketplace/create-listing' component={createSellListing} />
