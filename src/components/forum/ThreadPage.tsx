@@ -142,7 +142,13 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         </Box>
         <Box display="flex" flexDirection="row">
           {/* Vertical line */}
-          <Divider orientation="vertical" flexItem sx={{ margin: "0px 0px 0px 22px" }} ></Divider>
+          <Box display="flex" sx={{ color: "#edeff1", "&:hover": { color: "#9CA3AF" } }}>
+            <Divider orientation="vertical" flexItem
+              sx={{
+                margin: "4px 0px 0px 21.5px", color: "inherit", border: "none", borderLeft: "2.3px solid",
+              }}
+            />
+          </Box>
           <Box display="flex" flexDirection="column">
             {/* Main content */}
             {
