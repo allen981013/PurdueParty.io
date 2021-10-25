@@ -102,6 +102,17 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     </Grid>
                 </Box>
 
+                <div className="input-field-search">
+                <Button
+                component={Link}
+                to="search-profiles"
+                variant="outlined"
+                sx={{ color: "black", border: "1px solid black" }}
+                > Search For Other Profiles
+              </Button></div>
+
+              <p></p>
+
                 <div className="input-field">
                 <Button
                 component={Link}

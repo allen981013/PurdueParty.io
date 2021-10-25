@@ -27,6 +27,8 @@ import EditSellListing from './components/marketplace/EditSellListing';
 import ThreadPage from './components/forum/ThreadPage'
 
 
+import SearchProfiles from './components/profile/SearchProfiles';
+
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
   return (
@@ -65,6 +67,11 @@ function App() {
           <Route path='/edit-post/:classID/:postID' component={EditPost} />
           <Route path='/edit-event/:eventID' component={EditEvent} />
           <Route path='/create-class' component={CreateClass} />
+          <Route path = '/create-post/:classID' component = {CreatePost} />
+
+          <Route path = '/search-profiles' component = {SearchProfiles} />
+
+
           <Route path='/create-post/:classID' component={CreatePost} />
           <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
         </Switch>
