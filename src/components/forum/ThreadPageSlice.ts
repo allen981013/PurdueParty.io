@@ -98,7 +98,9 @@ export const fetchPost = (classID: string, postID: string) => {
     }, {})
     // Populate user data into thread node objects
     threadNodes = threadNodes.map(threadNode => {
-      let user = idToUserDict[threadNode.poster]
+      let uid = threadNode.poster
+      let user = uid in idToUserDict ? idToUserDict[uid] : {}
+      // Note: poster & posterImgUrl will be undefined if the user does not exist
       return {
         ...threadNode,
         poster: user.userName,
