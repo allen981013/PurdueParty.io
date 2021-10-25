@@ -91,7 +91,7 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
         if (!this.state.searchStarted && (userName === 'null' && year == 0)) {
             return (<div>Type in a user's email or username.</div>)
         }
-        else if(!this.state.profileFound){
+        else if (!this.state.profileFound) {
             return (<div>No profiles match your search.</div>)
         }
         else {
@@ -154,30 +154,27 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
     sortResults() {
         let profiles = [...this.props.profile]
 
+        var sortedProfiles: { bio: string; userName: string; email: string; hide: boolean; year: number; major: string; }[];
+        sortedProfiles = []
+
         var email1;
         var username1;
         var email2;
         var username2;
         var searchText;
+
+        if (this.state.searchField.indexOf('@') == -1) {
+            searchText = this.state.searchField.toLowerCase();
+        } else {
+            searchText = this.state.searchField.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
+        }
+
         for (let i = 0; i < profiles.length - 1; i++) {
             for (let j = 0; j < profiles.length - i - 1; j++) {
                 email1 = profiles[j].email.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
                 username1 = profiles[j].userName.toLowerCase();
                 email2 = profiles[j + 1].email.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
                 username2 = profiles[j + 1].userName.toLowerCase();
-
-                if (this.state.searchField.indexOf('@') == -1) {
-                    searchText = this.state.searchField.toLowerCase();
-                } else {
-                    searchText = this.state.searchField.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
-                }
-
-                if(searchText != '' && (username1.includes(searchText) || username2.includes(searchText) 
-                || email1.includes(searchText) || email2.includes(searchText))){
-                    this.setState({
-                        profileFound: true
-                    })
-                }
 
                 if ((username2 === searchText || email2 === searchText)
                     || ((username2.includes(searchText) || email2.includes(searchText))
@@ -191,8 +188,23 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
             }
         }
 
+        var j = 0
+        for (let i = 0; i < profiles.length - 1; i++) {
+            email1 = profiles[i].email.substring(0, profiles[i].email.indexOf('@')).toLowerCase();
+            username1 = profiles[i].userName.toLowerCase();
+
+            if (searchText != '' && (username1.includes(searchText) || email1.includes(searchText))) {
+                sortedProfiles[j] = profiles[i];
+
+                j = j + 1;
+                this.setState({
+                    profileFound: true
+                })
+            }
+        }
+
         this.setState({
-            sortedProfiles: profiles
+            sortedProfiles: sortedProfiles
         })
     }
 
