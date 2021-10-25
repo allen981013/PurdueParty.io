@@ -5,9 +5,10 @@ import { AppDispatch, RootState } from '../../store'
 import { connect } from 'react-redux'
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase'
 import { Action, compose, Dispatch } from 'redux'
-import { Redirect } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import moment from 'moment';
 import { actionTypes } from 'redux-firestore';
+import { EditOutlined } from '@mui/icons-material';
 import { PostsLandingProps } from './PostsLanding';
 import { firestoreDb } from '../..';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
@@ -41,6 +42,7 @@ interface ThreadPageProps {
 interface ThreadPageStates {
 }
 
+
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   componentDidMount() {
@@ -52,7 +54,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       this.props.fetchPost(this.props.classID, this.props.postID)
     }
   }
-
+  
   getPost = (post: ThreadNode) => {
     return (
       <Box
@@ -107,6 +109,16 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
               fontSize: "12px", padding: "4px 4px"
             }}
           >
+            <h1 style={{ fontWeight: 300, margin: "0px" }}>{this.props.post.title}</h1>
+              <Button 
+              component={Link}
+              to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
+              variant="outlined"
+              sx={{ color: "black", height: "32px" }}
+              >
+              <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+                Edit
+              </Button>
             <ChatBubbleOutlineOutlinedIcon
               sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
             />

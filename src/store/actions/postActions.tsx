@@ -28,8 +28,48 @@ export const addPost = (newPost: any) => {
     }
 }
 
-export const addClass = (newClass: any) => {
+export const editPost = (newPost:any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        console.log(newPost);
+        console.log(newPost.postId);
+        var docref = db.collection('posts').doc(newPost.postId);
+        
+        docref.update({
+            owner: getState().firebase.auth.uid,
+            classID: newPost.classID,
+            title: newPost.title,
+            content: newPost.description,
+            postedDateTime: Timestamp.now(),
+            upvotes: 0,
+            downvotes: 0,
+            numComments: 0,
+            comments: [],
+        }).then((newDocRef: any) => {
+            dispatch({ type: 'UPDATE_POST_SUCCESS', newDocRef });
+        }).catch((err: any) => {
+            dispatch({ type: 'UPDATE_POST_ERR', err });
+        });
+    }
+}
+
+export const deletePost = (newPost:any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        console.log(newPost);
+        console.log(newPost.postId);
+        var docref = db.collection('posts').doc(newPost.postId);
+
+        docref.delete().then(() => {
+            dispatch({ type: 'DELETE_POST_SUCCESS', docref });
+        }).catch((err: any) => {
+            dispatch({ type: 'DELETE_POST_ERR', err });
+        });
+    }
+}
+
+export const addClass = (newClass:any) => {
+    return(dispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {
         const db = getFirestore();
         var docref = db.collection('classes');
 
