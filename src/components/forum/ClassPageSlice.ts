@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Action, Dispatch } from 'redux'
 import { RootState } from '../../store'
-import { ThreadNode } from './ThreadPage'
 import { Post } from './ClassPage'
 import moment from 'moment'
 
