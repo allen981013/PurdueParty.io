@@ -73,9 +73,6 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             {!this.isLoggedIn() && this.getGreetingOrAuthButton("Sign in", "/signin")}
             {this.isLoggedIn() && this.getGreetingOrAuthButton("Hi, " + this.props.username, "/profile")}
             {this.isLoggedIn() && this.getGreetingOrAuthButton("Sign out", "/", this.handleSignOutClick)}
-
-            {this.isLoggedIn() && <Link to="/changePassword">Change Password</Link>}
-          
           </div>
         </div>
         <div id="topbar__black" />

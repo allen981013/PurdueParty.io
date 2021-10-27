@@ -6,11 +6,8 @@ import { connect } from 'react-redux'
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase'
 import { Action, compose, Dispatch } from 'redux'
 import { Link, Redirect } from 'react-router-dom'
-import moment from 'moment';
-import { actionTypes } from 'redux-firestore';
 import { EditOutlined } from '@mui/icons-material';
-import { PostsLandingProps } from './PostsLanding';
-import { firestoreDb } from '../..';
+import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
 import { deletePost } from '../../store/actions/postActions';
 
@@ -33,7 +30,7 @@ interface ThreadPageProps {
   auth?: FirebaseReducer.AuthState;
   classID: string;
   postID: string;
-  classInfo?: PostsLandingProps["classInfo"]
+  classInfo?: ClassPageProps["classInfo"]
   post?: ThreadNode;
   isDataFetched?: boolean;
   clearFetchedDocs?: () => void;
@@ -47,7 +44,6 @@ interface ThreadPageProps {
 
 interface ThreadPageStates {
 }
-
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
@@ -194,6 +190,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
   }
 
   getReply = (reply: ThreadNode) => {
+    // TODO: Abstract away some operations here into several util functions
     return (
       <Box display="flex" flexDirection="column" pt="16px">
         {/* Avatar, poster name, & time since posted */}
@@ -204,13 +201,13 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
               margin: "4px 8px"
             }}
           >
-            {reply.poster[0]}
+            {reply.poster ? reply.poster[0] : ""}
           </Avatar>
           <Typography
             variant="subtitle2"
             sx={{ color: "#000000", fontSize: "12px", fontWeight: "bold" }}
           >
-            {reply.isDeleted ? "[ deleted ]" : reply.poster} &nbsp;
+            {(reply.isDeleted || reply.poster === undefined) ? "[ deleted ]" : reply.poster} &nbsp;
           </Typography>
           <Typography
             variant="subtitle2"
@@ -285,7 +282,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     )
   }
 
-  getClass(class_: PostsLandingProps["classInfo"]) {
+  getClass(class_: ClassPageProps["classInfo"]) {
     return (
       <Card>
         <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
@@ -365,7 +362,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
   // Map class object to meet the UI's need
   var classes = state.firestore.ordered.classPageClasses
-  var classInfo: PostsLandingProps["classInfo"] = (classes !== undefined && classes.length > 0)
+  var classInfo: ClassPageProps["classInfo"] = (classes !== undefined && classes.length > 0)
     ? classes.map((class_: any) => {
       return {
         title: class_.title,

@@ -27,8 +27,8 @@ interface SearchProfilesState {
         hide: boolean,
         year: number,
         major: string
-    }
-
+    },
+    profileFound: boolean
 }
 
 // Interface/type for Profile Props
@@ -62,7 +62,8 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                 year: 0,
                 major: "null"
             },
-            sortedProfiles: []
+            sortedProfiles: [],
+            profileFound: false
 
         }
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -81,14 +82,17 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
 
         this.setState({
             displayProfile: profile,
-            profileSelected: true
+            profileSelected: true,
         })
 
     }
 
     displayUserProfile(bio: string, userName: string, major: string, year: number) {
-        if (userName === 'null' && year == 0) {
+        if (!this.state.searchStarted && (userName === 'null' && year == 0)) {
             return (<div>Type in a user's email or username.</div>)
+        }
+        else if (!this.state.profileFound) {
+            return (<div>No profiles match your search.</div>)
         }
         else {
             return (
@@ -150,23 +154,27 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
     sortResults() {
         let profiles = [...this.props.profile]
 
+        var sortedProfiles: { bio: string; userName: string; email: string; hide: boolean; year: number; major: string; }[];
+        sortedProfiles = []
+
         var email1;
         var username1;
         var email2;
         var username2;
         var searchText;
+
+        if (this.state.searchField.indexOf('@') == -1) {
+            searchText = this.state.searchField.toLowerCase();
+        } else {
+            searchText = this.state.searchField.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
+        }
+
         for (let i = 0; i < profiles.length - 1; i++) {
             for (let j = 0; j < profiles.length - i - 1; j++) {
                 email1 = profiles[j].email.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
                 username1 = profiles[j].userName.toLowerCase();
                 email2 = profiles[j + 1].email.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
                 username2 = profiles[j + 1].userName.toLowerCase();
-
-                if (this.state.searchField.indexOf('@') == -1) {
-                    searchText = this.state.searchField.toLowerCase();
-                } else {
-                    searchText = this.state.searchField.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
-                }
 
                 if ((username2 === searchText || email2 === searchText)
                     || ((username2.includes(searchText) || email2.includes(searchText))
@@ -180,8 +188,23 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
             }
         }
 
+        var j = 0
+        for (let i = 0; i < profiles.length - 1; i++) {
+            email1 = profiles[i].email.substring(0, profiles[i].email.indexOf('@')).toLowerCase();
+            username1 = profiles[i].userName.toLowerCase();
+
+            if (searchText != '' && (username1.includes(searchText) || email1.includes(searchText))) {
+                sortedProfiles[j] = profiles[i];
+
+                j = j + 1;
+                this.setState({
+                    profileFound: true
+                })
+            }
+        }
+
         this.setState({
-            sortedProfiles: profiles
+            sortedProfiles: sortedProfiles
         })
     }
 
@@ -195,11 +218,12 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
 
     handleSubmit(event: any) {
         event.preventDefault();
-        this.sortResults()
         this.setState({
             searchStarted: true,
-            profileSelected: false
+            profileSelected: false,
+            profileFound: false
         })
+        this.sortResults()
     }
 
     render() {
@@ -221,7 +245,7 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
                     <Box id="cropped-purdue-img" />
                     <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                        {this.props.profile != undefined && this.props.profile.length != 0 && this.state.searchStarted && !this.state.profileSelected
+                        {this.props.profile != undefined && this.props.profile.length != 0 && this.state.searchStarted && !this.state.profileSelected && this.state.profileFound
                             ?
                             this.state.sortedProfiles.map((users) => this.getUser(users.year, users.userName, users.hide, users.email, users.bio, users.major))
                             :

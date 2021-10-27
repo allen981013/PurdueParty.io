@@ -5,8 +5,8 @@ import { deleteAccount } from '../../store/actions/authActions';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
-import { Redirect } from 'react-router-dom'
-import { Box } from '@mui/material';
+import { Link, Redirect } from 'react-router-dom'
+import { Box, Button } from '@mui/material';
 
 // Interface/type for EditProfile State
 interface EditProfileState {
@@ -165,9 +165,6 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
     return (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
         <p></p>
-        <form onSubmit={this.handleDelete}>
-          <button>Delete Account</button>
-        </form>
         <form onSubmit={this.handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <h1>User Name</h1>
           <div className="input-field">
@@ -201,6 +198,16 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
           <div className="input-field">
             <button className="button">Save</button>
           </div>
+          <Button 
+            component={Link} 
+            to="/changePassword"
+            sx={{ color: "black", border: "1px solid black", margin: "8px 0px" }}
+          >
+            Change Password
+          </Button>
+          <Button sx={{ color: "black", border: "1px solid black" }} onClick={this.handleDelete}>
+            Delete Account 
+          </Button>
 
         </form>
       </Box>
