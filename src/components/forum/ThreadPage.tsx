@@ -12,6 +12,7 @@ import { EditOutlined } from '@mui/icons-material';
 import { PostsLandingProps } from './PostsLanding';
 import { firestoreDb } from '../..';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
+import { deletePost } from '../../store/actions/postActions';
 
 export interface ThreadNode { // Refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
@@ -37,6 +38,11 @@ interface ThreadPageProps {
   isDataFetched?: boolean;
   clearFetchedDocs?: () => void;
   fetchPost?: (classID: string, postID: string) => void;
+  deletePost?: (state: ThreadPageProps) => void;
+  users: {
+    bio: string,
+    userName: string
+  }[]
 }
 
 interface ThreadPageStates {
@@ -44,6 +50,32 @@ interface ThreadPageStates {
 
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
+
+  handleDelete = (event: any) => {
+    event.preventDefault();
+    var result : boolean = window.confirm("Are you sure you want to delete your post?");
+    if (result) {
+        //user said yes
+        console.log(this.props.postID);
+        this.props.deletePost(this.props);
+
+        this.setState({
+          postId: "",
+          owner: "",
+          classID: "",
+          title: "",
+          description: "",
+          upvotes: 1,
+          downvotes: 0,
+          comments: [],
+        })
+        //Maybe use this.props.history.push()
+
+        window.alert("Post Deleted Successfully!");
+        //return <Redirect to='/classes' />
+    }
+    // User said no, do nothing
+  }
 
   componentDidMount() {
     const postIsEmptyOrObsolete = () => !this.props.post
@@ -55,7 +87,48 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     }
   }
   
+  isOwner = (user:any) => {
+    if (this.props.post) {
+      return user.id === this.props.post.poster
+    } else {
+      return false;
+    }
+  }
+
   getPost = (post: ThreadNode) => {
+    const { auth } = this.props;
+
+    var curUser : any = undefined;
+    if (this.props.users) {
+      curUser = this.props.users.find(this.isOwner);
+    }
+
+    var renderEdit : boolean = false;
+    if (curUser && (curUser.id == auth.uid)) {
+      renderEdit = true;
+    }
+
+    var editCode : any = <div></div>;
+    if (renderEdit) {
+        editCode = <Button 
+        component={Link}
+        to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
+        variant="outlined"
+        sx={{ color: "black", height: "32px" }}
+      >
+        <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+          Edit
+      </Button>
+      {console.log(this)}
+      <Button 
+        onClick={this.handleDelete}
+        variant="outlined"
+        sx={{ color: "black", height: "32px" }}
+      >
+        Delete
+      </Button>
+    }
+
     return (
       <Box
         sx={{
@@ -86,15 +159,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             sx={{ color: "#787c7e", fontSize: "12px" }}
           >{post.timeSincePosted}
           </Typography>
-          <Button 
-            component={Link}
-            to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
-            variant="outlined"
-            sx={{ color: "black", height: "32px" }}
-          >
-            <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-              Edit
-          </Button>
+          {editCode}
         </Box>
         <Typography
           noWrap
@@ -323,6 +388,7 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
   return {
+    deletePost: (post: any) => dispatch(deletePost(post)),
     fetchPost: (classID: string, postID: string) => dispatch(fetchPost(classID, postID)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {

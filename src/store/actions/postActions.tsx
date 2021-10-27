@@ -57,8 +57,8 @@ export const deletePost = (newPost:any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         console.log(newPost);
-        console.log(newPost.postId);
-        var docref = db.collection('posts').doc(newPost.postId);
+        console.log(newPost.postID);
+        var docref = db.collection('posts').doc(newPost.postID);
 
         docref.delete().then(() => {
             dispatch({ type: 'DELETE_POST_SUCCESS', docref });

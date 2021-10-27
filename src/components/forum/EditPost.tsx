@@ -35,7 +35,6 @@ interface PostProps {
   posts: any,
   match: any,
   editPost: (state: PostState) => void
-  deletePost : (state: PostState) => void;
 }
 
 class EditPost extends Component<PostProps, PostState> {
@@ -70,32 +69,6 @@ class EditPost extends Component<PostProps, PostState> {
     })
   }
 
-  handleDelete = (event: any) => {
-    event.preventDefault();
-    var result : boolean = window.confirm("Are you sure you want to delete your post?");
-    if (result) {
-        //user said yes
-        console.log(this.props.match.params.postID);
-        this.props.deletePost({...this.state, postId: this.props.match.params.postID});
-
-        this.setState({
-          postId: "",
-          owner: "",
-          classID: "",
-          title: "",
-          description: "",
-          postedDateTime: new Timestamp(0,0),
-          upvotes: 1,
-          downvotes: 0,
-          comments: [],
-        })
-        //Maybe use this.props.history.push()
-
-        window.alert("Post Deleted Successfully!");
-        //return <Redirect to='/classes' />
-    }
-    // User said no, do nothing
-  }
 
   // Handle user submit
   handleSubmit = (event: any) => {
@@ -136,16 +109,6 @@ class EditPost extends Component<PostProps, PostState> {
   render() {
     return (
       <div>
-        {console.log(this)}
-        {console.log(this.props.match.params.postID)}
-        <h1 style={{ fontWeight: 300, margin: "0px" }}></h1>
-        <Button 
-          onClick={this.handleDelete}
-          variant="outlined"
-          sx={{ color: "black", height: "32px" }}
-        >
-          Delete
-        </Button>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
           <Box id="cropped-purdue-img" />
         </Box>
@@ -185,8 +148,7 @@ const mapStateToProps = (state: any) => {
 const mapDispatchToProps = (dispatch: (action: any) => void) => {
   // Insert functions from actions folder in similar syntax
   return {
-    editPost: (post: any) => dispatch(editPost(post)),
-    deletePost: (post: any) => dispatch(deletePost(post))
+    editPost: (post: any) => dispatch(editPost(post))
   }
 }
 
