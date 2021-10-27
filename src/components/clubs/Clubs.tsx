@@ -11,16 +11,16 @@ import {
   CardMedia, CardContent, Typography, Paper, IconButton, InputBase
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
-import { ClubsFetchParameter } from '../../store/reducers/clubReducer';
+import { ClubsFetchParameter } from './ClubsPageSlice';
+import { fetchClubs } from './ClubsPageSlice';
 
 // Interface/type for Clubs State
-interface ClubState {
-  imageURL: string
+interface ClubsState {
 }
 
 // Interface/type for Clubs Props
-interface ClubProps {
-  club: {
+export interface ClubsProps {
+  clubs: {
     title: string,
     description: string,
     image: string,
@@ -28,40 +28,39 @@ interface ClubProps {
   }[];
   auth: any;
   firebase: any;
-  fetchParameter: ClubsFetchParameter;
-  updateFetchParameter: (fetchParameter: any) => void;
+  fetchClubs: (fetchParameter: ClubsFetchParameter) => void;
 }
 
-class Clubs extends Component<ClubProps, ClubState> {
+class Clubs extends Component<ClubsProps, ClubsState> {
 
   // Instance attributes
-  fetchParameter = {
+  fetchParameter: ClubsFetchParameter = {
     searchKeyword: "",
   }
 
   // Initialize state
-  constructor(props: ClubProps) {
+  constructor(props: ClubsProps) {
     super(props);
     this.state = {
-      imageURL: ""
     }
   }
 
-  // TODO: Uncomment this if we were to implement full text search
+  componentDidMount() {
+    this.props.fetchClubs(this.fetchParameter)
+  }
+
   handleSearchBarChange = (e: any) => {
     this.fetchParameter.searchKeyword = e.target.value
   }
 
   handleSearchBarKeyDown = (e: any) => {
     if (e.key === "Enter") {
-      this.props.updateFetchParameter(this.fetchParameter)
-      console.log("clicked", this.props.fetchParameter)
+      this.props.fetchClubs(this.fetchParameter)
     }
   }
 
   handleSearchButtonClick = (e: any) => {
-    this.props.updateFetchParameter(this.fetchParameter)
-    console.log("clicked", this.props.fetchParameter)
+    this.props.fetchClubs(this.fetchParameter)
   }
 
   getClub(title: string, description: string, imageURL: string, id: string) {
@@ -112,7 +111,9 @@ class Clubs extends Component<ClubProps, ClubState> {
     return (
       <div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div
+          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
           <Box
             display="flex"
             alignSelf="center"
@@ -141,13 +142,12 @@ class Clubs extends Component<ClubProps, ClubState> {
           </Box></div>
 
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
-          <Paper  // TODO: Uncomment this search bar if we were to implement full-text search
+          <Paper
             sx={{ p: '2px 4px 0px 0px ', display: 'flex', alignItems: 'center' }}
           >
             <InputBase
               sx={{ ml: 2, flex: 1 }}
-              placeholder="Search events"
-              inputProps={{ 'aria-label': 'search events' }}
+              placeholder="Search clubs"
               onChange={this.handleSearchBarChange}
               onKeyDown={this.handleSearchBarKeyDown}
             />
@@ -156,9 +156,9 @@ class Clubs extends Component<ClubProps, ClubState> {
             </IconButton>
           </Paper>
           <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-            {this.props.club != undefined && this.props.club.length != 0
+            {this.props.clubs != undefined && this.props.clubs.length != 0
               ?
-              this.props.club.map((clubs) => this.getClub(clubs.title, clubs.description, clubs.image, clubs.id))
+              this.props.clubs.map((clubs) => this.getClub(clubs.title, clubs.description, clubs.image, clubs.id))
               :
               <div>Club Missing</div>
             }
@@ -171,15 +171,15 @@ class Clubs extends Component<ClubProps, ClubState> {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    club: state.firestore.ordered.clubs,
+    clubs: state.clubsPage.clubs,
     auth: state.firebase.auth,
-    fetchParameter: state.club.fetchParameter,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
+    fetchClubs: (fetchParameter: ClubsFetchParameter) => dispatch(fetchClubs(fetchParameter)),
     updateFetchParameter: (fetchParameter: any) => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any
       ) => {
@@ -188,21 +188,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
   }
 }
 
-export default compose<React.ComponentType<ClubProps>>(
-  connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect((props: ClubProps) => {
-    console.log("fc = ", props.fetchParameter.searchKeyword)
-    if (props.fetchParameter.searchKeyword == "") {
-      return [{collection: "clubs"}]
-    }
-    return [
-      {
-        collection: 'clubs',
-        where: [
-          ["title", ">=", props.fetchParameter.searchKeyword],
-          ["title", "<=", props.fetchParameter.searchKeyword + '\uf8ff']
-        ]
-      }
-    ]
-  })
+export default compose<React.ComponentType<ClubsProps>>(
+  connect(mapStateToProps, mapDispatchToProps)
 )(Clubs)
