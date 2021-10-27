@@ -6,9 +6,12 @@ import { RootState, AppDispatch } from '../../store';
 import { Redirect, Link } from 'react-router-dom';
 import {
   Box, Button, CircularProgress, Grid, Card, CardActionArea,
-  CardContent, Typography
+  CardContent, Typography, ToggleButton, ToggleButtonGroup
 } from '@mui/material'
+import { styled } from '@mui/material/styles';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
+import StarRateIcon from '@mui/icons-material/StarRate';
 import moment from 'moment';
 import { actionTypes } from 'redux-firestore';
 
@@ -23,6 +26,7 @@ interface Post {
 }
 
 interface PostsLandingState {
+  sortCriteria: string;
 }
 
 export interface PostsLandingProps {
@@ -41,21 +45,26 @@ export interface PostsLandingProps {
   clearFetchedDocs?: () => void;
 }
 
+export const SORT_OPTION = {
+  recency: "POSTED_TIME",
+  popularity: "POPULARITY",
+}
 
 class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
   // Initialize state
   constructor(props: PostsLandingProps) {
     super(props);
     this.state = {
+      sortCriteria: SORT_OPTION.recency,
     };
   }
-  
-  componentDidMount() {    
-    const classInfoIsEmptyOrObsolete = () => !this.props.classInfo 
-      || (this.props.classInfo 
-          && this.props.classInfo.classID !== this.props.classID)
-    const postsIsEmptyOrObsolete = () => !this.props.posts 
-      || this.props.posts.length == 0 
+
+  componentDidMount() {
+    const classInfoIsEmptyOrObsolete = () => !this.props.classInfo
+      || (this.props.classInfo
+        && this.props.classInfo.classID !== this.props.classID)
+    const postsIsEmptyOrObsolete = () => !this.props.posts
+      || this.props.posts.length == 0
       || (this.props.posts.length > 0 && this.props.posts[0].classID !== this.props.classID)
     if (classInfoIsEmptyOrObsolete() || postsIsEmptyOrObsolete()) {
       this.props.clearFetchedDocs()
@@ -157,6 +166,49 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
     )
   }
 
+  getSortingBar() {
+    // Create a mui theme
+    const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+      '& .MuiToggleButtonGroup-grouped': {
+        margin: "12px",
+        padding: "8px 16px",
+        border: 0,
+        display: "flex",
+        alignItems: "center",
+        '&:not(:first-of-type)': {
+          borderRadius: "20px",
+        },
+        '&:first-of-type': {
+          borderRadius: "20px",
+        },
+      },
+    }));
+    // Return the sorting bar
+    return (
+      <Box display="flex" mb="16px" width="100%">
+        <Card sx={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
+          <StyledToggleButtonGroup
+            size="small"
+            value={this.state.sortCriteria}
+            exclusive
+            onChange={(_, newVal) => { this.setState({ sortCriteria: newVal }) }}
+            aria-label="text alignment"
+          >
+            <ToggleButton value={SORT_OPTION.recency}>
+              {/* <StarBorderPurple500Icon sx={{ paddingRight: "4px" }} /> */}
+              <StarRateIcon sx={{ paddingRight: "4px" }} />
+              New
+            </ToggleButton>
+            <ToggleButton value={SORT_OPTION.popularity}>
+              <WhatshotIcon sx={{ paddingRight: "4px" }} />
+              Popular
+            </ToggleButton>
+          </StyledToggleButtonGroup>
+        </Card>
+      </Box>
+    )
+  }
+
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     if (!this.props.isDataFetched)
@@ -199,6 +251,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
           spacing={3}
         >
           <Grid item xs={12} md={9} >
+            {this.getSortingBar()}
             {this.props.posts === undefined
               && <CircularProgress />
             }
