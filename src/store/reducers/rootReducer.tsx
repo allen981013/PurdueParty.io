@@ -11,6 +11,7 @@ import { eventsLandingSlice } from '../../components/events/EventsLandingSlice';
 import profileReducer  from './profileReducer';
 import { threadPageSlice } from '../../components/forum/ThreadPageSlice';
 import { classPageSlice } from '../../components/forum/ClassPageSlice';
+import { clubsPageSlice } from '../../components/clubs/ClubsPageSlice';
 import clubReducer from './clubReducer';
 
 // Add it to this list
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
     threadPage: threadPageSlice.reducer,
     classPage: classPageSlice.reducer,
     club: clubReducer,
+    clubsPage: clubsPageSlice.reducer,
 });
 
 export default rootReducer;
