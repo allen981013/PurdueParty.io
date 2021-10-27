@@ -29,7 +29,6 @@ export const threadPageSlice = createSlice({
       }
     },
     fetchPostSuccess: (state: ThreadPageReduxState, action): ThreadPageReduxState => {
-      console.log({ action })
       return {
         ...state,
         post: action.payload,
@@ -106,7 +105,6 @@ export const fetchPost = (classID: string, postID: string) => {
         posterImgUrl: user.imageUrl,    // TODO: Update this once we have supported profile picture
       }
     })
-    console.log({ threadNodes })
     /* Build post object */
     // Get the set of all ancestor IDs
     var allAncestorsIDs = threadNodes.reduce((prevVal, curVal) => {
@@ -115,9 +113,9 @@ export const fetchPost = (classID: string, postID: string) => {
     }, new Set<string>())
     // Create dict of ID-to-thread node object 
     // - create entries for all ancestors (assume they all have been deleted)
-    var idToThreadElementDict: { [key: string]: ThreadNode } = {}
+    var idToThreadNodeDict: { [key: string]: ThreadNode } = {}
     allAncestorsIDs.forEach(id => {
-      idToThreadElementDict[id] = {
+      idToThreadNodeDict[id] = {
         ID: id,
         ancestorsIDs: [],
         title: "",
@@ -131,28 +129,26 @@ export const fetchPost = (classID: string, postID: string) => {
       }
     })
     // - create/replace entries for fetched thread nodes 
-    idToThreadElementDict = Object.assign(idToThreadElementDict,
-      ...threadNodes.map(threadEl => (
-        { [threadEl.ID]: threadEl }
+    idToThreadNodeDict = Object.assign(idToThreadNodeDict,
+      ...threadNodes.map(threadNode => (
+        { [threadNode.ID]: threadNode }
       ))
     )
     // Transform thread into the correct hierarchical structure
-    threadNodes.forEach(threadEl => {
-      let ancestorIdx = threadEl.ancestorsIDs.length - 1
+    threadNodes.forEach(threadNode => {
+      let ancestorIdx = threadNode.ancestorsIDs.length - 1
       if (ancestorIdx == -1) return
-      let ancestor: ThreadNode = idToThreadElementDict[threadEl.ancestorsIDs[ancestorIdx]]
-      ancestor.replies.push(threadEl)
+      let ancestor: ThreadNode = idToThreadNodeDict[threadNode.ancestorsIDs[ancestorIdx]]
+      ancestor.replies.push(threadNode)
       // Cater to the situation where the current ancestor was deleted
       while (ancestor.isDeleted) {
         // NOTE: It is assumed that the top-most ancestor (the main post) is not deleted
-        let olderAncestor = idToThreadElementDict[threadEl.ancestorsIDs[--ancestorIdx]]
+        let olderAncestor = idToThreadNodeDict[threadNode.ancestorsIDs[--ancestorIdx]]
         olderAncestor.replies.push(ancestor)
         ancestor = olderAncestor
       }
     })
-    var post: ThreadNode = idToThreadElementDict[postID]
-    console.log({ idToThreadElementDict })
-    console.log({ post })
+    var post: ThreadNode = idToThreadNodeDict[postID]
     dispatch(threadPageSlice.actions.fetchPostSuccess(post))
   }
 }
