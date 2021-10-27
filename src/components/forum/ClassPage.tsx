@@ -25,11 +25,11 @@ interface Post {
   classID: string;
 }
 
-interface PostsLandingState {
+interface ClassPageState {
   sortCriteria: string;
 }
 
-export interface PostsLandingProps {
+export interface ClassPageProps {
   auth?: FirebaseReducer.AuthState;
   classID: string;
   isDataFetched?: boolean;
@@ -50,9 +50,9 @@ export const SORT_OPTION = {
   popularity: "POPULARITY",
 }
 
-class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
+class ClassPage extends Component<ClassPageProps, ClassPageState> {
   // Initialize state
-  constructor(props: PostsLandingProps) {
+  constructor(props: ClassPageProps) {
     super(props);
     this.state = {
       sortCriteria: SORT_OPTION.recency,
@@ -134,7 +134,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
     )
   }
 
-  getClass(class_: PostsLandingProps["classInfo"]) {
+  getClass(class_: ClassPageProps["classInfo"]) {
     return (
       <Card>
         <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
@@ -281,7 +281,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
 
 const mapStateToProps = (state: RootState) => {
   // Map posts objects to meet the UI's needs
-  var posts: PostsLandingProps["posts"] = state.firestore.ordered.classPagePosts
+  var posts: ClassPageProps["posts"] = state.firestore.ordered.classPagePosts
     ? state.firestore.ordered.classPagePosts.map((post: any) => {
       return {
         title: post.title,
@@ -298,7 +298,7 @@ const mapStateToProps = (state: RootState) => {
     : undefined
   // Map class object to meet the UI's need
   var classes = state.firestore.ordered.classPageClasses
-  var classInfo: PostsLandingProps["classInfo"] = (classes !== undefined && classes.length > 0)
+  var classInfo: ClassPageProps["classInfo"] = (classes !== undefined && classes.length > 0)
     ? classes.map((class_: any) => {
       return {
         title: class_.title,
@@ -319,7 +319,7 @@ const mapStateToProps = (state: RootState) => {
   }
 }
 
-const mapDispatchToProps = (dispatch: AppDispatch, props: PostsLandingProps) => {
+const mapDispatchToProps = (dispatch: AppDispatch, props: ClassPageProps) => {
   return {
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
@@ -354,9 +354,9 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: PostsLandingProps) => 
   }
 }
 
-export default compose<React.ComponentType<PostsLandingProps>>(
+export default compose<React.ComponentType<ClassPageProps>>(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect((props: PostsLandingProps) => {
+  firestoreConnect((props: ClassPageProps) => {
     return [
       {
         collection: 'posts',
@@ -379,4 +379,4 @@ export default compose<React.ComponentType<PostsLandingProps>>(
       }
     ]
   })
-)(PostsLanding)
+)(ClassPage)

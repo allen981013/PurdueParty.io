@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Action, Dispatch } from 'redux'
-import { Timestamp } from 'firebase/firestore'
 import { RootState } from '../../store'
 import { ThreadNode } from './ThreadPage'
 import moment from 'moment'

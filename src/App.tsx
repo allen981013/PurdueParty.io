@@ -18,7 +18,7 @@ import CreatePost from './components/forum/create-post';
 import EditPost from './components/forum/EditPost';
 import Profile from './components/profile/Profile';
 import Classes from './components/forum/Classes';
-import PostsLanding from './components/forum/PostsLanding';
+import ClassPage from './components/forum/ClassPage';
 import EditProfile from './components/profile/EditProfile';
 import EditEvent from './components/events/EditEvent';
 import CreateClass from './components/forum/CreateClass';
@@ -59,7 +59,7 @@ function App() {
             return <ThreadPage classID={match.params.classID} postID={match.params.postID} isDataFetched={false} />
           }} />
           <Route path='/classes/:classID' render={({ match }) => {
-            return <PostsLanding classID={match.params.classID} />
+            return <ClassPage classID={match.params.classID} />
           }} />
           <Route path='/classes/create-post' component={CreatePost} />
           <Route path='/edit-post/:classID/:postID' component={EditPost} />
