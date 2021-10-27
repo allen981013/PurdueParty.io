@@ -10,6 +10,7 @@ import { eventInfoSlice } from '../../components/events/EventInfoSlice';
 import { eventsLandingSlice } from '../../components/events/EventsLandingSlice';
 import profileReducer  from './profileReducer';
 import { threadPageSlice } from '../../components/forum/ThreadPageSlice';
+import { classPageSlice } from '../../components/forum/ClassPageSlice';
 
 // Add it to this list
 const rootReducer = combineReducers({
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
     eventsLanding: eventsLandingSlice.reducer,
     profileReducer: profileReducer,
     threadPage: threadPageSlice.reducer,
+    classPage: classPageSlice.reducer,
 });
 
 export default rootReducer;
