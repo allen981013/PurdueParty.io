@@ -7,7 +7,7 @@ import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase'
 import { Action, compose, Dispatch } from 'redux'
 import { Link, Redirect } from 'react-router-dom'
 import { EditOutlined } from '@mui/icons-material';
-import { PostsLandingProps } from './PostsLanding';
+import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
 
 export interface ThreadNode { // Refers to a post or a reply
@@ -29,7 +29,7 @@ interface ThreadPageProps {
   auth?: FirebaseReducer.AuthState;
   classID: string;
   postID: string;
-  classInfo?: PostsLandingProps["classInfo"]
+  classInfo?: ClassPageProps["classInfo"]
   post?: ThreadNode;
   isDataFetched?: boolean;
   clearFetchedDocs?: () => void;
@@ -38,7 +38,6 @@ interface ThreadPageProps {
 
 interface ThreadPageStates {
 }
-
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
@@ -218,7 +217,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     )
   }
 
-  getClass(class_: PostsLandingProps["classInfo"]) {
+  getClass(class_: ClassPageProps["classInfo"]) {
     return (
       <Card>
         <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
@@ -298,7 +297,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
   // Map class object to meet the UI's need
   var classes = state.firestore.ordered.classPageClasses
-  var classInfo: PostsLandingProps["classInfo"] = (classes !== undefined && classes.length > 0)
+  var classInfo: ClassPageProps["classInfo"] = (classes !== undefined && classes.length > 0)
     ? classes.map((class_: any) => {
       return {
         title: class_.title,
