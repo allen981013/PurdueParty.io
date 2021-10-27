@@ -39,7 +39,6 @@ interface ThreadPageProps {
 interface ThreadPageStates {
 }
 
-
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   componentDidMount() {

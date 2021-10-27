@@ -13,9 +13,10 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import StarRateIcon from '@mui/icons-material/StarRate';
 import moment from 'moment';
+import { classPageSlice, fetchClassPosts, FetchCriteria } from '../../components/forum/ClassPageSlice';
 import { actionTypes } from 'redux-firestore';
 
-interface Post {
+export interface Post {
   title: string;
   content: string;
   poster: string;
@@ -26,7 +27,7 @@ interface Post {
 }
 
 interface ClassPageState {
-  sortCriteria: string;
+  sortBy: FetchCriteria["sortBy"];
 }
 
 export interface ClassPageProps {
@@ -42,20 +43,20 @@ export interface ClassPageProps {
     instructorEmail: string,
     classID: string;
   };
+  fetchClassPosts?: (classID: string, fetchCriteria: FetchCriteria) => void;
   clearFetchedDocs?: () => void;
 }
 
-export const SORT_OPTION = {
-  recency: "POSTED_TIME",
-  popularity: "POPULARITY",
-}
-
 class ClassPage extends Component<ClassPageProps, ClassPageState> {
+
+  // Instance attributes
+  fetchCriteria: FetchCriteria = {sortBy: "RECENCY"}
+
   // Initialize state
   constructor(props: ClassPageProps) {
     super(props);
     this.state = {
-      sortCriteria: SORT_OPTION.recency,
+      sortBy: "RECENCY",
     };
   }
 
@@ -68,6 +69,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
       || (this.props.posts.length > 0 && this.props.posts[0].classID !== this.props.classID)
     if (classInfoIsEmptyOrObsolete() || postsIsEmptyOrObsolete()) {
       this.props.clearFetchedDocs()
+      this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
     }
   }
 
@@ -189,23 +191,25 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         <Card sx={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
           <StyledToggleButtonGroup
             size="small"
-            value={this.state.sortCriteria}
+            value={this.state.sortBy}
             exclusive
-            onChange={(_, newVal) => { this.setState({ sortCriteria: newVal }) }}
-            aria-label="text alignment"
+            onChange={(_, newVal: FetchCriteria["sortBy"]) => {
+              this.setState({ sortBy: newVal })
+              this.fetchCriteria.sortBy = newVal
+              this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
+            }}
           >
-            <ToggleButton value={SORT_OPTION.recency}>
-              {/* <StarBorderPurple500Icon sx={{ paddingRight: "4px" }} /> */}
-              <StarRateIcon sx={{ paddingRight: "4px" }} />
-              New
-            </ToggleButton>
-            <ToggleButton value={SORT_OPTION.popularity}>
-              <WhatshotIcon sx={{ paddingRight: "4px" }} />
-              Popular
-            </ToggleButton>
-          </StyledToggleButtonGroup>
-        </Card>
-      </Box>
+          <ToggleButton value={"RECENCY"}>
+            <StarRateIcon sx={{ paddingRight: "4px" }} />
+            New
+          </ToggleButton>
+          <ToggleButton value={"POPULARITY"}>
+            <WhatshotIcon sx={{ paddingRight: "4px" }} />
+            Popular
+          </ToggleButton>
+        </StyledToggleButtonGroup>
+      </Card>
+      </Box >
     )
   }
 
@@ -251,17 +255,20 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
           spacing={3}
         >
           <Grid item xs={12} md={9} >
-            {this.getSortingBar()}
             {this.props.posts === undefined
               && <CircularProgress />
             }
             {this.props.posts != undefined
-              && this.props.posts.length != 0
-              && this.props.posts.map((post) => this.getPost(post))
-            }
-            {this.props.posts != undefined
               && this.props.posts.length == 0
               && <Box pt="32px">There are no posts yet in this class</Box>
+            }
+            {this.props.posts != undefined
+              && this.props.posts.length != 0
+              && this.getSortingBar()
+            }
+            {this.props.posts != undefined
+              && this.props.posts.length != 0
+              && this.props.posts.map((post) => this.getPost(post))
             }
           </Grid>
           <Grid item xs={12} md={3}>
@@ -280,22 +287,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  // Map posts objects to meet the UI's needs
-  var posts: ClassPageProps["posts"] = state.firestore.ordered.classPagePosts
-    ? state.firestore.ordered.classPagePosts.map((post: any) => {
-      return {
-        title: post.title,
-        content: post.content,
-        poster: "raziqraif",    // TODO: Our post object only contains poster ID for now, and not 
-        // username. While we can do some hacks here to get username from ID, I'm 
-        // just gonna wait until we've denormalized our DB.
-        numComments: post.numComments,
-        href: "/classes/" + post.classID + "/" + post.postId,
-        timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
-        classID: post.classID,
-      }
-    })
-    : undefined
   // Map class object to meet the UI's need
   var classes = state.firestore.ordered.classPageClasses
   var classInfo: ClassPageProps["classInfo"] = (classes !== undefined && classes.length > 0)
@@ -313,30 +304,23 @@ const mapStateToProps = (state: RootState) => {
   // Return mapped redux states  
   return {
     auth: state.firebase.auth,
-    posts: posts,
+    posts: state.classPage.posts,
     classInfo: classInfo,
-    isDataFetched: posts !== undefined && classes !== undefined,
+    isDataFetched: state.classPage.posts !== undefined && classes !== undefined,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ClassPageProps) => {
   return {
+    fetchClassPosts: (classID: string, fetchCriteria: FetchCriteria) => dispatch(
+      fetchClassPosts(classID, fetchCriteria)
+    ),
     clearFetchedDocs: () => dispatch(
-      (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-        reduxDispatch({
-          type: actionTypes.LISTENER_RESPONSE,
-          meta: {
-            collection: 'posts',
-            where: [
-              ["classID", "==", props.classID]
-            ],
-            orderBy: [
-              ["postedDateTime", "desc"],
-            ],
-            storeAs: "classPagePosts"
-          },
-          payload: {}
-        })
+      (reduxDispatch: Dispatch<Action>,
+        getState: any,
+        { getFirebase, getFirestore }: any
+      ) => {
+        reduxDispatch(classPageSlice.actions.fetchClassPostsBegin())
         reduxDispatch({
           type: actionTypes.LISTENER_RESPONSE,
           meta: {
@@ -358,17 +342,6 @@ export default compose<React.ComponentType<ClassPageProps>>(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect((props: ClassPageProps) => {
     return [
-      {
-        collection: 'posts',
-        where: [
-          ["classID", "==", props.classID],
-          ["ancestorsIDs", "==", []]
-        ],
-        orderBy: [
-          ["postedDateTime", "desc"],
-        ],
-        storeAs: "classPagePosts"
-      },
       {
         collection: "classes",
         where: [
