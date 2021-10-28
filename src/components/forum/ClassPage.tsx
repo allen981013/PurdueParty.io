@@ -95,7 +95,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
                   noWrap
                   variant="subtitle2"
                   sx={{ color: "#787c7e", fontSize: "12px" }}
-                >{post.poster}&nbsp;
+                >{post.poster ? post.poster : "[ deleted ]"}&nbsp;
                 </Typography>
                 <Typography
                   noWrap

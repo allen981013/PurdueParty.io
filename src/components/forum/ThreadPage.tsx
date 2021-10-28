@@ -70,7 +70,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
           <Typography
             variant="subtitle2"
             sx={{ color: "#787c7e", fontSize: "12px" }}
-          >{post.poster}&nbsp;
+          >{post.poster ? post.poster : "[ deleted ]"}&nbsp;
           </Typography>
           <Typography
             variant="subtitle2"
