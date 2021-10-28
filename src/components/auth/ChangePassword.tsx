@@ -87,11 +87,6 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
     }
   }
 
-  /*
-  handleReauth = (event: any) => {
-    this.props.reAuthenticate(this.state);
-  }
-  */
 
   render() {
     //redirect to homepage upon successful account creation
@@ -102,27 +97,6 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
     if (this.state.redirect == true) {
       return <Redirect to='/' />
     }
-
-    /*
-    if (this.props.authError != undefined && this.props.authError.localeCompare('Change user password error')) {
-      return (
-        <div className="login-form">
-          <div className="form-box solid">
-            <form onSubmit={this.handleReauth}>
-              <h1 className="login-text">Please Reauthenticate</h1>
-              <label>Email</label><br></br>
-              <input type="text" value={this.state.email} id="email" onChange={this.handleEmailChange} /> <br></br>
-              <label>Password</label> <br></br>
-              <input type="password" value={this.state.password} id="password" onChange={this.handlePasswordChange} /> <br></br>
-              <button>Reauthenticate</button>
-            </form>
-          </div>
-        </div>
-      )
-    } else if (this.props.authError != undefined && this.props.authError.localeCompare('Error during user reauthentication')) {
-      window.alert("Error during user reauthentication. Please try again");
-    }
-    */
 
     return (
       <div className="createaccount">

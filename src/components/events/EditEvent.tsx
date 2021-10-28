@@ -45,6 +45,7 @@ interface EditEventState{
     endTime: Date,
     postedDateTime: Timestamp,
     attendees: string[],
+    hasUpdated: boolean
 }
 
 // Interface/type for EditProfile Props
@@ -52,6 +53,7 @@ interface EditEventProps{
     auth: any,
     firebase: any,
     match: any,
+    events: any,
     editEvent: (state: EditEventState) => void
 }
 
@@ -79,6 +81,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
             endTime: new Date(),
             postedDateTime: new Timestamp(0, 0),
             attendees: [""],
+            hasUpdated: false
         }
     }
 
@@ -241,6 +244,44 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
 
         if (!auth.uid) return <Redirect to='/signin'/>
 
+        var curEvent : any = undefined;
+        if (!this.state.hasUpdated && this.props.events && this.props.events.length == 1) {
+          curEvent = this.props.events[0];
+        }
+
+        if (!this.state.hasUpdated && curEvent != undefined) {
+          /*
+this.state = {
+            id: "",
+            ownerID: "",
+            editors: [],
+            orgID: "",
+            title: "",
+            description: "",
+            location: "",
+            perks: [],
+            themes: [],
+            categories: [],
+            startTime: new Date(),
+            endTime: new Date(),
+            postedDateTime: new Timestamp(0, 0),
+            attendees: [""],
+            hasUpdated: false
+        }
+          */
+          this.setState({
+            title: curEvent.title,
+            description: curEvent.description,
+            startTime: curEvent.startTime,
+            endTime: curEvent.endTime,
+            location: curEvent.location,
+            themes: curEvent.themes,
+            categories: curEvent.categories,
+            perks: curEvent.perks,
+            hasUpdated: true
+          })
+        }
+        
         return (
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
             <form onSubmit={this.handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -349,7 +390,16 @@ const mapStateToProps = (state: any) => {
   
   export default compose<React.ComponentType<EditEventProps>>(
     connect(mapStateToProps, mapDispatchToProps),
-    firestoreConnect([
-      { collection: 'events' }
-    ])
+    firestoreConnect((props:EditEventProps) => {
+      if (typeof props.match != undefined) {
+        return [
+          {
+            collection: 'events',
+            doc: props.match.params.eventID
+          }
+        ]
+      } else {
+        return []
+      }
+    })
   )(EditEvent)
