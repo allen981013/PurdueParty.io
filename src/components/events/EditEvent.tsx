@@ -170,11 +170,6 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
         console.log("Minimum location length required: 3 characters");
         window.alert("Minimum location length required: 3 characters");
         }
-        // else if (this.state.orgID === "") {
-        //   // Pop modal for no org ID error
-        //   console.log("Please select orgID from dropdown");
-        //   window.alert("Please select an organization from the dropdown")
-        // }
         else if (this.state.themes.length == 0) {
         // Pop modal for no themes error
         window.alert("Please select a theme from the dropdown")
@@ -250,25 +245,6 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
         }
 
         if (!this.state.hasUpdated && curEvent != undefined) {
-          /*
-this.state = {
-            id: "",
-            ownerID: "",
-            editors: [],
-            orgID: "",
-            title: "",
-            description: "",
-            location: "",
-            perks: [],
-            themes: [],
-            categories: [],
-            startTime: new Date(),
-            endTime: new Date(),
-            postedDateTime: new Timestamp(0, 0),
-            attendees: [""],
-            hasUpdated: false
-        }
-          */
           this.setState({
             title: curEvent.title,
             description: curEvent.description,
@@ -278,7 +254,9 @@ this.state = {
             themes: curEvent.themes,
             categories: curEvent.categories,
             perks: curEvent.perks,
-            hasUpdated: true
+            hasUpdated: true,
+            editors: curEvent.editors,
+            orgID: curEvent.orgID,
           })
         }
         
@@ -302,7 +280,7 @@ this.state = {
               <h1>Enter event starting date and time:</h1>
               <Box width="300px">
                 <Datetime
-                  value={this.state.startTime}
+                  initialValue={this.state.startTime}
                   onChange={this.handleChangeDateTime}
                   isValidDate={(current) => current.isAfter(moment().subtract(1, 'day'))}
                   className="custom-datetime-picker"
@@ -312,7 +290,7 @@ this.state = {
               <h1>Enter event ending date and time:</h1>
               <Box width="300px">
                 <Datetime
-                  value={this.state.endTime}
+                  initialValue={this.state.endTime}
                   onChange={this.handleChangeDateTimeEnd}
                   isValidDate={(current) => current.isAfter(moment().subtract(1, 'day'))}
                   className="custom-datetime-picker"
