@@ -77,21 +77,6 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
     this.props.fetchEvents(this.fetchParameter)
   }
 
-  // TODO: Uncomment this if we were to implement full text search
-  // handleSearchBarChange = (e: any) => {
-  //   this.fetchParameter.searchKeyword = e.target.value
-  // }
-
-  // handleSearchBarKeyDown = (e: any) => {
-  //   if (e.key === "Enter") {
-  //     this.props.fetchEvents(this.fetchParameter)
-  //   }
-  // }
-
-  // handleSearchButtonClick = (e: any) => {
-  //   this.props.fetchEvents(this.fetchParameter)
-  // }
-
   handleLoadMoreClick = (e: any) => {
     this.fetchParameter.furthestPage += 1
     this.props.fetchEvents(this.fetchParameter)
@@ -231,20 +216,6 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
             md={3}
           >
             <Box display="flex" flexDirection="column" maxWidth="100%">
-              {/* <Paper  // TODO: Uncomment this search bar if we were to implement full-text search
-                sx={{ p: '2px 4px 0px 0px ', display: 'flex', alignItems: 'center' }}
-              >
-                <InputBase
-                  sx={{ ml: 2, flex: 1 }}
-                  placeholder="Search events"
-                  inputProps={{ 'aria-label': 'search events' }}
-                  onChange={this.handleSearchBarChange}
-                  onKeyDown={this.handleSearchBarKeyDown}
-                />
-                <IconButton sx={{ p: '10px' }} aria-label="search" onClick={this.handleSearchButtonClick}>
-                  <SearchIcon />
-                </IconButton>
-              </Paper> */}
               <Typography style={{ color: "#00000099", alignSelf: "flex-start" }}>Filter by dates</Typography>
               <FormControl component="fieldset" sx={{ padding: "12px 0px 12px" }}>
                 <RadioGroup

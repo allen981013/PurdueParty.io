@@ -2,12 +2,40 @@ import { Dispatch, Action } from 'redux';
 import { Timestamp } from '@firebase/firestore';
 
 // Need to explicitly define these types at some point
-export const addPost = (newPost:any) => {
-    return(dispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {
+export const addPost = (newPost: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         var docref = db.collection('posts');
 
         docref.add({
+            ancestorsIDs: [],
+            classID: newPost.classID,
+            content: newPost.description,
+            downvotes: 0,
+            numComments: 0,
+            owner: getState().firebase.auth.uid,
+            postedDateTime: Timestamp.now(),
+            title: newPost.title,
+            upvotes: 0,
+        }).then((newDocRef: any) => {
+            newDocRef.update({
+                postId: newDocRef.id,
+            })
+            dispatch({ type: 'ADD_POST_SUCCESS', newDocRef });
+        }).catch((err: any) => {
+            dispatch({ type: 'ADD_POST_ERR', err });
+        });
+    }
+}
+
+export const editPost = (newPost:any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        console.log(newPost);
+        console.log(newPost.postId);
+        var docref = db.collection('posts').doc(newPost.postId);
+        
+        docref.update({
             owner: getState().firebase.auth.uid,
             classID: newPost.classID,
             title: newPost.title,
@@ -17,14 +45,25 @@ export const addPost = (newPost:any) => {
             downvotes: 0,
             numComments: 0,
             comments: [],
-        }).then((newDocRef:any) => {
-            newDocRef.update({
-                postId: newDocRef.id
+        }).then((newDocRef: any) => {
+            dispatch({ type: 'UPDATE_POST_SUCCESS', newDocRef });
+        }).catch((err: any) => {
+            dispatch({ type: 'UPDATE_POST_ERR', err });
+        });
+    }
+}
 
-            })
-            dispatch({ type: 'ADD_POST_SUCCESS', newDocRef });
-        }).catch((err:any) => {
-            dispatch({ type: 'ADD_POST_ERR', err});
+export const deletePost = (newPost:any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        console.log(newPost);
+        console.log(newPost.postId);
+        var docref = db.collection('posts').doc(newPost.postId);
+
+        docref.delete().then(() => {
+            dispatch({ type: 'DELETE_POST_SUCCESS', docref });
+        }).catch((err: any) => {
+            dispatch({ type: 'DELETE_POST_ERR', err });
         });
     }
 }
@@ -37,13 +76,13 @@ export const addClass = (newClass:any) => {
         docref.add({
             courseID: newClass.courseID,
             title: newClass.title,
-        }).then((newDocRef:any) => {
+        }).then((newDocRef: any) => {
             newDocRef.update({
                 ID: newDocRef.id
             })
             dispatch({ type: 'ADD_CLASS_SUCCESS', newDocRef });
-        }).catch((err:any) => {
-            dispatch({ type: 'ADD_CLASS_ERR', err});
+        }).catch((err: any) => {
+            dispatch({ type: 'ADD_CLASS_ERR', err });
         });
     }
 }
