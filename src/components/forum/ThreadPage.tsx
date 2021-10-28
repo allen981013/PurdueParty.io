@@ -50,15 +50,10 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       this.props.fetchPost(this.props.classID, this.props.postID)
     }
   }
-  
+
   getPost = (post: ThreadNode) => {
     return (
-      <Box
-        sx={{
-          display: "flex", flexDirection: "column", alignItems: "flex-start",
-          padding: "0px 4px 0px 4px"
-        }}
-      >
+      <Box display="inline" textAlign="left" padding="0px 4px 0px 4px">
         <Box display="flex" flexDirection="row" pb="4px">
           {/* Note: We split the following text into separate tags in case we want to 
             proceed with the idea of making username & time clickable` */}
@@ -82,27 +77,25 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             sx={{ color: "#787c7e", fontSize: "12px" }}
           >{post.timeSincePosted}
           </Typography>
-          <Button 
+          <Button
             component={Link}
             to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
             variant="outlined"
             sx={{ color: "black", height: "32px" }}
           >
             <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-              Edit
+            Edit
           </Button>
         </Box>
         <Typography
-          noWrap
           variant="h6"
-          sx={{ fontSize: "18px", paddingBottom: "4px" }}
+          sx={{ fontSize: "18px", paddingBottom: "4px", wordWrap: "break-word" }}
         >
           {post.title}
         </Typography>
         <Typography
-          noWrap
           variant="body2"
-          sx={{ paddingBottom: "0px" }}
+          sx={{ paddingBottom: "0px", wordWrap: "break-word" }}
         >
           {post.content}
         </Typography>
@@ -136,7 +129,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
               margin: "4px 8px"
             }}
           >
-            {reply.poster ? reply.poster[0] : ""}
+            {reply.poster ? reply.poster[0] : undefined}
           </Avatar>
           <Typography
             variant="subtitle2"
@@ -175,14 +168,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                   </Box>
                 )
                 : (
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="flex-start"
-                    ml="22px"
-                  >
+                  <Box textAlign="left" ml="22px">
                     <Typography
-                      noWrap
                       variant="body2"
                       sx={{ paddingBottom: "0px" }}
                     >
@@ -223,7 +210,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
           Class Info
         </Box>
-        <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        <CardContent sx={{ textAlign: "left" }}>
           <label htmlFor="title">Course:</label>
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.title}
@@ -232,10 +219,10 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.department}
           </Typography>
-          <label htmlFor="title">Description:</label>
-          <Typography noWrap variant="body2" component="div" marginBottom="8px">
+          {/* <label htmlFor="title">Description:</label> */}
+          {/* <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.description}
-          </Typography>
+          </Typography> */}
           <label htmlFor="title">Instructor:</label>
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.instructorName}
