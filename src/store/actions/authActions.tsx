@@ -80,9 +80,7 @@ export const signOut = () => {
     }
 }
 
-const deleteFields = ({ getFirebase, getFirestore }: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
-    const firebase = getFirebase();
-    const db = getFirestore();
+const deleteFields = ( firebase: any, db: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
 
     var collection = db.collection(collectionName)
     collection.where(fieldName, docType, useruid).get().then((querySnapshot: any[]) => {
@@ -132,10 +130,8 @@ export const deleteFromStorage = (deletePath: any) => {
         });
 }
 
-const deleteDocs = ({ getFirebase, getFirestore }: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
-    const firebase = getFirebase();
-    const db = getFirestore();
-    var storageLoc = ''
+const deleteDocs = ( firebase: any, db: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
+    var storageLoc = '';
 
     if(collectionName === 'events'){
         storageLoc = 'events/'
@@ -175,8 +171,8 @@ export const deleteAccount = () => {
 
         console.log(useruid)
 
-        deleteDocs({ getFirebase, getFirestore }, 'sellListings', 'owner', '==', useruid)
-        deleteDocs({ getFirebase, getFirestore }, 'events', 'ownerID', '==', useruid)
+        deleteDocs(firebase, db, 'sellListings', 'owner', '==', useruid)
+        deleteDocs(firebase, db, 'events', 'ownerID', '==', useruid)
 
         //delete user from auth
         user.delete().then(() => {
@@ -191,14 +187,14 @@ export const deleteAccount = () => {
 
             //delete owner and editor fields from events and clubs
             //deleteFields({ getFirebase, getFirestore }, 'events', 'owner', '==', useruid)
-            deleteFields({ getFirebase, getFirestore }, 'events', 'editors', 'array-contains', useruid)
-            deleteFields({ getFirebase, getFirestore }, 'clubs', 'owner', '==', useruid)
-            deleteFields({ getFirebase, getFirestore }, 'clubs', 'editors', 'array-contains', useruid)
-            deleteFields({ getFirebase, getFirestore }, 'posts', 'owner', '==', useruid)
+            deleteFields(firebase, db, 'events', 'editors', 'array-contains', useruid)
+            deleteFields(firebase, db,  'clubs', 'owner', '==', useruid)
+            deleteFields(firebase, db,  'clubs', 'editors', 'array-contains', useruid)
+            deleteFields(firebase, db,  'posts', 'owner', '==', useruid)
 
             dispatch({ type: 'DELETE_SUCCESS' });
         }).catch((err: any) => {
-            window.alert("Please make sure to reauthenticate to delete your account. Also make sure that your account is not already deleted")
+            window.alert("For security purposes, please reauthenticate (logout/login) to delete your account.")
             dispatch({ type: 'DELETE_ERROR', err });
         });
     }
@@ -290,7 +286,7 @@ export const changePassword = (newPass: String) => {
         //dispatch({ type: 'SIGNUP_SUCCESS' })
         firebase.auth().signOut();
     }).catch((err: any) => {
-        //window.alert("Please reauthenticate (logout/login) to change your password.")
+        window.alert("For security purposes, please reauthenticate (logout/login) to change your password.")
         dispatch({ type: 'CHANGE_PASS_ERR', err })
         console.log(err)
     });

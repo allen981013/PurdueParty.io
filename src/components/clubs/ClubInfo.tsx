@@ -150,7 +150,13 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     console.log(this.props.clubInfo)
 
     return(
-      <Box>{this.getClub(this.props.clubInfo,true,"clubID","OwnerName")}</Box>
+      <div>
+      {this.props.clubInfo != undefined ? 
+        <Box>{this.getClub(this.props.clubInfo,true,"clubID","OwnerName")}</Box>
+      :
+        <div></div>
+      }
+      </div>
     )
   }
 }
@@ -161,7 +167,7 @@ const mapStateToProps = (state: RootState) => {
   var clubInfo: ClubInfoProps["clubInfo"] = (clubs !== undefined && clubs.length > 0)
   ? clubs.map((club_: any) => {
     return {
-      catgeory: club_.catgeory,
+      catgeory: club_.category,
       contactInfo: club_.contactInfo,
       description: club_.description,
       orgID: club_.orgID,
