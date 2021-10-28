@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { Dispatch, Action, compose } from 'redux';
-import { addClub } from '../../store/actions/clubActions'
 import { connect } from 'react-redux';
-import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import {
-  Box, Button, CircularProgress, Grid, Card, CardActionArea,
+  Box, Button, Grid, Card, CardActionArea,
   CardMedia, CardContent, Typography, Paper, IconButton, InputBase
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
@@ -76,7 +74,7 @@ class Clubs extends Component<ClubsProps, ClubsState> {
             to={"/clubs/" + id}
             sx={{ display: "inline-flex", width: "100%", height: "100%" }}
           >
-            <Box maxWidth="20%" height="100%">
+            <Box width="20%" height="100%">
               <CardMedia
                 component="img"
                 height="100%"

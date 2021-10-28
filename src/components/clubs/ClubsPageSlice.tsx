@@ -54,7 +54,7 @@ export const fetchClubs = (fetchParameter: ClubsFetchParameter) => {
           title: club.title,
           description: club.description,
           image: club.image,
-          id: club.id,
+          id: club.orgId,
         }
       })
       clubs = clubs.filter((club) => club.title.toUpperCase().includes(fetchParameter.searchKeyword.toUpperCase()))

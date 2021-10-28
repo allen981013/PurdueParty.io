@@ -187,7 +187,7 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
           meta: {
             collection: "clubs",
             where: [
-              ["orgID", "==", props.clubID],
+              ["orgId", "==", props.clubID],
             ],
             storeAs: "clubInfoClubs",
             limit: 1,
@@ -203,10 +203,10 @@ export default compose<React.ComponentType<ClubInfoProps>>(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect((props: ClubInfoProps) => {
     return [
-    { 
+    {
       collection: "clubs",
       where: [
-        ["orgID", "==", props.clubID],
+        ["orgId", "==", props.clubID],
       ],
       storeAs: "clubInfoClubs",
       limit: 1,
