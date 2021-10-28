@@ -1,31 +1,30 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { Redirect } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Redirect, Link} from 'react-router-dom';
 import {Box, Button, Grid, Chip} from '@mui/material';
-import { EditOutlined, DeleteOutlined } from '@mui/icons-material'
+import { EditOutlined} from '@mui/icons-material'
 import { actionTypes } from 'redux-firestore';
 import { Action, compose, Dispatch } from 'redux';
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
 
 interface ClubInfoProps {
-  clubID: string,
-  clubInfo: {
+  auth?: FirebaseReducer.AuthState;
+  clubID: string;
+  clubInfo?: {
     catgeory: string[],
     contactInfo: string,
     description: string,
     orgID: string,
     owner: string,
     title: string
-  },
-  auth?: any,
+  };
 }
 
 interface ClubInfoStates {
 };
 
-class ClubInfo extends React.Component<ClubInfoProps, ClubInfoStates> {
+class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
 
   constructor(props: ClubInfoProps) {
     super(props);
@@ -50,7 +49,7 @@ class ClubInfo extends React.Component<ClubInfoProps, ClubInfoStates> {
     )
   }
 
-  getClub(club_: ClubInfoProps["clubInfo"], hasPermission: boolean, clubID: string, ownerName: string){
+  getClub(club: ClubInfoProps["clubInfo"], hasPermission: boolean, clubID: string, ownerName: string){
     return(
       <Box
         display="flex"
@@ -96,7 +95,7 @@ class ClubInfo extends React.Component<ClubInfoProps, ClubInfoStates> {
                 width="100%"
                 pb="32px"
               >
-                <h1 style={{ fontWeight: 300, margin: "0px" }}>{club_.title}</h1>
+                <h1 style={{ fontWeight: 300, margin: "0px" }}>{club.title}</h1>
                 
                 <Button
                   component={Link}
@@ -125,7 +124,7 @@ class ClubInfo extends React.Component<ClubInfoProps, ClubInfoStates> {
                 pb="24px"
               >
                 <strong style={{ paddingBottom: "8px" }}>Contact Information</strong>
-                <span style={{ paddingBottom: "4px" }}>{club_.contactInfo}</span>
+                <span style={{ paddingBottom: "4px" }}>{club.contactInfo}</span>
               </Box>
 
             </Box>           
@@ -134,20 +133,21 @@ class ClubInfo extends React.Component<ClubInfoProps, ClubInfoStates> {
 
         <hr style={{ width: "100%", border: "1px solid lightgrey", margin: "40px 0px 28px" }} />
         <h1 style={{ fontWeight: 300, margin: "0px 0px 16px", alignSelf: "flex-start" }}>Description</h1>
-        <Box alignSelf="flex-start">{club_.description}</Box>
+        <Box alignSelf="flex-start">{club.description}</Box>
 
         <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Catgeory</h1>
-        {this.getChips(club_.catgeory)}
+        {this.getChips(club.catgeory)}
 
       </Box>
     )
   }
 
   render(){
+    if (!this.props.auth.uid) 
+      return <Redirect to='/signin' />
 
-    const { auth } = this.props;
-
-    if (!auth.uid) return <Redirect to='/signin'/>
+    console.log(this.props.clubID)
+    console.log(this.props.clubInfo)
 
     return(
       <Box>{this.getClub(this.props.clubInfo,true,"clubID","OwnerName")}</Box>
@@ -156,26 +156,29 @@ class ClubInfo extends React.Component<ClubInfoProps, ClubInfoStates> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  var clubs = state.firestore.ordered.ClubPageClubs
+  // Map club object to meet the UI's need
+  var clubs = state.firestore.ordered.clubInfoClubs
   var clubInfo: ClubInfoProps["clubInfo"] = (clubs !== undefined && clubs.length > 0)
   ? clubs.map((club_: any) => {
     return {
-      title: club_.title,
-      description: club_.description,
       catgeory: club_.catgeory,
+      contactInfo: club_.contactInfo,
+      description: club_.description,
       orgID: club_.orgID,
       owner: club_.owner,
-      contactInfo: club_.contactInfo,
+      title: club_.title
     }
   })[0]
   : undefined
-    return {
-      auth: state.firebase.auth,
-      clubInfo: clubInfo
-    }
+
+  return {
+    auth: state.firebase.auth,
+    clubInfo: clubInfo,
   }
+}
   
 const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
+
   return {
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
@@ -186,7 +189,7 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
             where: [
               ["orgID", "==", props.clubID],
             ],
-            storeAs: "ClubPageClubs",
+            storeAs: "clubInfoClubs",
             limit: 1,
           },
           payload: {}
@@ -196,17 +199,18 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
   }
 }
   
-export default compose<React.ComponentType<ClubInfo>>(
+export default compose<React.ComponentType<ClubInfoProps>>(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect((props: ClubInfoProps) => {
     return [
-    { collection: "clubs",
-    where: [
-      ["orgID", "==", props.clubID],
-    ],
-    storeAs: "ClubPageClubs",
-    limit: 1,
+    { 
+      collection: "clubs",
+      where: [
+        ["orgID", "==", props.clubID],
+      ],
+      storeAs: "clubInfoClubs",
+      limit: 1,
     }
-  ]
+    ]
   })
 )(ClubInfo);
