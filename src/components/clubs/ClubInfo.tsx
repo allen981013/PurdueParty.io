@@ -17,7 +17,8 @@ interface ClubInfoProps {
     description: string,
     orgID: string,
     owner: string,
-    title: string
+    title: string,
+    image: string
   };
 }
 
@@ -39,7 +40,6 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
           texts.map((text) =>
             <Chip
               label={text}
-              // color="primary"
               variant="outlined"
               sx={{ marginRight: "8px" }}
             />
@@ -72,6 +72,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
             xs={12}
             md={6}
           >
+            <img width="100%" height="100%" src={club.image} />
           </Grid>
 
           <Grid
@@ -150,7 +151,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     console.log(this.props.clubInfo)
 
     return(
-      <div>
+      <div style={{display:"flex", justifyContent:"center"}}>
       {this.props.clubInfo != undefined ? 
         <Box>{this.getClub(this.props.clubInfo,true,"clubID","OwnerName")}</Box>
       :
@@ -172,7 +173,8 @@ const mapStateToProps = (state: RootState) => {
       description: club_.description,
       orgID: club_.orgID,
       owner: club_.owner,
-      title: club_.title
+      title: club_.title,
+      image: club_.image
     }
   })[0]
   : undefined
