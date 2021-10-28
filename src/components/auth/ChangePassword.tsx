@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { changePassword } from '../../store/actions/authActions';
+import { changePassword, reAuthenticate } from '../../store/actions/authActions';
 import { RootState, AppDispatch } from '../../store'
-import { getFirebase } from 'react-redux-firebase';
-import { constants } from 'redux-firestore';
 import { Redirect } from 'react-router-dom';
 
 // Interface/type for create account State
@@ -11,7 +9,9 @@ interface ChangePasswordState {
   newpassword: string,
   confirmpassword: string,
   redirect: boolean,
-  errormsg: string
+  errormsg: string,
+  email: string,
+  password: string
 }
 
 // Interface/type for create account Props
@@ -19,6 +19,7 @@ interface ChangePasswordProps {
   auth: any,
   authError: any,
   changePassword: (newPass: string) => void
+  reAuthenticate: (credentials: any) => void
 }
 
 class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState> {
@@ -30,7 +31,9 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
       newpassword: "",
       confirmpassword: "",
       redirect: false,
-      errormsg: ""
+      errormsg: "",
+      email: "",
+      password: ""
     };
   }
 
@@ -45,6 +48,18 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
   handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       confirmpassword: e.target.value
+    })
+  }
+
+  handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      email: e.target.value
+    })
+  }
+
+  handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      password: e.target.value
     })
   }
 
@@ -72,6 +87,12 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
     }
   }
 
+  /*
+  handleReauth = (event: any) => {
+    this.props.reAuthenticate(this.state);
+  }
+  */
+
   render() {
     //redirect to homepage upon successful account creation
 
@@ -81,6 +102,27 @@ class ChangePassword extends Component<ChangePasswordProps, ChangePasswordState>
     if (this.state.redirect == true) {
       return <Redirect to='/' />
     }
+
+    /*
+    if (this.props.authError != undefined && this.props.authError.localeCompare('Change user password error')) {
+      return (
+        <div className="login-form">
+          <div className="form-box solid">
+            <form onSubmit={this.handleReauth}>
+              <h1 className="login-text">Please Reauthenticate</h1>
+              <label>Email</label><br></br>
+              <input type="text" value={this.state.email} id="email" onChange={this.handleEmailChange} /> <br></br>
+              <label>Password</label> <br></br>
+              <input type="password" value={this.state.password} id="password" onChange={this.handlePasswordChange} /> <br></br>
+              <button>Reauthenticate</button>
+            </form>
+          </div>
+        </div>
+      )
+    } else if (this.props.authError != undefined && this.props.authError.localeCompare('Error during user reauthentication')) {
+      window.alert("Error during user reauthentication. Please try again");
+    }
+    */
 
     return (
       <div className="createaccount">
@@ -115,7 +157,8 @@ const mapStateToProps = (state: any) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Return functions for changePassword
   return {
-    changePassword: (creds: any) => dispatch(changePassword(creds))
+    changePassword: (creds: any) => dispatch(changePassword(creds)),
+    reAuthenticate: (credentials: any) => dispatch(reAuthenticate(credentials))
   }
 }
 

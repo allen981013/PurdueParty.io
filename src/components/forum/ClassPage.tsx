@@ -6,13 +6,17 @@ import { RootState, AppDispatch } from '../../store';
 import { Redirect, Link } from 'react-router-dom';
 import {
   Box, Button, CircularProgress, Grid, Card, CardActionArea,
-  CardContent, Typography
+  CardContent, Typography, ToggleButton, ToggleButtonGroup
 } from '@mui/material'
+import { styled } from '@mui/material/styles';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
+import StarRateIcon from '@mui/icons-material/StarRate';
 import moment from 'moment';
+import { classPageSlice, fetchClassPosts, FetchCriteria } from '../../components/forum/ClassPageSlice';
 import { actionTypes } from 'redux-firestore';
 
-interface Post {
+export interface Post {
   title: string;
   content: string;
   poster: string;
@@ -22,10 +26,11 @@ interface Post {
   classID: string;
 }
 
-interface PostsLandingState {
+interface ClassPageState {
+  sortBy: FetchCriteria["sortBy"];
 }
 
-interface PostsLandingProps {
+export interface ClassPageProps {
   auth?: FirebaseReducer.AuthState;
   classID: string;
   isDataFetched?: boolean;
@@ -38,28 +43,33 @@ interface PostsLandingProps {
     instructorEmail: string,
     classID: string;
   };
+  fetchClassPosts?: (classID: string, fetchCriteria: FetchCriteria) => void;
   clearFetchedDocs?: () => void;
 }
 
+class ClassPage extends Component<ClassPageProps, ClassPageState> {
 
-class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
+  // Instance attributes
+  fetchCriteria: FetchCriteria = { sortBy: "RECENCY" }
+
   // Initialize state
-  constructor(props: PostsLandingProps) {
+  constructor(props: ClassPageProps) {
     super(props);
     this.state = {
+      sortBy: "RECENCY",
     };
   }
-  
-  componentDidMount() {    
-    // TODO: Is there a better way to reset isDataFetched without clearing firestore state?
-    const classInfoIsEmptyOrObsolete = () => !this.props.classInfo 
-      || (this.props.classInfo 
-          && this.props.classInfo.classID !== this.props.classID)
-    const postsIsEmptyOrObsolete = () => !this.props.posts 
-      || this.props.posts.length == 0 
+
+  componentDidMount() {
+    const classInfoIsEmptyOrObsolete = () => !this.props.classInfo
+      || (this.props.classInfo
+        && this.props.classInfo.classID !== this.props.classID)
+    const postsIsEmptyOrObsolete = () => !this.props.posts
+      || this.props.posts.length == 0
       || (this.props.posts.length > 0 && this.props.posts[0].classID !== this.props.classID)
     if (classInfoIsEmptyOrObsolete() || postsIsEmptyOrObsolete()) {
       this.props.clearFetchedDocs()
+      this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
     }
   }
 
@@ -72,9 +82,7 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
       >
         <Card sx={{ marginBottom: "16px" }}>
           <CardActionArea disableRipple component={Link} to={post.href}>
-            <CardContent
-              sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}
-            >
+            <CardContent sx={{ textAlign: "left" }}>
               <Box display="flex" flexDirection="row" pb="4px">
                 {/* Note: We split the following text into separate tags in case we want to 
                   proceed with the idea of making username & time clickable` */}
@@ -84,11 +92,13 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
                 >Posted by&nbsp;
                 </Typography>
                 <Typography
+                  noWrap
                   variant="subtitle2"
                   sx={{ color: "#787c7e", fontSize: "12px" }}
-                >{post.poster}&nbsp;
+                >{post.poster ? post.poster : "[ deleted ]"}&nbsp;
                 </Typography>
                 <Typography
+                  noWrap
                   variant="subtitle2"
                   sx={{ color: "#787c7e", fontSize: "12px" }}
                 >{post.timeSincePosted}
@@ -126,13 +136,13 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
     )
   }
 
-  getClass(class_: PostsLandingProps["classInfo"]) {
+  getClass(class_: ClassPageProps["classInfo"]) {
     return (
       <Card>
         <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
           Class Info
         </Box>
-        <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        <CardContent sx={{ textAlign: "left" }}>
           <label htmlFor="title">Course:</label>
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.title}
@@ -141,10 +151,10 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.department}
           </Typography>
-          <label htmlFor="title">Description:</label>
+          {/* <label htmlFor="title">Description:</label>
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.description}
-          </Typography>
+          </Typography> */}
           <label htmlFor="title">Instructor:</label>
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.instructorName}
@@ -155,6 +165,53 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
           </Typography>
         </CardContent>
       </Card>
+    )
+  }
+
+  getSortingBar() {
+    // Create a mui theme
+    const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+      '& .MuiToggleButtonGroup-grouped': {
+        margin: "12px",
+        padding: "8px 16px",
+        border: 0,
+        display: "flex",
+        alignItems: "center",
+        '&:not(:first-of-type)': {
+          borderRadius: "20px",
+        },
+        '&:first-of-type': {
+          borderRadius: "20px",
+        },
+      },
+    }));
+    // Return the sorting bar
+    return (
+      <Box display="flex" mb="16px" width="100%">
+        <Card sx={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
+          <StyledToggleButtonGroup
+            size="small"
+            value={this.state.sortBy}
+            exclusive
+            onChange={(_, newVal: FetchCriteria["sortBy"]) => {
+              if (newVal === null) return
+              console.log(newVal)
+              this.setState({ sortBy: newVal })
+              this.fetchCriteria.sortBy = newVal
+              this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
+            }}
+          >
+            <ToggleButton value={"RECENCY"}>
+              <StarRateIcon sx={{ paddingRight: "4px" }} />
+              New
+            </ToggleButton>
+            <ToggleButton value={"POPULARITY"}>
+              <WhatshotIcon sx={{ paddingRight: "4px" }} />
+              Popular
+            </ToggleButton>
+          </StyledToggleButtonGroup>
+        </Card>
+      </Box >
     )
   }
 
@@ -204,20 +261,23 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
               && <CircularProgress />
             }
             {this.props.posts != undefined
-              && this.props.posts.length != 0
-              && this.props.posts.map((post) => this.getPost(post))
-            }
-            {this.props.posts != undefined
               && this.props.posts.length == 0
               && <Box pt="32px">There are no posts yet in this class</Box>
             }
+            {this.props.posts != undefined
+              && this.props.posts.length != 0
+              && this.getSortingBar()
+            }
+            {this.props.posts != undefined
+              && this.props.posts.length != 0
+              && this.props.posts.map((post) => this.getPost(post))
+            }
           </Grid>
-          <Grid item xs={1} md={3}>
+          <Grid item xs={12} md={3}>
             {this.props.classInfo === undefined
               && <div>Class was not found</div>
             }
             {
-              // TODO: Fix this
               this.props.classInfo !== undefined
               && this.getClass(this.props.classInfo)
             }
@@ -229,25 +289,9 @@ class PostsLanding extends Component<PostsLandingProps, PostsLandingState> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  // Map posts objects to meet the UI's needs
-  var posts: PostsLandingProps["posts"] = state.firestore.ordered.classPagePosts
-    ? state.firestore.ordered.classPagePosts.map((post: any) => {
-      return {
-        title: post.title,
-        content: post.content,
-        poster: "raziqraif",    // TODO: Our post object only contains poster ID for now, and not 
-        // username. While we can do some hacks here to get username from ID, I'm 
-        // just gonna wait until we've denormalized our DB.
-        numComments: post.numComments,
-        href: "/classes/" + post.classID + "/" + post.postId,
-        timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
-        classID: post.classID,
-      }
-    })
-    : undefined
   // Map class object to meet the UI's need
   var classes = state.firestore.ordered.classPageClasses
-  var classInfo: PostsLandingProps["classInfo"] = (classes !== undefined && classes.length > 0)
+  var classInfo: ClassPageProps["classInfo"] = (classes !== undefined && classes.length > 0)
     ? classes.map((class_: any) => {
       return {
         title: class_.title,
@@ -262,30 +306,23 @@ const mapStateToProps = (state: RootState) => {
   // Return mapped redux states  
   return {
     auth: state.firebase.auth,
-    posts: posts,
+    posts: state.classPage.posts,
     classInfo: classInfo,
-    isDataFetched: posts !== undefined && classes !== undefined,
+    isDataFetched: state.classPage.posts !== undefined && classes !== undefined,
   }
 }
 
-const mapDispatchToProps = (dispatch: AppDispatch, props: PostsLandingProps) => {
+const mapDispatchToProps = (dispatch: AppDispatch, props: ClassPageProps) => {
   return {
+    fetchClassPosts: (classID: string, fetchCriteria: FetchCriteria) => dispatch(
+      fetchClassPosts(classID, fetchCriteria)
+    ),
     clearFetchedDocs: () => dispatch(
-      (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-        reduxDispatch({
-          type: actionTypes.LISTENER_RESPONSE,
-          meta: {
-            collection: 'posts',
-            where: [
-              ["classID", "==", props.classID]
-            ],
-            orderBy: [
-              ["postedDateTime", "desc"],
-            ],
-            storeAs: "classPagePosts"
-          },
-          payload: {}
-        })
+      (reduxDispatch: Dispatch<Action>,
+        getState: any,
+        { getFirebase, getFirestore }: any
+      ) => {
+        reduxDispatch(classPageSlice.actions.fetchClassPostsBegin())
         reduxDispatch({
           type: actionTypes.LISTENER_RESPONSE,
           meta: {
@@ -303,21 +340,10 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: PostsLandingProps) => 
   }
 }
 
-export default compose<React.ComponentType<PostsLandingProps>>(
+export default compose<React.ComponentType<ClassPageProps>>(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect((props: PostsLandingProps) => {
+  firestoreConnect((props: ClassPageProps) => {
     return [
-      {
-        collection: 'posts',
-        where: [
-          ["classID", "==", props.classID],
-          ["ancestorsIDs", "==", []]
-        ],
-        orderBy: [
-          ["postedDateTime", "desc"],
-        ],
-        storeAs: "classPagePosts"
-      },
       {
         collection: "classes",
         where: [
@@ -328,4 +354,4 @@ export default compose<React.ComponentType<PostsLandingProps>>(
       }
     ]
   })
-)(PostsLanding)
+)(ClassPage)

@@ -5,9 +5,9 @@ import { deleteAccount } from '../../store/actions/authActions';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
-import { Redirect } from 'react-router-dom'
-import { Box } from '@mui/material';
 import { refreshUserData } from '../../store/actions/authActions'
+import { Link, Redirect } from 'react-router-dom'
+import { Box, Button } from '@mui/material';
 
 // Interface/type for EditProfile State
 interface EditProfileState {
@@ -17,7 +17,8 @@ interface EditProfileState {
   major: string,
   year: string,
   hide: boolean,
- 
+
+  hasUpdated: boolean
 }
 
 // Interface/type for EditProfile Props
@@ -25,9 +26,12 @@ interface EditProfileProps {
   auth: any,
   firebase: any,
   uid: string,
-  deleteAccount: () => void
+
+  profile: any,
+  deleteAccount: () => void;
+  editUser: (state: EditProfileState) => void,
+  editStatus: string,
   refreshUserData: () => void
-  editUser: (state: EditProfileState) => void;
 }
 
 class EditProfile extends Component<EditProfileProps, EditProfileState> {
@@ -40,7 +44,8 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
       userName: "",
       major: "",
       year: "",
-      hide: false
+      hide: false,
+      hasUpdated: false
     }
   }
 
@@ -86,25 +91,33 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
   handleSubmit = (event: any) => {
     event.preventDefault();
 
-    if (this.state.bio.length > 280) {
+    if (this.state.bio.length > 0 && this.state.bio.length > 280) {
       // Pop modal for title length error
       console.log("Bio must be shorter than 280 characters.");
       window.alert("Bio must be shorter than 280 characters.")
     }
-    else if (this.state.userName.length < 3) {
+    else if (this.state.userName.length > 0 && this.state.userName.length < 3) {
       // Pop modal for description length error
       console.log("Minimum User Name Length Required: 3 characters");
       window.alert("Minimum User Name length required: 3 characters")
     }
     else {
-      console.log("Profile has been edited!");
-      window.alert("Profile has been edited!")
-
       this.setState({
         id: this.props.uid
       })
 
       this.props.editUser(this.state);
+
+      setTimeout(() => {
+        if (this.props.editStatus != undefined) {
+          if (this.props.editStatus.localeCompare('Edit profile success') == 0) {
+            console.log("Profile has been edited!");
+            window.alert("Profile has been edited!");
+          } else {
+            window.alert("Your chosen username is not unique. Please select a new one.");
+          }
+        }
+      }, 1000)
 
       this.setState({
         bio: "",
@@ -118,6 +131,7 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
       window.location.reload()
       window.history.back()
 
+
     }
   }
 
@@ -125,13 +139,40 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
     const { auth } = this.props;
 
     if (!auth.uid) return <Redirect to='/' />
+    var userProfile : any = undefined;
+
+    if (this.props.profile && this.props.profile.length == 1) {
+      //console.log(this.props.profile);
+      userProfile = this.props.profile[0];
+    }
+
+    if (!this.state.hasUpdated && userProfile != undefined) {
+      this.setState({
+        bio: userProfile.bio,
+        userName: userProfile.userName
+      })
+
+      if (userProfile.hasOwnProperty('major')) {
+        this.setState({
+          major: userProfile.major
+        })
+      }
+
+      
+      if (userProfile.hasOwnProperty('year')) {
+        this.setState({
+          year: userProfile.year
+        })
+      }
+
+      this.setState({
+        hasUpdated: true
+      })
+    }
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
         <p></p>
-        <form onSubmit={this.handleDelete}>
-          <button>Delete Account</button>
-        </form>
         <form onSubmit={this.handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <h1>User Name</h1>
           <div className="input-field">
@@ -165,6 +206,16 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
           <div className="input-field">
             <button className="button">Save</button>
           </div>
+          <Button 
+            component={Link} 
+            to="/changePassword"
+            sx={{ color: "black", border: "1px solid black", margin: "8px 0px" }}
+          >
+            Change Password
+          </Button>
+          <Button sx={{ color: "black", border: "1px solid black" }} onClick={this.handleDelete}>
+            Delete Account 
+          </Button>
 
         </form>
       </Box>
@@ -178,6 +229,7 @@ const mapStateToProps = (state: RootState) => {
     auth: state.firebase.auth,
     profile: state.firestore.ordered.users,
     uid: state.firebase.auth.uid,
+    editStatus: state.profileReducer.editStatus
   }
 }
 
@@ -191,7 +243,16 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
 
 export default compose<React.ComponentType<EditProfileProps>>(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect([
-    { collection: 'users' }
-  ])
+  firestoreConnect((props:EditProfileProps) => {
+    if (typeof props.auth != undefined) {
+      return [
+        {
+          collection: 'users',
+          doc: props.auth.uid
+        }
+      ]
+    } else {
+      return []
+    }
+  })
 )(EditProfile)
