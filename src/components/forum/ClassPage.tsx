@@ -50,7 +50,7 @@ export interface ClassPageProps {
 class ClassPage extends Component<ClassPageProps, ClassPageState> {
 
   // Instance attributes
-  fetchCriteria: FetchCriteria = {sortBy: "RECENCY"}
+  fetchCriteria: FetchCriteria = { sortBy: "RECENCY" }
 
   // Initialize state
   constructor(props: ClassPageProps) {
@@ -82,9 +82,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
       >
         <Card sx={{ marginBottom: "16px" }}>
           <CardActionArea disableRipple component={Link} to={post.href}>
-            <CardContent
-              sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}
-            >
+            <CardContent sx={{ textAlign: "left" }}>
               <Box display="flex" flexDirection="row" pb="4px">
                 {/* Note: We split the following text into separate tags in case we want to 
                   proceed with the idea of making username & time clickable` */}
@@ -94,11 +92,13 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
                 >Posted by&nbsp;
                 </Typography>
                 <Typography
+                  noWrap
                   variant="subtitle2"
                   sx={{ color: "#787c7e", fontSize: "12px" }}
                 >{post.poster}&nbsp;
                 </Typography>
                 <Typography
+                  noWrap
                   variant="subtitle2"
                   sx={{ color: "#787c7e", fontSize: "12px" }}
                 >{post.timeSincePosted}
@@ -142,7 +142,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
           Class Info
         </Box>
-        <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        <CardContent sx={{ textAlign: "left" }}>
           <label htmlFor="title">Course:</label>
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.title}
@@ -151,10 +151,10 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.department}
           </Typography>
-          <label htmlFor="title">Description:</label>
+          {/* <label htmlFor="title">Description:</label>
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.description}
-          </Typography>
+          </Typography> */}
           <label htmlFor="title">Instructor:</label>
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.instructorName}
@@ -194,21 +194,23 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
             value={this.state.sortBy}
             exclusive
             onChange={(_, newVal: FetchCriteria["sortBy"]) => {
+              if (newVal === null) return
+              console.log(newVal)
               this.setState({ sortBy: newVal })
               this.fetchCriteria.sortBy = newVal
               this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
             }}
           >
-          <ToggleButton value={"RECENCY"}>
-            <StarRateIcon sx={{ paddingRight: "4px" }} />
-            New
-          </ToggleButton>
-          <ToggleButton value={"POPULARITY"}>
-            <WhatshotIcon sx={{ paddingRight: "4px" }} />
-            Popular
-          </ToggleButton>
-        </StyledToggleButtonGroup>
-      </Card>
+            <ToggleButton value={"RECENCY"}>
+              <StarRateIcon sx={{ paddingRight: "4px" }} />
+              New
+            </ToggleButton>
+            <ToggleButton value={"POPULARITY"}>
+              <WhatshotIcon sx={{ paddingRight: "4px" }} />
+              Popular
+            </ToggleButton>
+          </StyledToggleButtonGroup>
+        </Card>
       </Box >
     )
   }
