@@ -27,6 +27,7 @@ import CreateClass from './components/forum/CreateClass';
 import EditSellListing from './components/marketplace/EditSellListing';
 import ThreadPage from './components/forum/ThreadPage';
 import ClubInfo from './components/clubs/ClubInfo';
+import EditClub from './components/clubs/EditClub';
 
 
 import SearchProfiles from './components/profile/SearchProfiles';
@@ -56,6 +57,8 @@ function App() {
           <Route path='/clubs/:clubID' render={({ match }) => {
             return <ClubInfo clubID={match.params.clubID} />
           }} />
+          <Route path='/edit-club/:clubID' component={EditClub} />
+
           <Route path='/forum/create-post' component={CreatePost} />
           <Route path='/profile' component={Profile} />
           <Route path='/edit-profile' component={EditProfile} />
@@ -73,16 +76,16 @@ function App() {
           <Route path='/edit-post/:classID/:postID' component={EditPost} />
           <Route path='/edit-event/:eventID' component={EditEvent} />
           <Route path='/create-class' component={CreateClass} />
-          <Route path = '/create-post/:classID' component = {CreatePost} />
+          <Route path='/create-post/:classID' component={CreatePost} />
 
-          <Route path = '/search-profiles' component = {SearchProfiles} />
+          <Route path='/search-profiles' component={SearchProfiles} />
 
 
           <Route path='/create-post/:classID' component={CreatePost} />
           <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
-        <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign:"center"}}>
+        <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
           Purdue University, 100 North University Street, West Lafayette, IN, 47907
         </div>
       </div>
