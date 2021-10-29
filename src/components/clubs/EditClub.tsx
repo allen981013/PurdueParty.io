@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, KeyboardEventHandler } from 'react';
 import { compose } from 'redux';
 import { editClub } from '../../store/actions/clubActions';
 import { connect } from 'react-redux';
@@ -10,6 +10,7 @@ import { Timestamp } from '@firebase/firestore';
 import Dropzone from 'react-dropzone'
 
 import CreatableSelect from 'react-select/creatable';
+import { ActionMeta, OnChangeValue } from 'react-select';
 
 
 import Datetime from 'react-datetime'
@@ -35,6 +36,11 @@ interface Option {
   readonly label: string;
   readonly value: string;
 }
+
+const createOption = (label: string) => ({
+  label,
+  value: label.toLowerCase(),
+});
 
 // Interface/type for Clubs State
 interface ClubState {
@@ -86,6 +92,38 @@ class EditClub extends Component<EditClubProps, ClubState> {
       hasUpdated: false
     }
   }
+  
+  // handleChange = (
+  //   value: OnChangeValue<Option, true>,
+  //   actionMeta: ActionMeta<Option>
+  // ) => {
+  //   console.group('Value Changed');
+  //   console.log(value);
+  //   console.log(`action: ${actionMeta.action}`);
+  //   console.groupEnd();
+
+  //   this.setState({ value });
+  // };
+
+  // handleInputChange = (inputValue: string) => {
+  //   this.setState({ inputValue });
+  // };
+
+  // handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
+  //   const { inputValue, value } = this.state;
+  //   if (!inputValue) return;
+  //   switch (event.key) {
+  //     case 'Enter':
+  //     case 'Tab':
+
+  //       this.setState({
+  //         inputValue: '',
+  //         value: [...value, createOption(inputValue)],
+  //       });
+
+  //       event.preventDefault();
+  //   }
+  // };
 
   // General purpose state updater during form modification
   handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,6 +224,7 @@ class EditClub extends Component<EditClubProps, ClubState> {
           id={Tag + "-select"}
           multiple
           value={selectedItems}
+          defaultValue={this.state.category}
           onChange={handler}
           input={<OutlinedInput label={Tag} />}
           MenuProps={MenuProps}
