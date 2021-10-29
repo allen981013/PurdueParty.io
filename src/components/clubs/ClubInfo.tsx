@@ -19,6 +19,9 @@ interface ClubInfoProps {
     owner: string,
     title: string,
     image: string
+  }
+  users?: {
+    userName: string
   };
 }
 
@@ -30,7 +33,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
   constructor(props: ClubInfoProps) {
     super(props);
     this.state = {
-    }
+    };
   }
 
   getChips(texts: string[]) {
@@ -139,6 +142,8 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
         <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Catgeory</h1>
         {this.getChips(club.catgeory)}
 
+
+
       </Box>
     )
   }
@@ -149,6 +154,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
 
     console.log(this.props.clubID)
     console.log(this.props.clubInfo)
+
 
     return(
       <div style={{display:"flex", justifyContent:"center"}}>
