@@ -16,6 +16,7 @@ interface ClubInfoProps {
     contactInfo: string,
     description: string,
     orgID: string,
+    editors: string[],
     owner: string,
     title: string
   };
@@ -97,15 +98,15 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
               >
                 <h1 style={{ fontWeight: 300, margin: "0px" }}>{club.title}</h1>
                 
-                <Button
+                {this.props.clubInfo.editors.includes(this.props.auth.uid) && <Button
                   component={Link}
-                  to={"/edit-club/" + clubID}
+                  to={"/edit-club/" + this.props.clubID}
                   variant="outlined"
                   sx={{ color: "black", height: "32px" }}
                 >
                   <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
                   Edit Club
-                </Button>
+                </Button>}
               </Box>
 
               <Box
@@ -171,6 +172,7 @@ const mapStateToProps = (state: RootState) => {
       contactInfo: club_.contactInfo,
       description: club_.description,
       orgID: club_.orgID,
+      editors: club_.editors,
       owner: club_.owner,
       title: club_.title
     }

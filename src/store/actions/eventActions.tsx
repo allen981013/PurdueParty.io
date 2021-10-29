@@ -133,6 +133,8 @@ export const editEvent = (newEvent: any) => {
             categories: newEvent.categories,
             themes: newEvent.themes,
             attendees: newEvent.attendees
+        }).then(() => {
+            dispatch({ type: 'EDIT_EVENT_SUCCESS' });
         });
     }
 }
