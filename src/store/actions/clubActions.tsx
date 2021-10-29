@@ -39,7 +39,7 @@ export const addClub = (newClub: any) => {
                         db.collection('users').doc(newClub.editors[i]).update({
                             canEditClubs: canEditClubs,
                         })
-                    // If user doesn't exist...
+                        // If user doesn't exist...
                     } else {
                         // doc.data() will be undefined in this case
                         console.log("No such document!");
@@ -104,6 +104,42 @@ export const addClub = (newClub: any) => {
             dispatch({ type: 'ADD_CLUB_SUCCESS', newDocRef });
         }).catch((err: any) => {
             dispatch({ type: 'ADD_CLUB_ERR', err });
+        });
+    }
+}
+
+
+export const editClub = (editedClub: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        // Get database
+        const db = getFirestore();
+
+        // Get that club document
+        var docref = db.collection('clubs').doc(editedClub.orgId);
+
+        console.log("WE ARE NOW IN EDITCLUB")
+        console.log(editedClub)
+
+        // Modify the club object
+        var checkUsername = db.collection('clubs').where("orgId", "==", editedClub.orgId).get().then((querySnapshot: any) => {
+            // Update the club object with the state variables from editClubPage
+            docref.update({
+                owner: getState().firebase.auth.uid,
+                orgId: editedClub.orgId,
+                editors: editedClub.editors,
+                title: editedClub.title,
+                description: editedClub.description,
+                contactInfo: editedClub.contactInfo,
+                postedDateTime: editedClub.postedDateTime,
+                attendees: editedClub.attendees,
+                category: editedClub.category,
+                events: editedClub.events,
+                image: editedClub.image,
+
+            }).then(() => {
+                console.log("Club Edit Successfully!");
+                dispatch({ type: 'EDIT_CLUB_SUCCESS' })
+            });
         });
     }
 }
