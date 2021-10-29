@@ -16,6 +16,8 @@ import createSellListing from './components/marketplace/create-sell-listings';
 import GenericSellListing from './components/marketplace/GenericSellListing';
 import CreatePost from './components/forum/create-post';
 import EditPost from './components/forum/EditPost';
+import createComment from './components/forum/createComment';
+import createCommentOnComment from './components/forum/createCommentOnComment';
 import Profile from './components/profile/Profile';
 import Classes from './components/forum/Classes';
 import ClassPage from './components/forum/ClassPage';
@@ -60,12 +62,14 @@ function App() {
           <Route exact path='/classes' component={Classes} />
           <Route path='/classes/:classID/:postID' render={({ match }) => {
             console.log(match)
-            return <ThreadPage classID={match.params.classID} postID={match.params.postID} isDataFetched={false} />
+            return <ThreadPage classID={match.params.classID} postID={match.params.postID} isDataFetched={false} users={[]} currentUser={''} />
           }} />
           <Route path='/classes/:classID' render={({ match }) => {
             return <ClassPage classID={match.params.classID} />
           }} />
           <Route path='/classes/create-post' component={CreatePost} />
+          <Route path='/createComment/:classID/:postID' component={createComment} />
+          <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} /> 
           <Route path='/edit-post/:classID/:postID' component={EditPost} />
           <Route path='/edit-event/:eventID' component={EditEvent} />
           <Route path='/create-class' component={CreateClass} />

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Dispatch, Action, compose } from 'redux';
-import { deletePost, editPost } from '../../store/actions/postActions'
+import { addCommentOnComment } from '../../store/actions/postActions'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom';
 import { Timestamp } from '@firebase/firestore';
-import { IconButton, Grid, Box, Button } from '@mui/material';
+import { IconButton, Grid, Box } from '@mui/material';
 import ReactModal from 'react-modal';
 
 import FormControl from '@mui/material/FormControl';
@@ -27,6 +27,7 @@ interface PostState {
   upvotes: number,
   downvotes: number,
   comments: any[],
+  commentID: string,
 }
 
 // Interface/type for Posts Props
@@ -34,10 +35,10 @@ interface PostProps {
   auth: any,
   posts: any,
   match: any,
-  editPost: (state: PostState) => void
+  addCommentOnComment: (state: PostState) => void
 }
 
-class EditPost extends Component<PostProps, PostState> {
+class AddCommentOnComment extends Component<PostProps, PostState> {
 
   // Initialize state
   constructor(props: PostProps) {
@@ -52,6 +53,7 @@ class EditPost extends Component<PostProps, PostState> {
         upvotes: 1,
         downvotes: 0,
         comments: [],
+        commentID: "",
     };
   }
 
@@ -60,6 +62,8 @@ class EditPost extends Component<PostProps, PostState> {
     this.setState({
       title: e.target.value,
       classID: this.props.match.params.classID,
+      postId: this.props.match.params.postID,
+      commentID: this.props.match.params.commentID,
     })
   }
 
@@ -68,7 +72,6 @@ class EditPost extends Component<PostProps, PostState> {
       description: e.target.value
     })
   }
-
 
   // Handle user submit
   handleSubmit = (event: any) => {
@@ -88,57 +91,49 @@ class EditPost extends Component<PostProps, PostState> {
       console.log("Posted Successfully!");
       window.alert("Posted successfully!")
 
-      //console.log(this.state.postId);
-      this.props.editPost({...this.state, postId: this.props.match.params.postID});
+
+      this.props.addCommentOnComment(this.state);
 
       this.setState({
-        postId: this.props.match.params.postID,
-        owner: this.state.owner,
-        classID: this.props.match.params.classID,
-        title: this.state.title,
-        description: this.state.description,
+        postId: "",
+        owner: "",
+        classID: "",
+        title: "",
+        description: "",
         postedDateTime: new Timestamp(0,0),
         upvotes: 1,
         downvotes: 0,
-        comments: this.state.comments,
+        comments: [],
       })
     }
   }
-
-  isPost = (post:any) => {
-    if (this.props.posts) {
-      return post.postId === this.props.match.params.postID
-    } else {
-      return false;
-    }
-  }
+  
 
   render() {
-    const curPost = this.props.posts.find(this.isPost);
-    console.log(curPost);
     return (
       <div>
+        {console.log(this.props.match.params.classID)}
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
           <Box id="cropped-purdue-img" />
         </Box>
 
         <form onSubmit={this.handleSubmit}>
-          <h1>Enter Post Title:</h1>
+          <h1>Enter Comment Title:</h1>
           <div className="input-field">
-            <label htmlFor="title">Post Title: </label>
-            <input type="text" value={curPost.title} placeholder="What's your post about?"
+            <label htmlFor="title">Comment Title: </label>
+            <input type="text" value={this.state.title} placeholder="What's your post about?"
               id="title" onChange={this.handleChangeTitle} />
           </div>
 
-          <h1>Enter Post Description:</h1>
+          <h1>Enter Comment Description:</h1>
           <div className="input-field">
-            <label htmlFor="description">Post Description: </label>
-            <input type="text" value={curPost.content} placeholder="Tell us more!" id="description"
+            <label htmlFor="description">Comment Description: </label>
+            <input type="text" value={this.state.description} placeholder="Tell us more!" id="description"
               onChange={this.handleChangeDescription} />
           </div>
 
           <div className="input-field">
-            <button className="button">Edit your post</button>
+            <button className="button">Submit your comment</button>
           </div>
 
         </form>
@@ -157,7 +152,7 @@ const mapStateToProps = (state: any) => {
 const mapDispatchToProps = (dispatch: (action: any) => void) => {
   // Insert functions from actions folder in similar syntax
   return {
-    editPost: (post: any) => dispatch(editPost(post))
+    addCommentOnComment: (post: any) => dispatch(addCommentOnComment(post))
   }
 }
 
@@ -168,4 +163,4 @@ export default compose<React.ComponentType<PostProps>>(
       collection: 'posts'
     }
   ])
-)(EditPost)
+)(AddCommentOnComment)

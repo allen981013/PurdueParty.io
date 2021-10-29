@@ -40,6 +40,7 @@ interface ThreadPageProps {
     bio: string,
     userName: string
   }[]
+  currentUser: string;
 }
 
 interface ThreadPageStates {
@@ -52,7 +53,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     var result : boolean = window.confirm("Are you sure you want to delete your post?");
     if (result) {
         //user said yes
-        console.log(this.props.postID);
         this.props.deletePost(this.props);
 
         this.setState({
@@ -85,7 +85,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
   
   isOwner = (user:any) => {
     if (this.props.post) {
-      return user.id === this.props.post.poster
+      return this.props.currentUser === this.props.post.poster
     } else {
       return false;
     }
@@ -95,6 +95,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     const { auth } = this.props;
 
     var curUser : any = undefined;
+    //console.log(this.props.users);
     if (this.props.users) {
       curUser = this.props.users.find(this.isOwner);
     }
@@ -106,23 +107,21 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
     var editCode : any = <div></div>;
     if (renderEdit) {
-        editCode = <Button 
-        component={Link}
-        to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
-        variant="outlined"
-        sx={{ color: "black", height: "32px" }}
-      >
-        <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+        editCode = <><Button
+          component={Link}
+          to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
+          variant="outlined"
+          sx={{ color: "black", height: "32px" }}
+        >
+          <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
           Edit
-      </Button>
-      {console.log(this)}
-      <Button 
-        onClick={this.handleDelete}
-        variant="outlined"
-        sx={{ color: "black", height: "32px" }}
-      >
-        Delete
-      </Button>
+        </Button><Button
+          onClick={this.handleDelete}
+          variant="outlined"
+          sx={{ color: "black", height: "32px" }}
+        >
+            Delete
+          </Button></>
     }
 
     return (
@@ -166,7 +165,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         </Typography>
         <Box pt="8px">
           <Button
-            onClick={e => { e.stopPropagation(); e.preventDefault() }}
+            component={Link}
+            to={"/createComment/" + this.props.classID + "/" + this.props.postID}
             sx={{
               textTransform: "none", color: "#787c7e", fontWeight: "bold",
               fontSize: "12px", padding: "4px 4px"
@@ -175,7 +175,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             <ChatBubbleOutlineOutlinedIcon
               sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
             />
-            {post.numComments} Comments
+            Reply ({post.numComments} Comments)
           </Button>
         </Box>
       </Box>
@@ -243,7 +243,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                     {/* Interaction widgets */}
                     <Box pt="8px">
                       <Button
-                        onClick={e => { e.stopPropagation(); e.preventDefault() }}
+                        component={Link}
+                        to={"/createCommentOnComment/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID}
                         sx={{
                           textTransform: "none", color: "#787c7e", fontWeight: "bold",
                           fontSize: "12px", padding: "4px 0px"
@@ -367,6 +368,8 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
     post: state.threadPage.post,
     classInfo: classInfo,
     isDataFetched: classes != undefined && state.threadPage.isPostFetched,
+    users: state.firestore.ordered.users,
+    currentUser: state.auth.lastCheckedUsername
   }
 }
 
@@ -395,8 +398,10 @@ export default compose<React.ComponentType<ThreadPageProps>>(
         ],
         storeAs: "classPageClasses",
         limit: 1,
+      },
+      {
+        collection: 'users'
       }
-
     ]
   })
 )(ThreadPage)
