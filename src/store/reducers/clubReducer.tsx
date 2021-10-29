@@ -17,6 +17,12 @@ const clubReducer = (state = initState, action: Action) => {
     case 'ADD_CLUB_ERR':
       console.log('error adding new club');
       return state;
+    case 'UPDATE_CLUB_ERR':
+      console.log('edited new club');
+      return state;
+    case 'UPDATE_CLUB_ERR':
+      console.log('error editing new club');
+      return state;
     default:
       return state;
   }

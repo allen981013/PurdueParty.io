@@ -89,7 +89,6 @@ export const addClub = (newClub: any) => {
                             newDocRef.update({
                                 image: downloadURL
                             })
-
                         })
                     })
             } else {
@@ -121,7 +120,7 @@ export const editClub = (editedClub: any) => {
         console.log(editedClub)
 
         // Modify the club object
-        var checkUsername = db.collection('clubs').where("orgId", "==", editedClub.orgId).get().then((querySnapshot: any) => {
+        var checkUsername = docref.get().then((querySnapshot: any) => {
             // Update the club object with the state variables from editClubPage
             docref.update({
                 owner: getState().firebase.auth.uid,
@@ -133,10 +132,57 @@ export const editClub = (editedClub: any) => {
                 postedDateTime: editedClub.postedDateTime,
                 attendees: editedClub.attendees,
                 category: editedClub.category,
-                events: editedClub.events,
-                image: editedClub.image,
-
+                events: editedClub.events
             }).then(() => {
+                // Get default fireRef first
+                var path = 'clubs/P.JPG'
+                var fileRef = firebaseStorageRef.child(path);
+                var fileType = '.png'
+                var metadata = {
+                    contentType: 'image/png',
+                };
+
+                //put profile pic in firebase storage
+                if (editedClub.image != null as any || editedClub.image != undefined) {
+                    //configure metadata
+                    if (editedClub.image.type == 'image/jpeg' || editedClub.image.type == 'image/jpg') {
+                        metadata.contentType = 'image/jpeg'
+                        fileType = '.jpeg'
+                    }
+                    else {
+                        metadata.contentType = 'image/png'
+                        fileType = '.png'
+                    }
+
+                    //create proper filename with user uid and path
+                    path = 'clubs/' + editedClub.orgId + fileType;
+                    fileRef = firebaseStorageRef.child(path);
+                }
+
+                if (editedClub.image != null as any) {
+                    //upload to firebase storage
+                    var waitOnUpload = fileRef.put(editedClub.image, metadata)
+
+                    //create image URL to store in Firestore
+                    waitOnUpload.on('state_changed', (snapshot) => {
+                    },
+                        (error) => {
+                            console.log('upload error')
+                        },
+                        () => {
+                            fileRef.getDownloadURL().then((downloadURL) => {
+                                //imageURL = downloadURL
+                                docref.update({
+                                    image: downloadURL
+                                }).then((docref: any) => {
+                                    dispatch({ type: 'UPDATE_CLUB_SUCCESS', docref });
+                                }).catch((err: any) => {
+                                    dispatch({ type: 'UPDATE_CLUB_ERR', err });
+                                });
+                            })
+                        })
+                } 
+
                 console.log("Club Edit Successfully!");
                 dispatch({ type: 'EDIT_CLUB_SUCCESS' })
             });
