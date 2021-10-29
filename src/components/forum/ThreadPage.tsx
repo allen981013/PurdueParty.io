@@ -9,6 +9,7 @@ import { Link, Redirect } from 'react-router-dom'
 import { EditOutlined } from '@mui/icons-material';
 import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
+import { deletePost } from '../../store/actions/postActions';
 
 export interface ThreadNode { // Refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
@@ -34,12 +35,43 @@ interface ThreadPageProps {
   isDataFetched?: boolean;
   clearFetchedDocs?: () => void;
   fetchPost?: (classID: string, postID: string) => void;
+  deletePost?: (state: ThreadPageProps) => void;
+  users: {
+    bio: string,
+    userName: string
+  }[]
+  currentUser: string;
 }
 
 interface ThreadPageStates {
 }
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
+
+  handleDelete = (event: any) => {
+    event.preventDefault();
+    var result : boolean = window.confirm("Are you sure you want to delete your post?");
+    if (result) {
+        //user said yes
+        this.props.deletePost(this.props);
+
+        this.setState({
+          postId: "",
+          owner: "",
+          classID: "",
+          title: "",
+          description: "",
+          upvotes: 1,
+          downvotes: 0,
+          comments: [],
+        })
+        //Maybe use this.props.history.push()
+
+        window.alert("Post Deleted Successfully!");
+        //return <Redirect to='/classes' />
+    }
+    // User said no, do nothing
+  }
 
   componentDidMount() {
     const postIsEmptyOrObsolete = () => !this.props.post
@@ -50,8 +82,48 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       this.props.fetchPost(this.props.classID, this.props.postID)
     }
   }
+  
+  isOwner = (user:any) => {
+    if (this.props.post) {
+      return this.props.currentUser === this.props.post.poster
+    } else {
+      return false;
+    }
+  }
 
   getPost = (post: ThreadNode) => {
+    const { auth } = this.props;
+
+    var curUser : any = undefined;
+    //console.log(this.props.users);
+    if (this.props.users) {
+      curUser = this.props.users.find(this.isOwner);
+    }
+
+    var renderEdit : boolean = false;
+    if (curUser && (curUser.id == auth.uid)) {
+      renderEdit = true;
+    }
+
+    var editCode : any = <div></div>;
+    if (renderEdit) {
+        editCode = <><Button
+          component={Link}
+          to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
+          variant="outlined"
+          sx={{ color: "black", height: "32px" }}
+        >
+          <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+          Edit
+        </Button><Button
+          onClick={this.handleDelete}
+          variant="outlined"
+          sx={{ color: "black", height: "32px" }}
+        >
+            Delete
+          </Button></>
+    }
+
     return (
       <Box display="inline" textAlign="left" padding="0px 4px 0px 4px">
         <Box display="flex" flexDirection="row" pb="4px">
@@ -77,15 +149,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             sx={{ color: "#787c7e", fontSize: "12px" }}
           >{post.timeSincePosted}
           </Typography>
-          <Button
-            component={Link}
-            to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
-            variant="outlined"
-            sx={{ color: "black", height: "32px" }}
-          >
-            <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-            Edit
-          </Button>
+          {editCode}
         </Box>
         <Typography
           variant="h6"
@@ -101,7 +165,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         </Typography>
         <Box pt="8px">
           <Button
-            onClick={e => { e.stopPropagation(); e.preventDefault() }}
+            component={Link}
+            to={"/createComment/" + this.props.classID + "/" + this.props.postID}
             sx={{
               textTransform: "none", color: "#787c7e", fontWeight: "bold",
               fontSize: "12px", padding: "4px 4px"
@@ -110,7 +175,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             <ChatBubbleOutlineOutlinedIcon
               sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
             />
-            {post.numComments} Comments
+            Reply ({post.numComments} Comments)
           </Button>
         </Box>
       </Box>
@@ -178,7 +243,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                     {/* Interaction widgets */}
                     <Box pt="8px">
                       <Button
-                        onClick={e => { e.stopPropagation(); e.preventDefault() }}
+                        component={Link}
+                        to={"/createCommentOnComment/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID}
                         sx={{
                           textTransform: "none", color: "#787c7e", fontWeight: "bold",
                           fontSize: "12px", padding: "4px 0px"
@@ -302,11 +368,14 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
     post: state.threadPage.post,
     classInfo: classInfo,
     isDataFetched: classes != undefined && state.threadPage.isPostFetched,
+    users: state.firestore.ordered.users,
+    currentUser: state.auth.lastCheckedUsername
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
   return {
+    deletePost: (post: any) => dispatch(deletePost(post)),
     fetchPost: (classID: string, postID: string) => dispatch(fetchPost(classID, postID)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
@@ -329,8 +398,10 @@ export default compose<React.ComponentType<ThreadPageProps>>(
         ],
         storeAs: "classPageClasses",
         limit: 1,
+      },
+      {
+        collection: 'users'
       }
-
     ]
   })
 )(ThreadPage)

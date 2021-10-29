@@ -90,7 +90,7 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
 
   handleSubmit = (event: any) => {
     event.preventDefault();
-
+    console.log("running");
     if (this.state.bio.length > 0 && this.state.bio.length > 280) {
       // Pop modal for title length error
       console.log("Bio must be shorter than 280 characters.");
@@ -116,22 +116,20 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
           } else {
             window.alert("Your chosen username is not unique. Please select a new one.");
           }
+
+          this.setState({
+            bio: "",
+            userName: "",
+            major: "",
+            year: "",
+            hide: false
+          })
+    
+          this.props.refreshUserData()
+          window.location.reload()
+          window.history.back()
         }
       }, 1000)
-
-      this.setState({
-        bio: "",
-        userName: "",
-        major: "",
-        year: "",
-        hide: false
-      })
-
-      this.props.refreshUserData()
-      window.location.reload()
-      window.history.back()
-
-
     }
   }
 
