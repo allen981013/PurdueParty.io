@@ -23,7 +23,7 @@ interface ClubInfoProps {
   }
   users?: {
     userName: string
-  };
+  }[];
 }
 
 interface ClubInfoStates {
@@ -35,6 +35,14 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     super(props);
     this.state = {
     };
+  }
+
+  isHolder = (user:any) => {
+    if (this.props.clubInfo) {
+      return user.id === this.props.clubInfo.owner
+    } else {
+      return false;
+    }
   }
 
   getChips(texts: string[]) {
@@ -53,7 +61,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     )
   }
 
-  getClub(club: ClubInfoProps["clubInfo"], hasPermission: boolean, clubID: string, ownerName: string){
+  getClub(club: ClubInfoProps["clubInfo"], ownerName: string){
     return(
       <Box
         display="flex"
@@ -143,7 +151,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
         <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Catgeory</h1>
         {this.getChips(club.catgeory)}
 
-
+        <hr style={{ width: "100%", border: "1px solid lightgrey", margin: "40px 0px 28px" }} />
 
       </Box>
     )
@@ -153,14 +161,19 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     if (!this.props.auth.uid) 
       return <Redirect to='/signin' />
 
+    var holdUser: any = undefined;
+    if(this.props.users) {
+      holdUser = this.props.users.find(this.isHolder);
+    }
+
     console.log(this.props.clubID)
     console.log(this.props.clubInfo)
-
+    console.log(holdUser)
 
     return(
       <div style={{display:"flex", justifyContent:"center"}}>
-      {this.props.clubInfo != undefined ? 
-        <Box>{this.getClub(this.props.clubInfo,true,"clubID","OwnerName")}</Box>
+      {this.props.clubInfo != undefined && holdUser != undefined ? 
+        <Box>{this.getClub(this.props.clubInfo,holdUser.userName)}</Box>
       :
         <div></div>
       }
@@ -189,6 +202,7 @@ const mapStateToProps = (state: RootState) => {
 
   return {
     auth: state.firebase.auth,
+    users: state.firestore.ordered.users,
     clubInfo: clubInfo,
   }
 }
@@ -226,6 +240,9 @@ export default compose<React.ComponentType<ClubInfoProps>>(
       ],
       storeAs: "clubInfoClubs",
       limit: 1,
+    },
+    {
+      collection: "users"
     }
     ]
   })
