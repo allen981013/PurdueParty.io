@@ -336,7 +336,7 @@ class EditClub extends Component<EditClubProps, ClubState> {
             </Select>
           </FormControl>
 
-          {/* <Dropzone
+          <Dropzone
           accept="image/jpeg, image/jpg, image/png"
           maxFiles={1}
           onDrop={inputtedFile =>
@@ -351,7 +351,7 @@ class EditClub extends Component<EditClubProps, ClubState> {
               </div>
             </section>
           )}
-        </Dropzone> */}
+        </Dropzone>
 
           <div className="input-field">
             <button className="button">Save</button>
