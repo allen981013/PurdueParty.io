@@ -23,7 +23,8 @@ import EditProfile from './components/profile/EditProfile';
 import EditEvent from './components/events/EditEvent';
 import CreateClass from './components/forum/CreateClass';
 import EditSellListing from './components/marketplace/EditSellListing';
-import ThreadPage from './components/forum/ThreadPage'
+import ThreadPage from './components/forum/ThreadPage';
+import ClubInfo from './components/clubs/ClubInfo';
 
 
 import SearchProfiles from './components/profile/SearchProfiles';
@@ -50,6 +51,9 @@ function App() {
           <Route path='/events' component={EventsLanding} />
           <Route exact path='/clubs' component={Clubs} />
           <Route path='/clubs/create-club' component={CreateClub} />
+          <Route path='/clubs/:clubID' render={({ match }) => {
+            return <ClubInfo clubID={match.params.clubID} />
+          }} />
           <Route path='/forum/create-post' component={CreatePost} />
           <Route path='/profile' component={Profile} />
           <Route path='/edit-profile' component={EditProfile} />

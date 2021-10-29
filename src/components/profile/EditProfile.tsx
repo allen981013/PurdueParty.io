@@ -5,6 +5,7 @@ import { deleteAccount } from '../../store/actions/authActions';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
+import { refreshUserData } from '../../store/actions/authActions'
 import { Link, Redirect } from 'react-router-dom'
 import { Box, Button } from '@mui/material';
 
@@ -16,6 +17,7 @@ interface EditProfileState {
   major: string,
   year: string,
   hide: boolean,
+
   hasUpdated: boolean
 }
 
@@ -24,10 +26,12 @@ interface EditProfileProps {
   auth: any,
   firebase: any,
   uid: string,
+
   profile: any,
   deleteAccount: () => void;
   editUser: (state: EditProfileState) => void,
-  editStatus: string
+  editStatus: string,
+  refreshUserData: () => void
 }
 
 class EditProfile extends Component<EditProfileProps, EditProfileState> {
@@ -115,7 +119,6 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
         }
       }, 1000)
 
-      /*
       this.setState({
         bio: "",
         userName: "",
@@ -123,7 +126,12 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
         year: "",
         hide: false
       })
-      */
+
+      this.props.refreshUserData()
+      window.location.reload()
+      window.history.back()
+
+
     }
   }
 
@@ -228,7 +236,8 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
     editUser: (profile: any) => dispatch(editUser(profile)),
-    deleteAccount: () => dispatch(deleteAccount())
+    deleteAccount: () => dispatch(deleteAccount()),
+    refreshUserData: () => dispatch(refreshUserData())
   }
 }
 

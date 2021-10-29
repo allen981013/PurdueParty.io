@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { Action, Dispatch } from 'redux'
 import { RootState } from '../../store'
-import { ThreadNode } from './ThreadPage'
 import { Post } from './ClassPage'
 import moment from 'moment'
 
@@ -85,11 +84,11 @@ export const fetchClassPosts = (classID: string, fetchCriteria: FetchCriteria) =
     // Populate user data into post objects
     posts = posts.map(post => {
       let uid = post.poster
-      let user = uid in idToUserDict ? idToUserDict[uid] : {}
-      // Note: poster & posterImgUrl will be undefined if the user does not exist
+      let userName = idToUserDict[uid] ? idToUserDict[uid].userName : undefined
+      // Note: poster will be undefined if the user does not exist
       return {
         ...post,
-        poster: user.userName,
+        poster: userName,
       }
     })
     dispatch(classPageSlice.actions.fetchClassPostsSuccess(posts))
