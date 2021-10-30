@@ -9,10 +9,6 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { AppDispatch, RootState } from '../../store'
 import { EventsLandingStatesRedux, fetchEvents } from './EventsLandingSlice'
-import Paper from '@mui/material/Paper';
-import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
 import Datetime from 'react-datetime'

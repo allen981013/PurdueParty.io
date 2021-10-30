@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { Redirect, Link} from 'react-router-dom';
-import {Box, Button, Grid, Chip} from '@mui/material';
-import { EditOutlined} from '@mui/icons-material'
+import { Redirect, Link } from 'react-router-dom';
+import { Box, Button, Grid, Chip, Card, CardMedia, CardContent, Typography } from '@mui/material';
+import { EditOutlined } from '@mui/icons-material'
 import { actionTypes } from 'redux-firestore';
 import { Action, compose, Dispatch } from 'redux';
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
@@ -23,7 +23,13 @@ interface ClubInfoProps {
   }
   users?: {
     userName: string
-  }[];
+  }[]
+  events?: {
+    image: string,
+    title: string,
+    orgID: string
+  }[]
+  ;
 }
 
 interface ClubInfoStates {
@@ -37,7 +43,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     };
   }
 
-  isHolder = (user:any) => {
+  isHolder = (user: any) => {
     if (this.props.clubInfo) {
       return user.id === this.props.clubInfo.owner
     } else {
@@ -61,8 +67,21 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     )
   }
 
-  getClub(club: ClubInfoProps["clubInfo"], ownerName: string){
-    return(
+  getEvents(events: ClubInfoProps["events"]) {
+    if (events != undefined) {
+      return (
+        <div> SOME RELEVANT EVENTS</div>
+      )
+    }
+    else {
+      return (
+        <div> NO RELEVANT EVENTS </div>
+      )
+    }
+  }
+
+  getClub(club: ClubInfoProps["clubInfo"], ownerName: string, events: ClubInfoProps["events"]) {
+    return (
       <Box
         display="flex"
         alignSelf="center"
@@ -109,7 +128,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
                 pb="32px"
               >
                 <h1 style={{ fontWeight: 300, margin: "0px" }}>{club.title}</h1>
-                
+
                 {this.props.clubInfo.editors.includes(this.props.auth.uid) && <Button
                   component={Link}
                   to={"/edit-club/" + this.props.clubID}
@@ -140,7 +159,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
                 <span style={{ paddingBottom: "4px" }}>{club.contactInfo}</span>
               </Box>
 
-            </Box>           
+            </Box>
           </Grid>
         </Grid>
 
@@ -152,31 +171,33 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
         {this.getChips(club.catgeory)}
 
         <hr style={{ width: "100%", border: "1px solid lightgrey", margin: "40px 0px 28px" }} />
+        <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Relevant Events</h1>
+
+        {this.getEvents(events)}
 
       </Box>
     )
   }
 
-  render(){
-    if (!this.props.auth.uid) 
+  render() {
+    if (!this.props.auth.uid)
       return <Redirect to='/signin' />
 
     var holdUser: any = undefined;
-    if(this.props.users) {
+    if (this.props.users) {
       holdUser = this.props.users.find(this.isHolder);
     }
 
     console.log(this.props.clubID)
-    console.log(this.props.clubInfo)
-    console.log(holdUser)
+    console.log(this.props.events)
 
-    return(
-      <div style={{display:"flex", justifyContent:"center"}}>
-      {this.props.clubInfo != undefined && holdUser != undefined ? 
-        <Box>{this.getClub(this.props.clubInfo,holdUser.userName)}</Box>
-      :
-        <div></div>
-      }
+    return (
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {this.props.clubInfo != undefined && holdUser != undefined ?
+          <Box>{this.getClub(this.props.clubInfo, holdUser.userName, this.props.events)}</Box>
+          :
+          <div></div>
+        }
       </div>
     )
   }
@@ -186,27 +207,38 @@ const mapStateToProps = (state: RootState) => {
   // Map club object to meet the UI's need
   var clubs = state.firestore.ordered.clubInfoClubs
   var clubInfo: ClubInfoProps["clubInfo"] = (clubs !== undefined && clubs.length > 0)
-  ? clubs.map((club_: any) => {
-    return {
-      catgeory: club_.category,
-      contactInfo: club_.contactInfo,
-      description: club_.description,
-      orgID: club_.orgID,
-      editors: club_.editors,
-      owner: club_.owner,
-      title: club_.title,
-      image: club_.image
-    }
-  })[0]
-  : undefined
+    ? clubs.map((club_: any) => {
+      return {
+        catgeory: club_.category,
+        contactInfo: club_.contactInfo,
+        description: club_.description,
+        orgID: club_.orgID,
+        editors: club_.editors,
+        owner: club_.owner,
+        title: club_.title,
+        image: club_.image
+      }
+    })[0]
+    : undefined
+
+  var events: ClubInfoProps["events"] = state.firestore.ordered.clubInfoEvents
+    ? state.firestore.ordered.clubInfoEvents.map((event: any) => {
+      return {
+        image: event.image,
+        title: event.title,
+        orgID: event.orgID
+      }
+    })[0]
+    : undefined
 
   return {
     auth: state.firebase.auth,
     users: state.firestore.ordered.users,
+    events: events,
     clubInfo: clubInfo,
   }
 }
-  
+
 const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
 
   return {
@@ -224,26 +256,46 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
           },
           payload: {}
         })
+        reduxDispatch({
+          type: actionTypes.LISTENER_RESPONSE,
+          meta: {
+            collection: "events",
+            where: [
+              ["orgID", "==", props.clubID],
+            ],
+            storeAs: "clubInfoEvents",
+            limit: 4,
+          },
+          payload: {}
+        })
       }
     )
   }
 }
-  
+
 export default compose<React.ComponentType<ClubInfoProps>>(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect((props: ClubInfoProps) => {
     return [
-    {
-      collection: "clubs",
-      where: [
-        ["orgId", "==", props.clubID],
-      ],
-      storeAs: "clubInfoClubs",
-      limit: 1,
-    },
-    {
-      collection: "users"
-    }
+      {
+        collection: "clubs",
+        where: [
+          ["orgId", "==", props.clubID],
+        ],
+        storeAs: "clubInfoClubs",
+        limit: 1,
+      },
+      {
+        collection: "users"
+      },
+      {
+        collection: "events",
+        where: [
+          ["orgID", "==", props.clubID],
+        ],
+        storeAs: "clubInfoEvents",
+        limit: 4,
+      }
     ]
   })
 )(ClubInfo);
