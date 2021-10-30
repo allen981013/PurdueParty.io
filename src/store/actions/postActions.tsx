@@ -133,6 +133,21 @@ export const deletePost = (newPost:any) => {
     }
 }
 
+export const deleteComment = (commentID:any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        // console.log(newPost);
+        // console.log(newPost.postID);
+        var docref = db.collection('posts').doc(commentID);
+
+        docref.delete().then(() => {
+            dispatch({ type: 'DELETE_COMMENT_SUCCESS', docref });
+        }).catch((err: any) => {
+            dispatch({ type: 'DELETE_COMMENT_ERR', err });
+        });
+    }
+}
+
 export const addClass = (newClass:any) => {
     return(dispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {
         const db = getFirestore();

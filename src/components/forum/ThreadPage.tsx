@@ -9,7 +9,8 @@ import { Link, Redirect } from 'react-router-dom'
 import { EditOutlined } from '@mui/icons-material';
 import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
-import { deletePost } from '../../store/actions/postActions';
+import { deletePost, deleteComment } from '../../store/actions/postActions';
+import { AnyNsRecord } from 'dns';
 
 export interface ThreadNode { // Refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
@@ -36,6 +37,7 @@ interface ThreadPageProps {
   clearFetchedDocs?: () => void;
   fetchPost?: (classID: string, postID: string) => void;
   deletePost?: (state: ThreadPageProps) => void;
+  deleteComment?: (state: ThreadPageProps) => void;           //DELETE??????????????????
   users: {
     bio: string,
     userName: string
@@ -68,6 +70,31 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       //Maybe use this.props.history.push()
 
       window.alert("Post Deleted Successfully!");
+      //return <Redirect to='/classes' />
+    }
+    // User said no, do nothing
+  }
+
+  handleDeleteComment = (commentID: any) => {
+    
+    var result: boolean = window.confirm("Are you sure you want to delete your comment?");
+    if (result) {
+      //user said yes
+      this.props.deleteComment(commentID);
+
+      this.setState({
+        postId: "",
+        owner: "",
+        classID: "",
+        title: "",
+        description: "",
+        upvotes: 1,
+        downvotes: 0,
+        comments: [],
+      })
+      //Maybe use this.props.history.push()
+
+      window.alert("Comment Deleted Successfully!");
       //return <Redirect to='/classes' />
     }
     // User said no, do nothing
@@ -162,8 +189,28 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     )
   }
 
-  getReply = (reply: ThreadNode) => {
+  getReply = (reply: ThreadNode, replyID:any) => {
     // TODO: Abstract away some operations here into several util functions
+    var renderEdit: boolean = reply.poster == this.props.currentUser;
+    var editCode: any = <div></div>;
+    if (renderEdit) {
+      editCode = <><Button
+        component={Link}
+        to={"/edit-post/" + this.props.classID + "/" + replyID}
+        variant="outlined"
+        sx={{ color: "black", height: "32px" }}
+      >
+        <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+        Edit
+      </Button><Button
+        onClick={() => this.handleDeleteComment(reply.ID)}
+        variant="outlined"
+        sx={{ color: "black", height: "32px" }}
+      >
+          Delete
+        </Button></>
+    }
+
     return (
       <Box display="flex" flexDirection="column" pt="16px">
         {/* Avatar, poster name, & time since posted */}
@@ -235,6 +282,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                         />
                         Reply
                       </Button>
+                      {editCode}
                     </Box>
                   </Box>
 
@@ -242,7 +290,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             }
             {
               (reply.replies.length > 0)
-              && reply.replies.map((reply_) => this.getReply(reply_))
+              && reply.replies.map((reply_) => this.getReply(reply_, reply_.ID))
             }
           </Box>
         </Box>
@@ -314,7 +362,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
               </Box>
               <CardContent sx={{ textAlign: "left" }}>
                 {this.getPost(this.props.post)}
-                {this.props.post.replies.map((reply) => this.getReply(reply))}
+                {this.props.post.replies.map((reply) => this.getReply(reply, reply.ID))}
               </CardContent>
             </Card>
           </Grid>
@@ -356,6 +404,7 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
 const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
   return {
     deletePost: (post: any) => dispatch(deletePost(post)),
+    deleteComment: (commentID: any) => dispatch(deleteComment(commentID)),
     fetchPost: (classID: string, postID: string) => dispatch(fetchPost(classID, postID)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
