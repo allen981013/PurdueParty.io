@@ -50,25 +50,25 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   handleDelete = (event: any) => {
     event.preventDefault();
-    var result : boolean = window.confirm("Are you sure you want to delete your post?");
+    var result: boolean = window.confirm("Are you sure you want to delete your post?");
     if (result) {
-        //user said yes
-        this.props.deletePost(this.props);
+      //user said yes
+      this.props.deletePost(this.props);
 
-        this.setState({
-          postId: "",
-          owner: "",
-          classID: "",
-          title: "",
-          description: "",
-          upvotes: 1,
-          downvotes: 0,
-          comments: [],
-        })
-        //Maybe use this.props.history.push()
+      this.setState({
+        postId: "",
+        owner: "",
+        classID: "",
+        title: "",
+        description: "",
+        upvotes: 1,
+        downvotes: 0,
+        comments: [],
+      })
+      //Maybe use this.props.history.push()
 
-        window.alert("Post Deleted Successfully!");
-        //return <Redirect to='/classes' />
+      window.alert("Post Deleted Successfully!");
+      //return <Redirect to='/classes' />
     }
     // User said no, do nothing
   }
@@ -82,46 +82,26 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       this.props.fetchPost(this.props.classID, this.props.postID)
     }
   }
-  
-  isOwner = (user:any) => {
-    if (this.props.post) {
-      return this.props.currentUser === this.props.post.poster
-    } else {
-      return false;
-    }
-  }
 
   getPost = (post: ThreadNode) => {
-    const { auth } = this.props;
-
-    var curUser : any = undefined;
-    //console.log(this.props.users);
-    if (this.props.users) {
-      curUser = this.props.users.find(this.isOwner);
-    }
-
-    var renderEdit : boolean = false;
-    if (curUser && (curUser.id == auth.uid)) {
-      renderEdit = true;
-    }
-
-    var editCode : any = <div></div>;
+    var renderEdit: boolean = post.poster == this.props.currentUser;
+    var editCode: any = <div></div>;
     if (renderEdit) {
-        editCode = <><Button
-          component={Link}
-          to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
-          variant="outlined"
-          sx={{ color: "black", height: "32px" }}
-        >
-          <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-          Edit
-        </Button><Button
-          onClick={this.handleDelete}
-          variant="outlined"
-          sx={{ color: "black", height: "32px" }}
-        >
-            Delete
-          </Button></>
+      editCode = <><Button
+        component={Link}
+        to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
+        variant="outlined"
+        sx={{ color: "black", height: "32px" }}
+      >
+        <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+        Edit
+      </Button><Button
+        onClick={this.handleDelete}
+        variant="outlined"
+        sx={{ color: "black", height: "32px" }}
+      >
+          Delete
+        </Button></>
     }
 
     return (
