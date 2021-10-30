@@ -15,6 +15,9 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import MenuItem from '@mui/material/MenuItem';
+import { StayCurrentPortraitSharp } from '@mui/icons-material';
+
+var updated: boolean;
 
 // Interface/type for Posts State
 interface PostState {
@@ -52,7 +55,7 @@ class EditPost extends Component<PostProps, PostState> {
         upvotes: 1,
         downvotes: 0,
         comments: [],
-    };
+    }
   }
 
   // General purpose state updater during form modification
@@ -61,6 +64,7 @@ class EditPost extends Component<PostProps, PostState> {
       title: e.target.value,
       classID: this.props.match.params.classID,
     })
+    
   }
 
   handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,8 +118,18 @@ class EditPost extends Component<PostProps, PostState> {
   }
 
   render() {
-    const curPost = this.props.posts.find(this.isPost);
-    console.log(curPost);
+    if (!this.props.posts) return <Box>Post not found</Box>;
+    if(!updated){
+      const curPost = this.props.posts.find(this.isPost);
+      console.log(curPost);
+      if (curPost != null) {
+        this.setState({
+          title: curPost.title,
+          description: curPost.content,
+        })
+      }
+      updated = true;
+    }
     return (
       <div>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
@@ -126,14 +140,14 @@ class EditPost extends Component<PostProps, PostState> {
           <h1>Enter Post Title:</h1>
           <div className="input-field">
             <label htmlFor="title">Post Title: </label>
-            <input type="text" value={curPost.title} placeholder="What's your post about?"
+            <input type="text" value={this.state.title} placeholder="What's your post about?"
               id="title" onChange={this.handleChangeTitle} />
           </div>
 
           <h1>Enter Post Description:</h1>
           <div className="input-field">
             <label htmlFor="description">Post Description: </label>
-            <input type="text" value={curPost.content} placeholder="Tell us more!" id="description"
+            <input type="text" value={this.state.description} placeholder="Tell us more!" id="description"
               onChange={this.handleChangeDescription} />
           </div>
 
