@@ -7,6 +7,7 @@ import { EditOutlined, OutdoorGrillOutlined } from '@mui/icons-material'
 import { actionTypes } from 'redux-firestore';
 import { Action, compose, Dispatch } from 'redux';
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
+import { Timestamp } from 'firebase/firestore';
 
 interface ClubInfoProps {
   auth?: FirebaseReducer.AuthState;
@@ -23,13 +24,15 @@ interface ClubInfoProps {
   }
   users?: {
     userName: string
-  }[]
+  }[];
   events?: {
     image: string,
     title: string,
-    orgID: string
-  }[]
-  ;
+    orgID: string,
+    startTime: Timestamp,
+    location: string,
+    id: string
+  };
 }
 
 interface ClubInfoStates {
@@ -67,10 +70,10 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     )
   }
 
-  getEvents(image: string, title: string, orgID: string) {
-    console.log(image)
-    console.log(title)
-    console.log(orgID)
+  getEvents(image: string, title: string, orgID: string, eventID: string, location: string, startTime: Timestamp) {
+    { console.log(startTime) }
+    { console.log(startTime.toDate().toLocaleString()) }
+
     return (
       <Box
         display="flex"
@@ -81,16 +84,17 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
         maxWidth="1200px"
         margin="56px 16px"
       >
-        <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Relevant Events</h1>
+        <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Next Upcoming Event</h1>
         <Grid
           item
           xs={12}
           md={12}
+          sx={{ width: "100%" }}
         >
-          <Card sx={{ width: "100%", height: 140 }}>
+          <Card sx={{ width: "100%", height: 200 }}>
             <CardActionArea
               component={Link}
-              to={"/clubs/"}
+              to={"/events/" + eventID}
               sx={{ display: "inline-flex", width: "100%", height: "100%" }}
             >
               <Box width="20%" height="100%">
@@ -101,9 +105,17 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
                 />
               </Box>
               <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "80%" }}>
-                <label htmlFor="title">Event Title: </label>
+                <label htmlFor="title">Event Name </label>
                 <Typography gutterBottom noWrap component="div" marginBottom="10px">
                   {title}
+                </Typography>
+                <label htmlFor="title">Location: </label>
+                <Typography gutterBottom noWrap component="div" marginBottom="10px">
+                  {location}
+                </Typography>
+                <label htmlFor="title">Start Time: </label>
+                <Typography gutterBottom noWrap component="div" marginBottom="10px">
+                  {startTime.toDate().toLocaleString()}
                 </Typography>
               </CardContent>
             </CardActionArea>
@@ -224,9 +236,9 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
           <Box>
             {this.getClub(this.props.clubInfo, holdUser.userName)}
             <Box>
-              {this.props.events != undefined && this.props.events.length != 0
+              {this.props.events != undefined
                 ?
-                this.props.events.map((event) => this.getEvents(event.image, event.title, event.orgID))
+                this.getEvents(this.props.events.image, this.props.events.title, this.props.events.orgID, this.props.events.id, this.props.events.location, this.props.events.startTime)
                 :
                 <div>No Relevant Event</div>
               }
@@ -263,7 +275,10 @@ const mapStateToProps = (state: RootState) => {
       return {
         image: event.image,
         title: event.title,
-        orgID: event.orgID
+        orgID: event.orgID,
+        startTime: event.startTime,
+        location: event.location,
+        id: event.id
       }
     })[0]
     : undefined
@@ -300,8 +315,11 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
             where: [
               ["orgID", "==", props.clubID],
             ],
+            orderBy: [
+              ["startTime", "desc"],
+            ],
             storeAs: "clubInfoEvents",
-            limit: 4,
+            limit: 1,
           },
           payload: {}
         })
@@ -331,7 +349,7 @@ export default compose<React.ComponentType<ClubInfoProps>>(
           ["orgID", "==", props.clubID],
         ],
         storeAs: "clubInfoEvents",
-        limit: 4,
+        limit: 1,
       }
     ]
   })
