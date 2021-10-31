@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect, Link } from 'react-router-dom';
-import { Box, Button, Grid, Chip, Card, CardMedia, CardContent, Typography } from '@mui/material';
-import { EditOutlined } from '@mui/icons-material'
+import { Box, Button, Grid, Chip, Card, CardMedia, CardContent, Typography, CardActionArea } from '@mui/material';
+import { EditOutlined, OutdoorGrillOutlined } from '@mui/icons-material'
 import { actionTypes } from 'redux-firestore';
 import { Action, compose, Dispatch } from 'redux';
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
@@ -67,20 +67,53 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     )
   }
 
-  getEvents(events: ClubInfoProps["events"]) {
-    if (events != undefined) {
-      return (
-        <div> SOME RELEVANT EVENTS</div>
-      )
-    }
-    else {
-      return (
-        <div> NO RELEVANT EVENTS </div>
-      )
-    }
+  getEvents(image: string, title: string, orgID: string) {
+    console.log(image)
+    console.log(title)
+    console.log(orgID)
+    return (
+      <Box
+        display="flex"
+        alignSelf="center"
+        flexDirection="column"
+        alignItems="center"
+        pt="8px"
+        maxWidth="1200px"
+        margin="56px 16px"
+      >
+        <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Relevant Events</h1>
+        <Grid
+          item
+          xs={12}
+          md={12}
+        >
+          <Card sx={{ width: "100%", height: 140 }}>
+            <CardActionArea
+              component={Link}
+              to={"/clubs/"}
+              sx={{ display: "inline-flex", width: "100%", height: "100%" }}
+            >
+              <Box width="20%" height="100%">
+                <CardMedia
+                  component="img"
+                  height="100%"
+                  image={image}
+                />
+              </Box>
+              <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "80%" }}>
+                <label htmlFor="title">Event Title: </label>
+                <Typography gutterBottom noWrap component="div" marginBottom="10px">
+                  {title}
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid >
+      </Box>
+    )
   }
 
-  getClub(club: ClubInfoProps["clubInfo"], ownerName: string, events: ClubInfoProps["events"]) {
+  getClub(club: ClubInfoProps["clubInfo"], ownerName: string) {
     return (
       <Box
         display="flex"
@@ -171,9 +204,6 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
         {this.getChips(club.catgeory)}
 
         <hr style={{ width: "100%", border: "1px solid lightgrey", margin: "40px 0px 28px" }} />
-        <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Relevant Events</h1>
-
-        {this.getEvents(events)}
 
       </Box>
     )
@@ -188,13 +218,20 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
       holdUser = this.props.users.find(this.isHolder);
     }
 
-    console.log(this.props.clubID)
-    console.log(this.props.events)
-
     return (
       <div style={{ display: "flex", justifyContent: "center" }}>
         {this.props.clubInfo != undefined && holdUser != undefined ?
-          <Box>{this.getClub(this.props.clubInfo, holdUser.userName, this.props.events)}</Box>
+          <Box>
+            {this.getClub(this.props.clubInfo, holdUser.userName)}
+            <Box>
+              {this.props.events != undefined && this.props.events.length != 0
+                ?
+                this.props.events.map((event) => this.getEvents(event.image, event.title, event.orgID))
+                :
+                <div>No Relevant Event</div>
+              }
+            </Box>
+          </Box>
           :
           <div></div>
         }
