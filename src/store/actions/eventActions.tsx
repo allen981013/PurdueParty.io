@@ -134,6 +134,55 @@ export const editEvent = (newEvent: any) => {
             themes: newEvent.themes,
             attendees: newEvent.attendees
         }).then(() => {
+            // Get default fireRef first
+            var path = 'events/P.JPG'
+            var fileRef = firebaseStorageRef.child(path);
+            var fileType = '.png'
+            var metadata = {
+                contentType: 'image/png',
+            };
+
+            //put profile pic in firebase storage
+            if (newEvent.image != null as any || newEvent.image != undefined) {
+                //configure metadata
+                if (newEvent.image.type == 'image/jpeg' || newEvent.image.type == 'image/jpg') {
+                    metadata.contentType = 'image/jpeg'
+                    fileType = '.jpeg'
+                }
+                else {
+                    metadata.contentType = 'image/png'
+                    fileType = '.png'
+                }
+
+                //create proper filename with user uid and path
+                path = 'events/' + newEvent.id + fileType;
+                fileRef = firebaseStorageRef.child(path);
+            }
+
+            if (newEvent.image != null as any) {
+                //upload to firebase storage
+                var waitOnUpload = fileRef.put(newEvent.image, metadata)
+
+                //create image URL to store in Firestore
+                waitOnUpload.on('state_changed', (snapshot) => {
+                },
+                    (error) => {
+                        console.log('upload error')
+                    },
+                    () => {
+                        fileRef.getDownloadURL().then((downloadURL) => {
+                            //imageURL = downloadURL
+                            docref.update({
+                                image: downloadURL
+                            }).then((docref: any) => {
+                                dispatch({ type: 'UPDATE_EVENT_SUCCESS', docref });
+                            }).catch((err: any) => {
+                                dispatch({ type: 'UPDATE_EVENT_ERR', err });
+                            });
+                        })
+                    })
+            } 
+            console.log("Event Edit Successfully!");
             dispatch({ type: 'EDIT_EVENT_SUCCESS' });
         });
     }

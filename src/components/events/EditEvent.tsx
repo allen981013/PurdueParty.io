@@ -45,7 +45,8 @@ interface EditEventState {
   endTime: Date,
   postedDateTime: Timestamp,
   attendees: string[],
-  hasUpdated: boolean
+  hasUpdated: boolean,
+  image: File,
 }
 
 // Interface/type for EditProfile Props
@@ -76,6 +77,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
       location: "",
       perks: [],
       themes: [],
+      image: null,
       categories: [],
       startTime: new Date(),
       endTime: new Date(),
@@ -140,11 +142,25 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
     })
   }
 
+  // General purpose state updater during form modification
+  handleInputImage = (e: File) => {
+    console.log(typeof (e));
+    console.log(e);
+    console.log(this.state);
+
+    if (e == undefined) {
+      window.alert("Please enter a valid file with a .JPG, .PNG, .JPEG extension.")
+    }
+    else {
+      this.setState({
+        image: e
+      })
+    }
+  }
 
   // Handle user submit
   handleSubmit = (event: any) => {
     event.preventDefault();
-
     if (this.state.title.length < 3) {
       // Pop modal for title length error
       console.log("Minimum title length required: 3 characters");
@@ -184,9 +200,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
     else {
       console.log("Event Edit Successfully!");
       window.alert("Event Edit Successfully!")
-
       this.props.editEvent({ ...this.state, id: this.props.match.params.eventID });
-
       this.setState({
         id: "",
         ownerID: "",
@@ -311,7 +325,6 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
                 <input type ="text" value={this.state.orgID} placeholder="Who's hosting the party?" id="type" onChange={this.handleChangeOrgID}/>
               </div> */}
 
-
           <h1>Enter event theme:</h1>
           {this.getMultipleSelect(this.state.themes, this.themes, this.handleChangeThemes, "Themes")}
 
@@ -337,7 +350,6 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
               ))}
             </Select>
           </FormControl>
-
           <h1>Enter event perks:</h1>
           {this.getMultipleSelect(this.state.perks, this.perks, this.handleChangePerks, "Perks")}
 
@@ -345,8 +357,24 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
             <button className="button">Save</button>
           </div>
 
-        </form>
-      </Box>
+          <Dropzone
+            accept="image/jpeg, image/jpg, image/png"
+            maxFiles={1}
+            onDrop={inputtedFile =>
+              this.handleInputImage(inputtedFile[0])
+            }
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Click here to upload a picture. JPG, JPEG, or PNG only.</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
+        </form >
+      </Box >
     )
   }
 }
