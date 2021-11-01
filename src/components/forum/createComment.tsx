@@ -68,12 +68,7 @@ class CreatePost extends Component<PostProps, PostState> {
   handleSubmit = (event: any) => {
     event.preventDefault();
 
-    if (this.state.title.length < 10) {
-      // Pop modal for title length error
-      console.log("Minimum title length required: 10 characters");
-      window.alert("Minimum title length required: 10 characters")
-    }
-    else if (this.state.description.length < 10) {
+    if (this.state.description.length < 10) {
       // Pop modal for description length error
       console.log("Minimum description Length Required: 10 characters");
       window.alert("Minimum description length required: 10 characters")
