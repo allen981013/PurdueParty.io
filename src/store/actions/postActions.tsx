@@ -42,7 +42,7 @@ export const addComment = (newPost: any) => {
             numComments: 0,
             owner: getState().firebase.auth.uid,
             postedDateTime: Timestamp.now(),
-            title: newPost.title,
+            title: "",
             upvotes: 0,
         }).then(() => {
             var newDocRef = db.collection('posts').doc(newPost.postId);
@@ -73,7 +73,7 @@ export const addCommentOnComment = (newPost: any) => {
             numComments: 0,
             owner: getState().firebase.auth.uid,
             postedDateTime: Timestamp.now(),
-            title: newPost.title,
+            title: "",
             upvotes: 0,
         }).then(() => {
             var newDocRef = db.collection('posts').doc(newPost.postId);

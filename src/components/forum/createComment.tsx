@@ -56,17 +56,11 @@ class CreatePost extends Component<PostProps, PostState> {
   }
 
   // General purpose state updater during form modification
-  handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      title: e.target.value,
-      classID: this.props.match.params.classID,
-      postId: this.props.match.params.postID,
-    })
-  }
-
   handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      description: e.target.value
+      description: e.target.value,
+      classID: this.props.match.params.classID,
+      postId: this.props.match.params.postID,
     })
   }
 
@@ -115,13 +109,6 @@ class CreatePost extends Component<PostProps, PostState> {
         </Box>
 
         <form onSubmit={this.handleSubmit}>
-          <h1>Enter Comment Title:</h1>
-          <div className="input-field">
-            <label htmlFor="title">Comment Title: </label>
-            <input type="text" value={this.state.title} placeholder="What's your post about?"
-              id="title" onChange={this.handleChangeTitle} />
-          </div>
-
           <h1>Enter Comment Description:</h1>
           <div className="input-field">
             <label htmlFor="description">Comment Description: </label>
