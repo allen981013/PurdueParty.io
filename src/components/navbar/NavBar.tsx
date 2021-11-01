@@ -133,7 +133,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
 const mapStateToProps = (state: RootState) => {
   return {
     auth: state.firebase.auth,
-    username: state.auth.lastCheckedUsername,
+    username: state.auth.lastCheckedUsername ? state.auth.lastCheckedUsername : "guest",
   }
 }
 

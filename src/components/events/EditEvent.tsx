@@ -161,7 +161,6 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
   // Handle user submit
   handleSubmit = (event: any) => {
     event.preventDefault();
-
     if (this.state.title.length < 3) {
       // Pop modal for title length error
       console.log("Minimum title length required: 3 characters");
@@ -201,9 +200,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
     else {
       console.log("Event Edit Successfully!");
       window.alert("Event Edit Successfully!")
-
       this.props.editEvent({ ...this.state, id: this.props.match.params.eventID });
-
       this.setState({
         id: "",
         ownerID: "",
@@ -265,8 +262,8 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
       this.setState({
         title: curEvent.title,
         description: curEvent.description,
-        startTime: curEvent.startTime,
-        endTime: curEvent.endTime,
+        startTime: curEvent.startTime.toDate(),
+        endTime: curEvent.endTime.toDate(),
         location: curEvent.location,
         themes: curEvent.themes,
         categories: curEvent.categories,
@@ -276,7 +273,6 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
         orgID: curEvent.orgID,
       })
     }
-
     return (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
         <form onSubmit={this.handleSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -297,7 +293,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
           <h1>Enter event starting date and time:</h1>
           <Box width="300px">
             <Datetime
-              initialValue={this.state.startTime}
+              value={this.state.startTime}
               onChange={this.handleChangeDateTime}
               isValidDate={(current) => current.isAfter(moment().subtract(1, 'day'))}
               className="custom-datetime-picker"
@@ -307,7 +303,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
           <h1>Enter event ending date and time:</h1>
           <Box width="300px">
             <Datetime
-              initialValue={this.state.endTime}
+              value={this.state.endTime}
               onChange={this.handleChangeDateTimeEnd}
               isValidDate={(current) => current.isAfter(moment().subtract(1, 'day'))}
               className="custom-datetime-picker"
@@ -354,7 +350,6 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
               ))}
             </Select>
           </FormControl>
-
           <h1>Enter event perks:</h1>
           {this.getMultipleSelect(this.state.perks, this.perks, this.handleChangePerks, "Perks")}
 
@@ -378,8 +373,8 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
               </section>
             )}
           </Dropzone>
-        </form>
-      </Box>
+        </form >
+      </Box >
     )
   }
 }
