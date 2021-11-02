@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom'
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { Timestamp } from '@firebase/firestore';
 import Dropzone from 'react-dropzone'
 import { EventInfoStatesRedux, fetchEventInfo } from './EventInfoSlice'
@@ -252,6 +252,11 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
     const { auth } = this.props;
 
     if (!auth.uid) return <Redirect to='/signin' />
+
+    // Check if props has loaded correctly
+    if (!(this.props.events)) {
+      return (<CircularProgress sx={{ alignSelf: "center", padding: "164px" }}></CircularProgress>)
+    }
 
     var curEvent: any = undefined;
     if (!this.state.hasUpdated && this.props.events && this.props.events.length == 1) {
