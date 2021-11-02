@@ -71,9 +71,6 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
   }
 
   getEvents(image: string, title: string, orgID: string, eventID: string, location: string, startTime: Timestamp) {
-    { console.log(startTime) }
-    { console.log(startTime.toDate().toLocaleString()) }
-
     return (
       <Box
         display="flex"

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom'
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { Timestamp } from '@firebase/firestore';
 import Dropzone from 'react-dropzone'
 import { EventInfoStatesRedux, fetchEventInfo } from './EventInfoSlice'
@@ -161,10 +161,10 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
   // Handle user submit
   handleSubmit = (event: any) => {
     event.preventDefault();
-    if (this.state.title.length < 3) {
+    if (this.state.title.length < 3 || this.state.title.length > 30) {
       // Pop modal for title length error
       console.log("Minimum title length required: 3 characters");
-      window.alert("Minimum title length required: 3 characters")
+      window.alert("Required title length between 3-30 characters")
     }
     else if (this.state.description.length < 10) {
       // Pop modal for description length error
@@ -253,6 +253,11 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
 
     if (!auth.uid) return <Redirect to='/signin' />
 
+    // Check if props has loaded correctly
+    if (!(this.props.events)) {
+      return (<CircularProgress sx={{ alignSelf: "center", padding: "164px" }}></CircularProgress>)
+    }
+
     var curEvent: any = undefined;
     if (!this.state.hasUpdated && this.props.events && this.props.events.length == 1) {
       curEvent = this.props.events[0];
@@ -260,6 +265,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
 
     if (!this.state.hasUpdated && curEvent != undefined) {
       this.setState({
+        ownerID: curEvent.ownerID,
         title: curEvent.title,
         description: curEvent.description,
         startTime: curEvent.startTime.toDate(),

@@ -8,6 +8,7 @@ import { Timestamp } from '@firebase/firestore';
 import Dropzone from 'react-dropzone'
 import CreatableSelect from 'react-select/creatable';
 import { ActionMeta, OnChangeValue } from 'react-select';
+import { IconButton, Grid, Box, CircularProgress } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useTheme } from '@mui/material/styles';
 import InputLabel from '@mui/material/InputLabel';
@@ -35,7 +36,7 @@ interface EditorNameOption {
 
 const createOption = (label: string) => ({
   label,
-  value: label.toLowerCase(),
+  value: label,
 });
 
 
@@ -239,6 +240,11 @@ class CreateClub extends Component<ClubProps, ClubState> {
   }
 
   render() {
+    // Check if props has loaded correctly
+    if (!(this.props.users && this.props.clubs)) {
+      return (<CircularProgress sx={{ alignSelf: "center", padding: "164px" }}></CircularProgress>)
+    }
+    
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
