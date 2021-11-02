@@ -161,10 +161,10 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
   // Handle user submit
   handleSubmit = (event: any) => {
     event.preventDefault();
-    if (this.state.title.length < 3) {
+    if (this.state.title.length < 3 || this.state.title.length > 30) {
       // Pop modal for title length error
       console.log("Minimum title length required: 3 characters");
-      window.alert("Minimum title length required: 3 characters")
+      window.alert("Required title length between 3-30 characters")
     }
     else if (this.state.description.length < 10) {
       // Pop modal for description length error
@@ -260,6 +260,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
 
     if (!this.state.hasUpdated && curEvent != undefined) {
       this.setState({
+        ownerID: curEvent.ownerID,
         title: curEvent.title,
         description: curEvent.description,
         startTime: curEvent.startTime.toDate(),

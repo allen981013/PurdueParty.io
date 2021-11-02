@@ -5,14 +5,11 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom'
-import { Box } from '@mui/material';
 import { Timestamp } from '@firebase/firestore';
 import Dropzone from 'react-dropzone'
-
 import CreatableSelect from 'react-select/creatable';
 import { ActionMeta, OnChangeValue } from 'react-select';
-
-
+import { IconButton, Grid, Box, CircularProgress } from '@mui/material';
 import Datetime from 'react-datetime'
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -39,7 +36,7 @@ interface Option {
 
 const createOption = (label: string) => ({
   label,
-  value: label.toLowerCase(),
+  value: label,
 });
 
 // Interface/type for Clubs State
@@ -63,6 +60,7 @@ interface ClubState {
 // Interface/type for EditProfile Props
 interface EditClubProps {
   auth: any,
+  users: any,
   firebase: any,
   match: any,
   clubs: any,
@@ -92,38 +90,41 @@ class EditClub extends Component<EditClubProps, ClubState> {
       hasUpdated: false
     }
   }
-  
-  // handleChange = (
-  //   value: OnChangeValue<Option, true>,
-  //   actionMeta: ActionMeta<Option>
-  // ) => {
-  //   console.group('Value Changed');
-  //   console.log(value);
-  //   console.log(`action: ${actionMeta.action}`);
-  //   console.groupEnd();
 
-  //   this.setState({ value });
-  // };
+  handleChange = (
+    value: OnChangeValue<Option, true>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    console.log(this.state);
+    console.group('Value Changed');
+    console.log(value);
+    console.log(`action: ${actionMeta.action}`);
+    console.groupEnd();
 
-  // handleInputChange = (inputValue: string) => {
-  //   this.setState({ inputValue });
-  // };
+    this.setState({ value });
+  };
 
-  // handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
-  //   const { inputValue, value } = this.state;
-  //   if (!inputValue) return;
-  //   switch (event.key) {
-  //     case 'Enter':
-  //     case 'Tab':
+  handleInputChange = (inputValue: string) => {
+    console.log(this.state);
+    this.setState({ inputValue });
+  };
 
-  //       this.setState({
-  //         inputValue: '',
-  //         value: [...value, createOption(inputValue)],
-  //       });
+  handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
+    console.log(this.state);
+    const { inputValue, value } = this.state;
+    if (!inputValue) return;
+    switch (event.key) {
+      case 'Enter':
+      case 'Tab':
 
-  //       event.preventDefault();
-  //   }
-  // };
+        this.setState({
+          inputValue: '',
+          value: [...value, createOption(inputValue)],
+        });
+
+        event.preventDefault();
+    }
+  };
 
   // General purpose state updater during form modification
   handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,27 +192,52 @@ class EditClub extends Component<EditClubProps, ClubState> {
       window.alert("Please enter contact info that's a valid purdue email.");
     }
     else {
-      window.alert("Club Edit Successfully!")
+      // Create temp editor array with owner's ID
+      var uid_arr = [];
 
-      this.props.editClub(this.state);
+      // Add other editors if they exist
+      if (this.state.value.length > 1) {
+        // For each editor in the editors arr
+        for (let i = 0; i < this.state.value.length; i++) {
+          // Get the user object from users array with matching username
+          var result = this.props.users.find(({ userName }: any) => userName === this.state.value[i].value);
 
-      this.setState({
-        orgId: "",
-        owner: "",
-        editors: [],
-        title: "",
-        description: "",
-        contactInfo: "",
-        postedDateTime: new Timestamp(0, 0),
-        image: null as any,
-        attendees: [],
-        category: [],
-        events: [],
-        inputValue: "",
-        value: [],
+          // Check if result if valid
+          if (result == undefined) {
+            window.alert("There was an invalid username that was entered. Please enter a valid username.")
+            return;
+          }
+          else {
+            // Push the uid onto a new array
+            uid_arr.push(result.id);
+          }
+        }
+      }
+      else {
+        uid_arr.push(this.props.auth.uid);
+      }
+
+      // Edit the club with the new information after updating editors state
+      this.setState({ editors: uid_arr }, () => {
+        this.props.editClub(this.state);
+
+        this.setState({
+          orgId: "",
+          owner: "",
+          editors: [""],
+          title: "",
+          description: "",
+          contactInfo: "",
+          postedDateTime: new Timestamp(0, 0),
+          attendees: [""],
+          category: [],
+          events: [],
+          inputValue: "",
+          value: []
+        })
+        window.alert("Club posted successfully!")
+        window.history.back();
       })
-
-      window.history.back()
     }
   }
 
@@ -247,16 +273,28 @@ class EditClub extends Component<EditClubProps, ClubState> {
 
     if (!auth.uid) return <Redirect to='/signin' />
 
+    // Check if props has loaded correctly
+    if (!(this.props.users && this.props.clubs)) {
+      return (<CircularProgress sx={{ alignSelf: "center", padding: "164px" }}></CircularProgress>)
+    }
+
     var curClub: any = undefined;
     if (!this.state.hasUpdated && this.props.clubs && this.props.clubs.length == 1) {
       curClub = this.props.clubs[0];
     }
 
-
-
     if (!this.state.hasUpdated && curClub != undefined) {
-      console.log("WE ARE HERE");
-      console.log(curClub);
+      var values = [];
+
+      // For each editor in the editors arr
+      for (let i = 0; i < curClub.editors.length; i++) {
+
+        // Get the user object from users array with matching username
+        var result = this.props.users.find(({ id }: any) => id === curClub.editors[i]);
+
+        // Push the uid onto a new array
+        values.push(createOption(result.userName));
+      }
 
       this.setState({
         orgId: curClub.orgId,
@@ -266,12 +304,11 @@ class EditClub extends Component<EditClubProps, ClubState> {
         description: curClub.description,
         contactInfo: curClub.contactInfo,
         postedDateTime: curClub.postedDateTime,
-        image: curClub.image,
         attendees: curClub.attendees,
         category: curClub.category,
         events: curClub.events,
         inputValue: "",
-        value: [],
+        value: values,
         hasUpdated: true,
       })
     }
@@ -293,18 +330,22 @@ class EditClub extends Component<EditClubProps, ClubState> {
               placeholder="Ex: We're a group of students who..." onChange={this.handleChangeDescription} />
           </div>
 
-          {/* <h1>List username of club editors:</h1>
-        <CreatableSelect
-          inputValue={this.state.inputValue}
-          isClearable
-          isMulti
-          menuIsOpen={false}
-          onChange={this.handleChange}
-          onInputChange={this.handleInputChange}
-          onKeyDown={this.handleKeyDown}
-          placeholder="Enter usernames and hit enter/tab after each..."
-          value={this.state.value}
-        /> */}
+          {this.state.owner == this.props.auth.uid &&
+            <div>
+              <h1>List username of club editors:</h1>
+              <CreatableSelect
+                inputValue={this.state.inputValue}
+                isClearable
+                isMulti
+                menuIsOpen={false}
+                onChange={this.handleChange}
+                onInputChange={this.handleInputChange}
+                onKeyDown={this.handleKeyDown}
+                placeholder="Enter usernames and hit enter/tab after each..."
+                value={this.state.value}
+              />
+            </div>
+          }
 
           <h1>Enter Club contact information:</h1>
           <div className="input-field">
@@ -337,21 +378,21 @@ class EditClub extends Component<EditClubProps, ClubState> {
           </FormControl>
 
           <Dropzone
-          accept="image/jpeg, image/jpg, image/png"
-          maxFiles={1}
-          onDrop={inputtedFile =>
-            this.handleInputImage(inputtedFile[0])
-          }
-        >
-          {({ getRootProps, getInputProps }) => (
-            <section>
-              <div {...getRootProps()}>
-                <input {...getInputProps()} />
-                <p>Click here to upload a picture. JPG, JPEG, or PNG only.</p>
-              </div>
-            </section>
-          )}
-        </Dropzone>
+            accept="image/jpeg, image/jpg, image/png"
+            maxFiles={1}
+            onDrop={inputtedFile =>
+              this.handleInputImage(inputtedFile[0])
+            }
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Click here to upload a picture. JPG, JPEG, or PNG only.</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
 
           <div className="input-field">
             <button className="button">Save</button>
@@ -366,7 +407,8 @@ class EditClub extends Component<EditClubProps, ClubState> {
 const mapStateToProps = (state: any) => {
   return {
     auth: state.firebase.auth,
-    clubs: state.firestore.ordered.clubs
+    clubs: state.firestore.ordered.clubs,
+    users: state.firestore.ordered.users,
   }
 }
 
@@ -381,6 +423,9 @@ export default compose<React.ComponentType<EditClubProps>>(
   firestoreConnect((props: EditClubProps) => {
     if (typeof props.match != undefined) {
       return [
+        {
+          collection: 'users'
+        },
         {
           collection: 'clubs',
           doc: props.match.params.clubID

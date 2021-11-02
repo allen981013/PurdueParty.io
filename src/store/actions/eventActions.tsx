@@ -120,7 +120,7 @@ export const editEvent = (newEvent: any) => {
         var docref = db.collection('events').doc(newEvent.id);
 
         docref.update({
-            ownerID: getState().firebase.auth.uid,
+            ownerID: newEvent.ownerID,
             editors: newEvent.editors,
             orgID: newEvent.orgID,
             title: newEvent.title,
@@ -135,7 +135,7 @@ export const editEvent = (newEvent: any) => {
             attendees: newEvent.attendees
         }).then(() => {
             // Get default fireRef first
-            var path = 'events/P.JPG'
+            var path = 'events/default.jpg'
             var fileRef = firebaseStorageRef.child(path);
             var fileType = '.png'
             var metadata = {

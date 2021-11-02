@@ -1,6 +1,7 @@
 import { Dispatch, Action } from 'redux';
 import { Timestamp } from '@firebase/firestore';
 import { firebaseStorageRef } from '../..';
+import { string } from 'yargs';
 
 // Need to explicitly define these types at some point
 export const addClub = (newClub: any) => {
@@ -116,14 +117,48 @@ export const editClub = (editedClub: any) => {
         // Get that club document
         var docref = db.collection('clubs').doc(editedClub.orgId);
 
-        console.log("WE ARE NOW IN EDITCLUB")
-        console.log(editedClub)
+        // Get users in the editors array previously
+        docref.get().then((doc: any) => {
+            if (doc.exists) {
+                var oldEditors = doc.data().editors;
+
+                // For each old user, check if they're in new editors array and delete if they aren't
+                for (let i = 0; i < oldEditors.length; i++) {
+                    // Get the editor object
+                    var userObj = db.collection("users").doc(oldEditors[i]);
+                    userObj.get().then(function (doc: any) {
+                        // If user object exists
+                        if (doc.exists) {
+                            // Only remove the clubID from the users canEditClub arr if it's not in club editors
+                            if (!editedClub.editors.includes(doc.id)) {
+                                // Create copy of canEditClubs arr to splice clubID from
+                                var canEditClubs = doc.data().canEditClubs;
+                                canEditClubs.splice(canEditClubs.indexOf(editedClub.orgID), 1);
+
+                                // Edit the user object
+                                db.collection('users').doc(oldEditors[i]).update({
+                                    canEditClubs: canEditClubs,
+                                })
+                            }
+                            // If user doesn't exist...
+                        } else {
+                            // doc.data() will be undefined in this case
+                            console.log("No such document!");
+                        }
+                    }).catch(function (error: any) {
+                        console.log("Error getting document:", error);
+                    });
+                };
+            }
+        }).catch((error: any) => {
+            console.log("Error getting document:", error);
+        });
 
         // Modify the club object
         var checkUsername = docref.get().then((querySnapshot: any) => {
             // Update the club object with the state variables from editClubPage
             docref.update({
-                owner: getState().firebase.auth.uid,
+                owner: editedClub.owner,
                 orgId: editedClub.orgId,
                 editors: editedClub.editors,
                 title: editedClub.title,
@@ -134,6 +169,52 @@ export const editClub = (editedClub: any) => {
                 category: editedClub.category,
                 events: editedClub.events
             }).then(() => {
+                // For each editor in the editors arr
+                for (let i = 0; i < editedClub.editors.length; i++) {
+                    // Get the editor object
+                    db.collection("users").doc(editedClub.editors[i]).get().then(function (doc: any) {
+
+                        // If user object exists
+                        if (doc.exists) {
+                            // Only add the clubID to the user array if it's not already in there
+                            if (!doc.data().canEditClubs.includes(docref.id)) {
+                                // Create copy of canEditClubs arr to append new clubID onto
+                                var canEditClubs = doc.data().canEditClubs;
+                                canEditClubs.push(docref.id);
+
+                                // Edit the user object
+                                db.collection('users').doc(editedClub.editors[i]).update({
+                                    canEditClubs: canEditClubs,
+                                })
+                            }
+                            // If user doesn't exist...
+                        } else {
+                            // doc.data() will be undefined in this case
+                            console.log("No such document!");
+                        }
+                    }).catch(function (error: any) {
+                        console.log("Error getting document:", error);
+                    });
+                };
+
+                // Modify the event objects to change their editors now
+
+                // For each editor in the editors arr
+                for (let i = 0; i < editedClub.events.length; i++) {
+                    // Get the event object
+                    db.collection("events").doc(editedClub.events[i]).get().then(function (doc: any) {
+                        // If event object exists
+                        if (doc.exists) {
+                            // Edit the user object
+                            db.collection('events').doc(editedClub.events[i]).update({
+                                editors: editedClub.editors,
+                            })
+                        }
+                    }).catch(function (error: any) {
+                        console.log("Error getting document:", error);
+                    });
+                }
+
                 // Get default fireRef first
                 var path = 'clubs/P.JPG'
                 var fileRef = firebaseStorageRef.child(path);
@@ -175,16 +256,18 @@ export const editClub = (editedClub: any) => {
                                 docref.update({
                                     image: downloadURL
                                 }).then((docref: any) => {
-                                    dispatch({ type: 'UPDATE_CLUB_SUCCESS', docref });
+                                    dispatch({ type: 'EDIT_CLUB_SUCCESS', docref });
                                 }).catch((err: any) => {
-                                    dispatch({ type: 'UPDATE_CLUB_ERR', err });
+                                    dispatch({ type: 'EDIT_CLUB_ERR', err });
                                 });
                             })
                         })
-                } 
-
+                }
                 console.log("Club Edit Successfully!");
                 dispatch({ type: 'EDIT_CLUB_SUCCESS' })
+            }).catch((err: any) => {
+                console.log("CLUB FAILURE")
+                dispatch({ type: 'EDIT_CLUB_ERR', err });
             });
         });
     }
