@@ -126,6 +126,8 @@ class Clubs extends Component<ClubsProps, ClubsState> {
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
 
+    console.log(this.props.clubs)
+
     return (
       <Box
         display="flex"

@@ -8,12 +8,14 @@ import { Timestamp } from '@firebase/firestore';
 import Dropzone from 'react-dropzone'
 import CreatableSelect from 'react-select/creatable';
 import { ActionMeta, OnChangeValue } from 'react-select';
+import { IconButton, Grid, Box, CircularProgress } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useTheme } from '@mui/material/styles';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import MenuItem from '@mui/material/MenuItem';
+import { dropdownIndicatorCSS } from 'react-select/dist/declarations/src/components/indicators';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -27,14 +29,14 @@ const MenuProps = {
 };
 
 
-interface Option {
+interface EditorNameOption {
   readonly label: string;
   readonly value: string;
 }
 
 const createOption = (label: string) => ({
   label,
-  value: label.toLowerCase(),
+  value: label,
 });
 
 
@@ -51,8 +53,8 @@ interface ClubState {
   attendees: string[],
   category: string[],
   events: string[],
-  readonly inputValue: string,
-  readonly value: readonly Option[],
+  pendingEditorName: string,
+  selectedEditorNames: readonly EditorNameOption[],
 }
 
 // Interface/type for Clubs Props
@@ -61,6 +63,7 @@ interface ClubProps {
   clubs: any,
   addClub: (state: ClubState) => void,
   users: any,
+  currentUsername?: string;
 }
 
 class CreateClub extends Component<ClubProps, ClubState> {
@@ -83,37 +86,39 @@ class CreateClub extends Component<ClubProps, ClubState> {
       attendees: [""],
       category: [],
       events: [],
-      inputValue: "",
-      value: []
+      pendingEditorName: "",
+      selectedEditorNames: this.props.currentUsername
+        ? [{ label: this.props.currentUsername, value: this.props.currentUsername }]
+        : []
     };
   }
 
   handleChange = (
-    value: OnChangeValue<Option, true>,
-    actionMeta: ActionMeta<Option>
+    value: OnChangeValue<EditorNameOption, true>,
+    actionMeta: ActionMeta<EditorNameOption>
   ) => {
     console.group('Value Changed');
     console.log(value);
     console.log(`action: ${actionMeta.action}`);
     console.groupEnd();
 
-    this.setState({ value });
+    this.setState({ selectedEditorNames: value });
   };
 
   handleInputChange = (inputValue: string) => {
-    this.setState({ inputValue });
+    this.setState({ pendingEditorName: inputValue });
   };
 
   handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
-    const { inputValue, value } = this.state;
+    const { pendingEditorName: inputValue, selectedEditorNames: value } = this.state;
     if (!inputValue) return;
     switch (event.key) {
       case 'Enter':
       case 'Tab':
 
         this.setState({
-          inputValue: '',
-          value: [...value, createOption(inputValue)],
+          pendingEditorName: '',
+          selectedEditorNames: [...value, createOption(inputValue)],
         });
 
         event.preventDefault();
@@ -195,11 +200,11 @@ class CreateClub extends Component<ClubProps, ClubState> {
       console.log("STATE NOW ON SUBMIT");
       console.log(this.state);
 
-      if (this.state.value.length > 0) {
+      if (this.state.selectedEditorNames.length > 0) {
         // For each editor in the editors arr
-        for (let i = 0; i < this.state.value.length; i++) {
+        for (let i = 0; i < this.state.selectedEditorNames.length; i++) {
           // Get the user object from users array with matching username
-          var result = this.props.users.find(({ userName }: any) => userName === this.state.value[i].value);
+          var result = this.props.users.find(({ userName }: any) => userName === this.state.selectedEditorNames[i].value);
 
           // Check if result if valid
           if (result == undefined) {
@@ -212,13 +217,10 @@ class CreateClub extends Component<ClubProps, ClubState> {
           }
         }
       }
-
       // Change the editors state
       this.setState({ editors: uid_arr }, () => {
         this.props.addClub(this.state);
-
         window.alert("Club posted successfully!")
-
         this.setState({
           orgId: "",
           owner: "",
@@ -230,19 +232,19 @@ class CreateClub extends Component<ClubProps, ClubState> {
           attendees: [""],
           category: [],
           events: [],
-          inputValue: "",
-          value: []
+          pendingEditorName: "",
+          selectedEditorNames: [{ label: this.props.currentUsername, value: this.props.currentUsername }]
         })
       })
     }
   }
 
   render() {
-    console.log(this.props.clubs);
-    console.log(this.state);
-    console.log("USERS");
-    console.log(this.props.users);
-
+    // Check if props has loaded correctly
+    if (!(this.props.users && this.props.clubs)) {
+      return (<CircularProgress sx={{ alignSelf: "center", padding: "164px" }}></CircularProgress>)
+    }
+    
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -262,7 +264,8 @@ class CreateClub extends Component<ClubProps, ClubState> {
 
           <h1>List username of club editors:</h1>
           <CreatableSelect
-            inputValue={this.state.inputValue}
+            components={{ DropdownIndicator: null }}
+            inputValue={this.state.pendingEditorName}
             isClearable
             isMulti
             menuIsOpen={false}
@@ -270,7 +273,7 @@ class CreateClub extends Component<ClubProps, ClubState> {
             onInputChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}
             placeholder="Enter usernames and hit enter/tab after each..."
-            value={this.state.value}
+            value={this.state.selectedEditorNames}
           />
 
           <h1>Enter Club contact information:</h1>
@@ -334,6 +337,7 @@ const mapStateToProps = (state: RootState) => {
     auth: state.firebase.auth,
     clubs: state.firestore.ordered.clubs,
     users: state.firestore.ordered.users,
+    currentUsername: state.auth.lastCheckedUsername,
   }
 }
 

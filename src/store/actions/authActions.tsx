@@ -1,17 +1,13 @@
-import { Firestore, query, queryEqual, where } from 'firebase/firestore';
-import { isEmpty } from 'react-redux-firebase';
 import { Dispatch, Action } from 'redux';
-//import { StringLiteralLike } from 'typescript';
 import { RootState } from '..';
-import { getAuth, sendPasswordResetEmail, updatePassword } from "firebase/auth";
-import { current } from '@reduxjs/toolkit';
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { firebaseStorageRef } from '../..';
 
 
 export const refreshUserData = () => {
     return (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
         const userId = getState().firebase.auth.uid
-        var payload = { lastCheckedUsername: "guest", lastCheckedIsLoggedIn: false }
+        var payload: any = { lastCheckedUsername: undefined, lastCheckedIsLoggedIn: false }
         if (!userId) {
             dispatch({ type: 'USER_DATA_REFRESHED', payload: payload })
             return
@@ -35,9 +31,9 @@ export const signIn = (credentials: { email: string, password: string }) => {
             credentials.password
         ).then((response: any) => {
             const userId = response.user.uid
-            let payload = { lastCheckedUsername: "guest" }
+            let emptyPayload: any = { lastCheckedUsername: undefined }
             if (userId)
-                dispatch({ type: 'LOGIN_SUCCESS', payload: payload })  // update login status first while waiting for username query to return
+                dispatch({ type: 'LOGIN_SUCCESS', payload: emptyPayload })  // update login status first while waiting for username query to return
             // Query username from db
             const db = getFirestore()
             db.collection("users").doc(userId).get()
@@ -61,7 +57,7 @@ export const reAuthenticate = (credentials: { email: string, password: string })
         firebase.auth().currentUser.reauthenticateWithCredential(
             credential
         ).then((response: any) => {
-            dispatch({ type: 'REAUTH_SUCCESS'})
+            dispatch({ type: 'REAUTH_SUCCESS' })
         }).catch((err: any) => {
             dispatch({ type: 'REAUTH_ERR', err });
         });
@@ -80,7 +76,7 @@ export const signOut = () => {
     }
 }
 
-const deleteFields = ( firebase: any, db: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
+const deleteFields = (firebase: any, db: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
 
     var collection = db.collection(collectionName)
     collection.where(fieldName, docType, useruid).get().then((querySnapshot: any[]) => {
@@ -130,10 +126,10 @@ export const deleteFromStorage = (deletePath: any) => {
         });
 }
 
-const deleteDocs = ( firebase: any, db: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
+const deleteDocs = (firebase: any, db: any, collectionName: any, fieldName: any, docType: any, useruid: any,) => {
     var storageLoc = '';
 
-    if(collectionName === 'events'){
+    if (collectionName === 'events') {
         storageLoc = 'events/'
     }
     else {
@@ -188,9 +184,9 @@ export const deleteAccount = () => {
             //delete owner and editor fields from events and clubs
             //deleteFields({ getFirebase, getFirestore }, 'events', 'owner', '==', useruid)
             deleteFields(firebase, db, 'events', 'editors', 'array-contains', useruid)
-            deleteFields(firebase, db,  'clubs', 'owner', '==', useruid)
-            deleteFields(firebase, db,  'clubs', 'editors', 'array-contains', useruid)
-            deleteFields(firebase, db,  'posts', 'owner', '==', useruid)
+            deleteFields(firebase, db, 'clubs', 'owner', '==', useruid)
+            deleteFields(firebase, db, 'clubs', 'editors', 'array-contains', useruid)
+            deleteFields(firebase, db, 'posts', 'owner', '==', useruid)
 
             dispatch({ type: 'DELETE_SUCCESS' });
         }).catch((err: any) => {
@@ -274,23 +270,23 @@ export const signUp = (newUser: any) => {
         })
     }
 }
-  
-export const changePassword = (newPass: String) => {
-  return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
-    const firebase = getFirebase();
-    const user = firebase.auth().currentUser;
 
-    console.log(newPass);
-    user.updatePassword(newPass).then(() => {
-        console.log(user);
-        //dispatch({ type: 'SIGNUP_SUCCESS' })
-        firebase.auth().signOut();
-    }).catch((err: any) => {
-        window.alert("For security purposes, please reauthenticate (logout/login) to change your password.")
-        dispatch({ type: 'CHANGE_PASS_ERR', err })
-        console.log(err)
-    });
-  }
+export const changePassword = (newPass: String) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const firebase = getFirebase();
+        const user = firebase.auth().currentUser;
+
+        console.log(newPass);
+        user.updatePassword(newPass).then(() => {
+            console.log(user);
+            //dispatch({ type: 'SIGNUP_SUCCESS' })
+            firebase.auth().signOut();
+        }).catch((err: any) => {
+            window.alert("For security purposes, please reauthenticate (logout/login) to change your password.")
+            dispatch({ type: 'CHANGE_PASS_ERR', err })
+            console.log(err)
+        });
+    }
 }
 
 export const resetPasswordRequest = (credentials: { email: string }) => {

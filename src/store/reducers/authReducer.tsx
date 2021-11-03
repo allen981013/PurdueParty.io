@@ -2,7 +2,7 @@ import { PlaylistAddOutlined } from "@mui/icons-material";
 
 type AuthState = {
   authError?: string,
-  lastCheckedUsername: string,
+  lastCheckedUsername?: string,
   lastCheckedIsLoggedIn: boolean,
 }
 
@@ -39,7 +39,7 @@ const authReducer = (state = initState, action: Action): AuthState => {
       console.log('user signed out');
       return {
         ...state,
-        lastCheckedUsername: "guest",
+        lastCheckedUsername: undefined,
         lastCheckedIsLoggedIn: false,
       };
     case 'SIGNOUT_ERROR':

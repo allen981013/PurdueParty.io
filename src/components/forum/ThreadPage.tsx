@@ -1,3 +1,4 @@
+import './ThreadPage.css'
 import React from 'react'
 import { Avatar, Box, Button, Card, CardContent, CircularProgress, Divider, Grid, Typography } from '@mui/material'
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
@@ -70,7 +71,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       //Maybe use this.props.history.push()
 
       window.alert("Post Deleted Successfully!");
-      //return <Redirect to='/classes' />
+      window.history.back();
     }
     // User said no, do nothing
   }
@@ -106,29 +107,41 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         && this.props.post.ID !== this.props.postID)
     if (postIsEmptyOrObsolete()) {
       this.props.clearFetchedDocs()
-      this.props.fetchPost(this.props.classID, this.props.postID)
     }
+    this.props.fetchPost(this.props.classID, this.props.postID)
+  }
+
+  showEditAndDelete() {
+    document.getElementById("myDropdown").classList.toggle("show");
   }
 
   getPost = (post: ThreadNode) => {
     var renderEdit: boolean = post.poster == this.props.currentUser;
     var editCode: any = <div></div>;
     if (renderEdit) {
-      editCode = <><Button
-        component={Link}
-        to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
-        variant="outlined"
-        sx={{ color: "black", height: "32px" }}
-      >
-        <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-        Edit
-      </Button><Button
-        onClick={this.handleDelete}
-        variant="outlined"
-        sx={{ color: "black", height: "32px" }}
-      >
+      editCode = <><div>
+      <div className="dropdown">
+        <Button onClick={this.showEditAndDelete} className="dropbtn">...</Button>
+          <div id="myDropdown" className="dropdown-content">
+          <Button
+            component={Link}
+            to={"/edit-post/" + this.props.classID + "/" + this.props.postID}
+          variant="outlined"
+          sx={{ color: "black", height: "32px" }}
+          >
+          <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
+          Edit
+          </Button>
+          <Button
+            onClick={this.handleDelete}
+            variant="outlined"
+            sx={{ color: "black", height: "32px" }}
+          >
           Delete
-        </Button></>
+          </Button>
+        </div>
+      </div>
+      </div></>
     }
 
     return (

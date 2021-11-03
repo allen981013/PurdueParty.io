@@ -69,8 +69,8 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
       || (this.props.posts.length > 0 && this.props.posts[0].classID !== this.props.classID)
     if (classInfoIsEmptyOrObsolete() || postsIsEmptyOrObsolete()) {
       this.props.clearFetchedDocs()
-      this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
     }
+    this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
   }
 
   getPost(post: Post) {

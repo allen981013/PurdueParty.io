@@ -57,19 +57,12 @@ class AddCommentOnComment extends Component<PostProps, PostState> {
     };
   }
 
-  // General purpose state updater during form modification
-  handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+  handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      title: e.target.value,
+      description: e.target.value,
       classID: this.props.match.params.classID,
       postId: this.props.match.params.postID,
       commentID: this.props.match.params.commentID,
-    })
-  }
-
-  handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      description: e.target.value
     })
   }
 
@@ -77,12 +70,7 @@ class AddCommentOnComment extends Component<PostProps, PostState> {
   handleSubmit = (event: any) => {
     event.preventDefault();
 
-    if (this.state.title.length < 10) {
-      // Pop modal for title length error
-      console.log("Minimum title length required: 10 characters");
-      window.alert("Minimum title length required: 10 characters")
-    }
-    else if (this.state.description.length < 10) {
+    if (this.state.description.length < 10) {
       // Pop modal for description length error
       console.log("Minimum description Length Required: 10 characters");
       window.alert("Minimum description length required: 10 characters")
@@ -98,7 +86,6 @@ class AddCommentOnComment extends Component<PostProps, PostState> {
         postId: "",
         owner: "",
         classID: "",
-        title: "",
         description: "",
         postedDateTime: new Timestamp(0,0),
         upvotes: 1,
@@ -118,17 +105,11 @@ class AddCommentOnComment extends Component<PostProps, PostState> {
         </Box>
 
         <form onSubmit={this.handleSubmit}>
-          <h1>Enter Comment Title:</h1>
-          <div className="input-field">
-            <label htmlFor="title">Comment Title: </label>
-            <input type="text" value={this.state.title} placeholder="What's your post about?"
-              id="title" onChange={this.handleChangeTitle} />
-          </div>
 
           <h1>Enter Comment Description:</h1>
           <div className="input-field">
             <label htmlFor="description">Comment Description: </label>
-            <input type="text" value={this.state.description} placeholder="Tell us more!" id="description"
+            <input type="text" value={this.state.description} placeholder="content for comment" id="description"
               onChange={this.handleChangeDescription} />
           </div>
 
