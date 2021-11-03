@@ -99,13 +99,13 @@ export const addCommentOnComment = (newPost: any) => {
     }
 }
 
-export const editPost = (newPost:any) => {
+export const editPost = (newPost: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         console.log(newPost);
         console.log(newPost.postId);
         var docref = db.collection('posts').doc(newPost.postId);
-        
+
         docref.update({
             title: newPost.title,
             content: newPost.description,
@@ -118,7 +118,25 @@ export const editPost = (newPost:any) => {
     }
 }
 
-export const deletePost = (newPost:any) => {
+export const editComment = (commentID: any, description: string) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+
+        var docref = db.collection('posts').doc(commentID);
+
+        docref.update({
+            content: description,
+            postedDateTime: Timestamp.now(),
+        }).then((newDocRef: any) => {
+            window.alert("Comment edited successfully!")
+            dispatch({ type: 'UPDATE_COMMENT_SUCCESS', newDocRef });
+        }).catch((err: any) => {
+            dispatch({ type: 'UPDATE_COMMENT_ERR', err });
+        });
+    }
+}
+
+export const deletePost = (newPost: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         console.log(newPost);
@@ -133,8 +151,48 @@ export const deletePost = (newPost:any) => {
     }
 }
 
-export const addClass = (newClass:any) => {
-    return(dispatch : Dispatch<Action>, getState:any, { getFirebase, getFirestore}: any ) => {
+export const deleteComment = (commentID: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+
+        var collection = db.collection('posts')
+        var docref = collection.doc(commentID);
+
+        // docref.get().then((docWithIDs: any) => {
+        //     let listAncestorIDs = docWithIDs.data().ancestorsIDs
+        //     var currentDoc: any
+
+        //     if (listAncestorIDs) {
+        //         for (let i = 0; i < listAncestorIDs.length; i++) {
+        //             currentDoc = collection.doc(listAncestorIDs[i]);
+        //             console.log(listAncestorIDs[i])
+        //             console.log("THEN")
+        //             currentDoc.get().then((doc: any) => {
+        //                 console.log(doc.data().content)
+                        
+        //                 let numComment = doc.data().numComments
+        //                 numComment = numComment - 1;
+        //                 collection.doc(doc.id).update({
+        //                     numComments: numComment
+        //                 })
+
+        //             })
+        //         }
+        //     }
+        // })
+
+        //dispatch({ type: 'DELETE_COMMENT_SUCCESS', docref });
+        docref.delete().then(() => {
+            window.alert("Comment Deleted Successfully!");
+            dispatch({ type: 'DELETE_COMMENT_SUCCESS', docref });
+        }).catch((err: any) => {
+            dispatch({ type: 'DELETE_COMMENT_ERR', err });
+        });
+    }
+}
+
+export const addClass = (newClass: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         var docref = db.collection('classes');
 
