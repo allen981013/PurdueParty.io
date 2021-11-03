@@ -1,7 +1,6 @@
 import { Dispatch, Action } from 'redux';
 import { Timestamp } from '@firebase/firestore';
 import { firebaseStorageRef } from '../..';
-import { string } from 'yargs';
 
 // Need to explicitly define these types at some point
 export const addClub = (newClub: any) => {
