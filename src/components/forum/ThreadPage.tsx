@@ -80,8 +80,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         && this.props.post.ID !== this.props.postID)
     if (postIsEmptyOrObsolete()) {
       this.props.clearFetchedDocs()
-      this.props.fetchPost(this.props.classID, this.props.postID)
     }
+    this.props.fetchPost(this.props.classID, this.props.postID)
   }
 
   showEditAndDelete() {
