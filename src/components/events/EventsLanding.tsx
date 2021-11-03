@@ -148,7 +148,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
               height="140"
               image={event.imageUrl}
             />
-            <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+            <CardContent sx={{ display: "box", textAlign: "left"}}>
               <Typography gutterBottom noWrap component="div">
                 {event.title}
               </Typography>
@@ -159,7 +159,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
                 {event.location}
               </Typography>
             </CardContent>
-            <Box display="flex" padding="4px 8px 4px 16px" sx={{ background: "#F3F4F6" }}>
+            <Box display="block" textAlign="left" padding="4px 8px 4px 16px" sx={{ background: "#F3F4F6" }}>
               <Typography noWrap variant="body2" color="text.secondary" component="div">
                 {event.hostName}
               </Typography>
@@ -204,7 +204,6 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
           container
           spacing={3}
           sx={{ maxWidth: "100%" }}
-        // padding={"16px 0px"}
         >
           <Grid
             item

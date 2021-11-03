@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Chip, CircularProgress } from '@mui/material'
+import { Box, Button, Grid, Chip, CircularProgress, IconButton, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { EditOutlined, DeleteOutlined } from '@mui/icons-material'
 import React from 'react'
@@ -29,7 +29,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
 
   constructor(props: EventInfoProps) {
     super(props)
-    
+
     this.state = {
       deleteEventError: true
     };
@@ -57,14 +57,10 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
     var result: boolean = window.confirm("Are you sure you want to delete your event?");
     if (result) {
       console.log("DELETING EVENT")
-
-      //user said yes
       this.props.deleteEvent(this.props.eventID);
-
       if (!this.state.deleteEventError) {
         // Alert the user
         window.alert("Listing Deleted Successfully!");
-
         // Redirect them to another page
         //window.location.href = "./";
       }
@@ -79,7 +75,6 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
   render() {
     const { auth } = this.props;
     if (!auth.uid) return <Redirect to='/signin' />
-
     if (!this.props.hasInfoFetched)
       return (
         <Box pt="32px"><CircularProgress /></Box>
@@ -95,8 +90,8 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
         flexDirection="column"
         alignItems="center"
         pt="8px"
+        padding="56px 16px"
         maxWidth="1200px"
-        margin="56px 16px"
       >
         <Grid
           container
@@ -109,7 +104,6 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
             id="image-container"
             xs={12}
             md={6}
-          // sx={{minWidth:"450px"}}
           >
             <img width="100%" height="100%" src={this.props.event.imageUrl} />
           </Grid>
@@ -120,7 +114,6 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
             md={6}
           >
             <Box
-              id="title-container"
               display="flex"
               flexDirection="column"
               alignItems="flex-start"
@@ -130,44 +123,38 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
               <Box
                 display="flex"
                 alignItems="center"
-                justifyContent="space-between"
+                flexWrap="wrap"
                 width="100%"
                 pb="32px"
               >
-
-                <h1 style={{ fontWeight: 300, margin: "0px" }}>{this.props.event.title}</h1>
-
-
-                {this.props.event.editors.includes(this.props.auth.uid) && <Button
-                  component={Link}
-                  to={"/edit-event/" + this.props.eventID}
-                  variant="outlined"
-                  sx={{ color: "black", height: "32px" }}
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 300, margin: "0px", flexGrow: 1, textAlign: "left", wordWrap: "break-word", minWidth: "1%" }}
                 >
-                  <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-                  Edit Event
-                </Button>}
+                  {this.props.event.title}
+                </Typography>
 
-                {console.log("CONSOLE LOG HERE")}
-                {console.log(this.props.event.ownerID)}
-                {console.log(this.props.auth.uid)}
-
+                {this.props.event.editors.includes(this.props.auth.uid) &&
+                  <IconButton
+                    component={Link}
+                    to={"/edit-event/" + this.props.eventID}
+                    // variant="outlined"
+                    sx={{ color: "black", height: "32px", width: "32px", margin: "0px" }}
+                  >
+                    <EditOutlined sx={{ fontSize: "16px" }} />
+                    {/* Edit */}
+                  </IconButton>}
                 {this.props.event.ownerID === this.props.auth.uid &&
-                  <form onSubmit={this.handleDelete}>
-                    <div>
-                      <Button
-                        variant="outlined"
-                        sx={{ color: "black", height: "32px" }}
-                        onClick={this.handleDelete}
-                      >
-                        <DeleteOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-                        Delete Event
-                      </Button>
-                    </div>
-                  </form>}
-
-                  {!this.state.deleteEventError ? <Redirect to='/events'/> : <div></div>}
-
+                  <IconButton
+                    // variant="outlined"
+                    sx={{ color: "black", height: "32px", width: "32px" }}
+                    onClick={this.handleDelete}
+                  >
+                    <DeleteOutlined sx={{ fontSize: "16px" }} />
+                    {/* Delete  */}
+                  </IconButton>
+                }
+                {!this.state.deleteEventError ? <Redirect to='/events' /> : <div></div>}
               </Box>
               <Box
                 display="flex"
@@ -184,10 +171,18 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 display="flex"
                 flexDirection="column"
                 alignItems="flex-start"
+                textAlign="left"
                 pb="24px"
+                width="100%"
+                sx={{ wordWrap: "break-word", minWidth: "1%" }}
               >
-                <strong style={{ paddingBottom: "8px" }}>Location</strong>
-                <span>{this.props.event.location}</span>
+                <strong>Location</strong>
+                {/* <Box
+                  sx={{ wordWrap: "break-word", minWidth: "1%", paddingTop: "8px", width: "100%" }}
+                > */}
+                <Box pt="8px" width="100%" sx={{ wordWrap: "break-word", maxWidth: { xs: "90vw", md: "500px", lg: "550px" } }}>
+                  {this.props.event.location}
+                </Box>
               </Box>
               <Box
                 display="flex"
@@ -195,15 +190,22 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 alignItems="flex-start"
                 pb="24px"
               >
-                {/* <strong style={{ paddingBottom: "8px" }}>Description</strong>
-                <span>{this.props.event.description}</span> */}
               </Box>
             </Box>
           </Grid>
         </Grid>
         <hr style={{ width: "100%", border: "1px solid lightgrey", margin: "40px 0px 28px" }} />
         <h1 style={{ fontWeight: 300, margin: "0px 0px 16px", alignSelf: "flex-start" }}>Description</h1>
-        <Box alignSelf="flex-start">{this.props.event.description}</Box>
+        <Box
+          display="block"
+          alignSelf="flex-start"
+          flexWrap="nowrap"
+          width="100%"
+          maxWidth="95vw"
+          sx={{ textAlign: "left", wordWrap: "break-word", overflowWrap: "break-word" }}
+        >
+          {this.props.event.description}
+        </Box>
         {
           this.props.event.perks.length &&
           <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Perks</h1>
@@ -219,7 +221,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
           component={Link}
           to={this.props.host.href}
           sx={{
-            width: "100%", height: "92px", color: "black", boxShadow: 3,
+            width: "100%", maxWidth: "95vw", height: "92px", color: "black", boxShadow: 3,
             justifyContent: "flex-start", paddingLeft: "24px"
           }}
         >
