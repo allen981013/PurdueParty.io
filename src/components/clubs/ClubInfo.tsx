@@ -32,7 +32,7 @@ interface ClubInfoProps {
     startTime: Timestamp,
     location: string,
     id: string
-  };
+  }[];
 }
 
 interface ClubInfoStates {
@@ -79,9 +79,8 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
         alignItems="center"
         pt="8px"
         maxWidth="1200px"
-        margin="56px 16px"
+        margin="20px 20px"
       >
-        <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Next Upcoming Event</h1>
         <Grid
           item
           xs={12}
@@ -213,6 +212,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
         {this.getChips(club.catgeory)}
 
         <hr style={{ width: "100%", border: "1px solid lightgrey", margin: "40px 0px 28px" }} />
+        <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Relevant Events</h1>
 
       </Box>
     )
@@ -226,16 +226,15 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     if (this.props.users) {
       holdUser = this.props.users.find(this.isHolder);
     }
-
     return (
       <div style={{ display: "flex", justifyContent: "center" }}>
         {this.props.clubInfo != undefined && holdUser != undefined ?
           <Box>
             {this.getClub(this.props.clubInfo, holdUser.userName)}
             <Box>
-              {this.props.events != undefined
+              {this.props.events != undefined && this.props.events.length != 0
                 ?
-                this.getEvents(this.props.events.image, this.props.events.title, this.props.events.orgID, this.props.events.id, this.props.events.location, this.props.events.startTime)
+                this.props.events.map((event) => this.getEvents(event.image, event.title, event.orgID, event.id, event.location, event.startTime))
                 :
                 <div>No Relevant Event</div>
               }
@@ -277,7 +276,7 @@ const mapStateToProps = (state: RootState) => {
         location: event.location,
         id: event.id
       }
-    })[0]
+    })
     : undefined
 
   return {
@@ -289,7 +288,6 @@ const mapStateToProps = (state: RootState) => {
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
-
   return {
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
@@ -316,7 +314,6 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
               ["startTime", "desc"],
             ],
             storeAs: "clubInfoEvents",
-            limit: 1,
           },
           payload: {}
         })
@@ -346,7 +343,6 @@ export default compose<React.ComponentType<ClubInfoProps>>(
           ["orgID", "==", props.clubID],
         ],
         storeAs: "clubInfoEvents",
-        limit: 1,
       }
     ]
   })
