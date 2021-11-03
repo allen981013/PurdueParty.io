@@ -40,6 +40,12 @@ const postReducer = (state = initState, action: Action) => {
         case 'EDIT_POST_ERR':
             console.log('error editing post');
             return state;
+        case 'EDIT_COMMENT_SUCCESS':
+            console.log('edited comment');
+            return state;
+        case 'EDIT_COMMENT_ERR':
+            console.log('error editing comment');
+            return state;
         case 'DELETE_POST_SUCCESS':
             console.log('deleted post');
             return state;
