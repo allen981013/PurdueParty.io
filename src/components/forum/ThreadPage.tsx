@@ -52,6 +52,7 @@ interface ThreadPageStates {
   dropdownAnchor: any,
   commentID: string,
   description: string,
+  dropdownReplyID: string
 }
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
@@ -62,6 +63,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       description: "",
       commentID: "",
       dropdownAnchor: null,
+      dropdownReplyID: ""
     }
   }
 
@@ -98,9 +100,10 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     // User said no, do nothing
   }
 
-  handleDropdownClick = (event: React.MouseEvent<HTMLElement>) => {
+  handleDropdownClick = (event: React.MouseEvent<HTMLElement>, replyID: string) => {
     this.setState({
-      dropdownAnchor: event.currentTarget
+      dropdownAnchor: event.currentTarget,
+      dropdownReplyID: replyID
     })
   }
 
@@ -286,7 +289,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
   getReply = (reply: ThreadNode) => {
     // TODO: Abstract away some operations here into several util functions
     var commentCode: any = <div id="myComment2" hidden>
-      {console.log(this)}
       <input type="text" value={this.state.description} placeholder="Tell us more!" id="myComment2"
         onChange={this.handleChangeDescription2} />
       <div></div>
@@ -304,19 +306,13 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     </div>;
     var userIsCommentOwner: boolean = this.props.currentUsername && reply.posterUsername == this.props.currentUsername;
     var dropdownMenu: any = <div></div>;
+    var showMenu: any = <div></div>;
     if (userIsCommentOwner) {
       const open = Boolean(this.state.dropdownAnchor);
-      dropdownMenu =
-        <div>
-          <IconButton
-            aria-label="more"
-            aria-controls="long-menu"
-            aria-expanded={open ? 'true' : undefined}
-            aria-haspopup="true"
-            onClick={this.handleDropdownClick}
-          >
-            <MoreHorizIcon sx={{ fontSize: "16px" }} />
-          </IconButton>
+
+      if (this.state.dropdownReplyID === reply.ID) {
+        console.log(reply.ID + " " + this.state.dropdownReplyID)
+        showMenu =
           <Menu
             id="long-menu"
             MenuListProps={{
@@ -338,8 +334,20 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             <MenuItem onClick={() => this.handleDeleteComment(reply.ID)}>
               {"Delete"}
             </MenuItem>
-
           </Menu>
+      }
+      dropdownMenu =
+        <div>
+          <IconButton
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-expanded={open ? 'true' : undefined}
+            aria-haspopup="true"
+            onClick={(event) => this.handleDropdownClick(event, reply.ID)}
+          >
+            <MoreHorizIcon sx={{ fontSize: "16px" }} />
+          </IconButton>
+          {showMenu}
         </div>
     }
     return (
