@@ -42,10 +42,10 @@ interface ThreadPageProps {
   isDataFetched?: boolean;
   clearFetchedDocs?: () => void;
   fetchPost?: (classID: string, postID: string) => void;
-  deletePost?: (state: ThreadPageProps) => void;
-  addComment?: (state: ThreadPageStates) => void;
-  addCommentOnComment?: (state: ThreadPageStates) => void
-  deleteComment?: (state: ThreadPageProps) => void;           //DELETE??????????????????
+  deletePost?: (post: any) => void;   // TODO: I type-annotate this hackily since the actual redux action doesn't have proper type annotation  - Raziq
+  addComment?: (comment: any) => void;
+  addCommentOnComment?: (comment: any) => void
+  deleteComment?: (commentID: string) => void;           //DELETE??????????????????
 }
 
 interface ThreadPageStates {
@@ -80,7 +80,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     var result: boolean = window.confirm("Are you sure you want to delete your post?");
     if (result) {
       //user said yes
-      this.props.deletePost(this.props);
+      this.props.deletePost({ postID: this.props.postID });
       // TODO: Do this in redux action after deletion has actually succeeded / failed
       // TODO: Maybe use this.props.history.push()
       window.alert("Post Deleted Successfully!");
@@ -93,7 +93,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     var result: boolean = window.confirm("Are you sure you want to delete your comment?");
     if (result) {
       //user said yes
-      this.props.deleteComment(commentID as any);  // TODO: Fix the type annotation for deleteComment
+      this.props.deleteComment(commentID);  // TODO: Fix the type annotation for deleteComment
     }
     // User said no, do nothing
   }
@@ -120,7 +120,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   showComment2(reply: ThreadNode) {
     this.setState({
-      commentID: reply.ID
+      commentID: reply.ID,
     })
     document.getElementById("myComment2").classList.toggle("show");
   }
@@ -135,7 +135,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
   // Handle user submit
   handleSubmit = (event: any) => {
     event.preventDefault();
-
     if (this.state.description.length < 10) {
       // Pop modal for description length error
       console.log("Minimum description Length Required: 10 characters");
@@ -144,9 +143,11 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     else {
       console.log("Posted Successfully!");
       window.alert("Posted successfully!")
-
-
-      this.props.addComment(this.state);
+      this.props.addComment({
+        description: this.state.description,
+        postId: this.props.postID,
+        classID: this.props.classID
+      });
       window.history.back();
     }
   }
@@ -160,7 +161,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
   // Handle user submit
   handleSubmit2 = (event: any) => {
     event.preventDefault();
-
     if (this.state.description.length < 10) {
       // Pop modal for description length error
       console.log("Minimum description Length Required: 10 characters");
@@ -169,9 +169,12 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     else {
       console.log("Posted Successfully!");
       window.alert("Posted successfully!")
-
-
-      this.props.addCommentOnComment(this.state);
+      this.props.addCommentOnComment({
+        description: this.state.description,
+        postId: this.props.postID,
+        classID: this.props.classID,
+        commentID: this.state.commentID,
+      });
       window.history.back();
     }
   }
@@ -413,8 +416,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                       </Button>
                       {commentCode}
                       {dropdownMenu}
-                    </Box>
-                  </Box>
+                    </Box >
+                  </Box >
 
                 )
             }
@@ -422,9 +425,9 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
               (reply.replies.length > 0)
               && reply.replies.map((reply_) => this.getReply(reply_))
             }
-          </Box>
-        </Box>
-      </Box>
+          </Box >
+        </Box >
+      </Box >
     )
   }
 
@@ -533,7 +536,7 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
 const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
   return {
     deletePost: (post: any) => dispatch(deletePost(post)),
-    deleteComment: (commentID: any) => dispatch(deleteComment(commentID)),
+    deleteComment: (commentID: string) => dispatch(deleteComment(commentID)),
     fetchPost: (classID: string, postID: string) => dispatch(fetchPost(classID, postID)),
     addComment: (post: any) => dispatch(addComment(post)),
     addCommentOnComment: (post: any) => dispatch(addCommentOnComment(post)),
