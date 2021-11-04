@@ -154,7 +154,6 @@ export const deletePost = (newPost: any) => {
 export const deleteComment = (commentID: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
-
         var collection = db.collection('posts')
         var docref = collection.doc(commentID);
 
@@ -184,24 +183,23 @@ export const deleteComment = (commentID: any) => {
                         })
                     }
                 }
-                else{
+                else {
                     console.log("ancestorIDs error 1")
                 }
             }
-            else{
+            else {
                 console.log("ancestorIDs error 2")
             }
-            
+
             docref.delete().then(() => {
                 window.alert("Comment Deleted Successfully!");
                 dispatch({ type: 'DELETE_COMMENT_SUCCESS', docref });
             }).catch((err: any) => {
                 dispatch({ type: 'DELETE_COMMENT_ERR', err });
             });
-        })
-
-        //dispatch({ type: 'DELETE_COMMENT_SUCCESS', docref });
-        
+        }).catch((err: any) => {
+            dispatch({ type: 'DELETE_COMMENT_ERR', err });
+        });
     }
 }
 
