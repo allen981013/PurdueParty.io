@@ -158,36 +158,50 @@ export const deleteComment = (commentID: any) => {
         var collection = db.collection('posts')
         var docref = collection.doc(commentID);
 
-        // docref.get().then((docWithIDs: any) => {
-        //     let listAncestorIDs = docWithIDs.data().ancestorsIDs
-        //     var currentDoc: any
+        docref.get().then((docWithIDs: any) => {
+            let listAncestorIDs
+            console.log(listAncestorIDs = docWithIDs.data())
+            if (listAncestorIDs) {
+                listAncestorIDs = listAncestorIDs.ancestorsIDs
 
-        //     if (listAncestorIDs) {
-        //         for (let i = 0; i < listAncestorIDs.length; i++) {
-        //             currentDoc = collection.doc(listAncestorIDs[i]);
-        //             console.log(listAncestorIDs[i])
-        //             console.log("THEN")
-        //             currentDoc.get().then((doc: any) => {
-        //                 console.log(doc.data().content)
-                        
-        //                 let numComment = doc.data().numComments
-        //                 numComment = numComment - 1;
-        //                 collection.doc(doc.id).update({
-        //                     numComments: numComment
-        //                 })
+                console.log(listAncestorIDs)
+                var currentDoc: any
 
-        //             })
-        //         }
-        //     }
-        // })
+                if (listAncestorIDs) {
+                    for (let i = 0; i < listAncestorIDs.length; i++) {
+                        currentDoc = collection.doc(listAncestorIDs[i]);
+                        console.log(listAncestorIDs[i])
+                        console.log("THEN")
+                        currentDoc.get().then((doc: any) => {
+                            console.log(doc.data().content)
+
+                            let numComment = doc.data().numComments
+                            numComment = numComment - 1;
+                            collection.doc(doc.id).update({
+                                numComments: numComment
+                            })
+
+                        })
+                    }
+                }
+                else{
+                    console.log("ancestorIDs error 1")
+                }
+            }
+            else{
+                console.log("ancestorIDs error 2")
+            }
+            
+            docref.delete().then(() => {
+                window.alert("Comment Deleted Successfully!");
+                dispatch({ type: 'DELETE_COMMENT_SUCCESS', docref });
+            }).catch((err: any) => {
+                dispatch({ type: 'DELETE_COMMENT_ERR', err });
+            });
+        })
 
         //dispatch({ type: 'DELETE_COMMENT_SUCCESS', docref });
-        docref.delete().then(() => {
-            window.alert("Comment Deleted Successfully!");
-            dispatch({ type: 'DELETE_COMMENT_SUCCESS', docref });
-        }).catch((err: any) => {
-            dispatch({ type: 'DELETE_COMMENT_ERR', err });
-        });
+        
     }
 }
 
