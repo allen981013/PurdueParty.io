@@ -69,7 +69,7 @@ export const fetchPost = (classID: string, postID: string) => {
         ancestorsIDs: node.ancestorsIDs,
         title: node.title,
         content: node.content,
-        poster: node.owner, // Store uid in the poster field first
+        posterUsername: node.owner, // Store uid in the poster field first
         posterImgUrl: "",
         replies: [],
         numComments: node.numComments,
@@ -79,7 +79,7 @@ export const fetchPost = (classID: string, postID: string) => {
     })
     // Build set of user IDs
     var uids: Set<string> = threadNodes.reduce((prevSet, curNode) => {
-      prevSet.add(curNode.poster)
+      prevSet.add(curNode.posterUsername)
       return prevSet
     }, new Set<string>())
     // Build array of promises for user objects
@@ -96,12 +96,12 @@ export const fetchPost = (classID: string, postID: string) => {
     }, {})
     // Populate user data into thread node objects
     threadNodes = threadNodes.map(threadNode => {
-      let uid = threadNode.poster
+      let uid = threadNode.posterUsername
       let user = idToUserDict[uid] ? idToUserDict[uid] : {}
       // Note: poster & posterImgUrl will be undefined if the user does not exist
       return {
         ...threadNode,
-        poster: user.userName,
+        posterUsername: user.userName,
         posterImgUrl: user.imageUrl,    // TODO: Update this once we have supported profile picture
       }
     })
@@ -120,7 +120,7 @@ export const fetchPost = (classID: string, postID: string) => {
         ancestorsIDs: [],
         title: "",
         content: "",
-        poster: "",
+        posterUsername: "",
         posterImgUrl: "",
         replies: [],
         numComments: 0,
