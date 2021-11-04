@@ -8,7 +8,7 @@ const initState = {
         classID: "",
         title: "",
         description: "",
-        postedDateTime: new Timestamp(0,0),
+        postedDateTime: new Timestamp(0, 0),
         upvotes: 1,
         downvotes: 0,
         comments: [""]
@@ -20,7 +20,7 @@ type Action = {
     payload?: any, // Annotate the payload with proper type, if there are any
 }
 
-const postReducer = (state=initState, action: Action) => {
+const postReducer = (state = initState, action: Action) => {
     switch (action.type) {
         case 'ADD_POST_SUCCESS':
             console.log('added new post');
@@ -40,11 +40,23 @@ const postReducer = (state=initState, action: Action) => {
         case 'EDIT_POST_ERR':
             console.log('error editing post');
             return state;
+        case 'EDIT_COMMENT_SUCCESS':
+            console.log('edited comment');
+            return state;
+        case 'EDIT_COMMENT_ERR':
+            console.log('error editing comment');
+            return state;
         case 'DELETE_POST_SUCCESS':
             console.log('deleted post');
             return state;
         case 'DELETE_POST_ERR':
             console.log('error deleting post');
+            return state;
+        case 'DELETE_COMMENT_SUCCESS':
+            console.log('deleted comment');
+            return state;
+        case 'DELETE_COMMENT_ERR':
+            console.log('error deleting comment');
             return state;
         case 'ADD_CLASS_SUCCESS':
             console.log('added new class');
@@ -53,7 +65,7 @@ const postReducer = (state=initState, action: Action) => {
             console.log('error adding new class');
             return state;
 
-        default :
+        default:
             return state;
     }
 }

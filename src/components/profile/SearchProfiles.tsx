@@ -166,7 +166,7 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
         if (this.state.searchField.indexOf('@') == -1) {
             searchText = this.state.searchField.toLowerCase();
         } else {
-            searchText = this.state.searchField.substring(0, profiles[j].email.indexOf('@')).toLowerCase();
+            searchText = this.state.searchField.substring(0, this.state.searchField.indexOf('@')).toLowerCase();
         }
 
         for (let i = 0; i < profiles.length - 1; i++) {
