@@ -66,17 +66,16 @@ function App() {
           <Route exact path='/classes' component={Classes} />
           <Route path='/classes/:classID/:postID/:commentID/edit' component={EditComment} />
           <Route path='/classes/:classID/:postID' render={({ match }) => {
-            console.log(match)
-            return <ThreadPage classID={match.params.classID} postID={match.params.postID} isDataFetched={false} users={[]} currentUser={''} />
+            return <ThreadPage classID={match.params.classID} postID={match.params.postID} />
           }} />
           <Route path='/classes/:classID' render={({ match }) => {
             return <ClassPage classID={match.params.classID} />
           }} />
           <Route path='/classes/create-post' component={CreatePost} />
           <Route path='/createComment/:classID/:postID' component={createComment} />
-          <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} /> 
+          <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} />
           <Route path='/edit-post/:classID/:postID' component={EditPost} />
-          
+
           <Route path='/edit-event/:eventID' component={EditEvent} />
           <Route path='/create-class' component={CreateClass} />
           <Route path='/create-post/:classID' component={CreatePost} />
