@@ -10,7 +10,8 @@ import { Link, Redirect } from 'react-router-dom'
 import { EditOutlined } from '@mui/icons-material';
 import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
-import { deletePost } from '../../store/actions/postActions';
+import { addComment, addCommentOnComment, deletePost } from '../../store/actions/postActions';
+import { Timestamp } from 'firebase/firestore';
 
 export interface ThreadNode { // Refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
@@ -29,6 +30,7 @@ export interface ThreadNode { // Refers to a post or a reply
 
 interface ThreadPageProps {
   auth?: FirebaseReducer.AuthState;
+  match: any,
   classID: string;
   postID: string;
   classInfo?: ClassPageProps["classInfo"]
@@ -37,6 +39,8 @@ interface ThreadPageProps {
   clearFetchedDocs?: () => void;
   fetchPost?: (classID: string, postID: string) => void;
   deletePost?: (state: ThreadPageProps) => void;
+  addComment?: (state: ThreadPageStates) => void;
+  addCommentOnComment?: (state: ThreadPageStates) => void
   users: {
     bio: string,
     userName: string
@@ -45,10 +49,32 @@ interface ThreadPageProps {
 }
 
 interface ThreadPageStates {
+  match: any,
+  classID: string,
+  postId: string,
+  description: string,
+  users: {
+    bio: string,
+    userName: string
+  }[]
+  currentUser: string,
+  commentID?: string,
 }
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
-
+  // Initialize state
+  constructor(props: ThreadPageProps) {
+    super(props);
+    this.state = {
+        postId: this.props.postID,
+        classID: this.props.classID,
+        description: "",
+        match: this.props.match,
+        users: this.props.users,
+        currentUser: this.props.currentUser,
+    }
+  }
+  
   handleDelete = (event: any) => {
     event.preventDefault();
     var result: boolean = window.confirm("Are you sure you want to delete your post?");
@@ -58,13 +84,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
       this.setState({
         postId: "",
-        owner: "",
         classID: "",
-        title: "",
         description: "",
-        upvotes: 1,
-        downvotes: 0,
-        comments: [],
       })
       //Maybe use this.props.history.push()
 
@@ -88,9 +109,91 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     document.getElementById("myDropdown").classList.toggle("show");
   }
 
+  showComment() {
+    document.getElementById("myComment").classList.toggle("show");
+  }
+
+  showComment2(reply: ThreadNode) {
+    this.setState({
+      commentID: reply.ID
+    })
+    document.getElementById("myComment2").classList.toggle("show");
+  }
+
+  // General purpose state updater during form modification
+  handleChangeDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      description: e.target.value,
+      classID: this.props.match.params.classID,
+      postId: this.props.match.params.postID,
+    })
+  }
+
+  // Handle user submit
+  handleSubmit = (event: any) => {
+    event.preventDefault();
+
+    if (this.state.description.length < 10) {
+      // Pop modal for description length error
+      console.log("Minimum description Length Required: 10 characters");
+      window.alert("Minimum description length required: 10 characters")
+    }
+    else {
+      console.log("Posted Successfully!");
+      window.alert("Posted successfully!")
+
+
+      this.props.addComment(this.state);
+      window.history.back();
+    }
+  }
+
+  handleChangeDescription2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      description: e.target.value,
+      classID: this.props.match.params.classID,
+      postId: this.props.match.params.postID,
+    })
+  }
+
+  // Handle user submit
+  handleSubmit2 = (event: any) => {
+    event.preventDefault();
+
+    if (this.state.description.length < 10) {
+      // Pop modal for description length error
+      console.log("Minimum description Length Required: 10 characters");
+      window.alert("Minimum description length required: 10 characters")
+    }
+    else {
+      console.log("Posted Successfully!");
+      window.alert("Posted successfully!")
+
+
+      this.props.addCommentOnComment(this.state);
+      window.history.back();
+    }
+  }
+
   getPost = (post: ThreadNode) => {
     var renderEdit: boolean = post.poster == this.props.currentUser;
     var editCode: any = <div></div>;
+    var commentCode: any = <div id="myComment" hidden>
+      <input type="text" value={this.state.description} placeholder="Tell us more!" id="myComment"
+              onChange={this.handleChangeDescription} />
+      <div></div>
+      <Button
+            onClick={this.handleSubmit}
+            sx={{
+              textTransform: "none", color: "#787c7e", fontWeight: "bold",
+              fontSize: "12px", padding: "4px 4px"
+            }}
+            id="myComment"
+            hidden
+      >
+        Submit
+      </Button>
+      </div>;
     if (renderEdit) {
       editCode = <><div>
       <div className="dropdown">
@@ -158,8 +261,9 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         </Typography>
         <Box pt="8px">
           <Button
-            component={Link}
-            to={"/createComment/" + this.props.classID + "/" + this.props.postID}
+            onClick={this.showComment}
+            /*component={Link}
+            to={"/createComment/" + this.props.classID + "/" + this.props.postID}*/
             sx={{
               textTransform: "none", color: "#787c7e", fontWeight: "bold",
               fontSize: "12px", padding: "4px 4px"
@@ -170,6 +274,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             />
             Reply ({post.numComments} Comments)
           </Button>
+          {commentCode}
         </Box>
       </Box>
     )
@@ -177,6 +282,23 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   getReply = (reply: ThreadNode) => {
     // TODO: Abstract away some operations here into several util functions
+    var commentCode: any = <div id="myComment2" hidden>
+      {console.log(this)}
+      <input type="text" value={this.state.description} placeholder="Tell us more!" id="myComment2"
+              onChange={this.handleChangeDescription2} />
+      <div></div>
+      <Button
+            onClick={this.handleSubmit2}
+            sx={{
+              textTransform: "none", color: "#787c7e", fontWeight: "bold",
+              fontSize: "12px", padding: "4px 4px"
+            }}
+            id="myComment2"
+            hidden
+      >
+        Submit
+      </Button>
+      </div>;
     return (
       <Box display="flex" flexDirection="column" pt="16px">
         {/* Avatar, poster name, & time since posted */}
@@ -236,8 +358,9 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                     {/* Interaction widgets */}
                     <Box pt="8px">
                       <Button
-                        component={Link}
-                        to={"/createCommentOnComment/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID}
+                        /*component={Link}
+                        to={"/createCommentOnComment/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID}*/
+                        onClick={() => this.showComment2(reply)}
                         sx={{
                           textTransform: "none", color: "#787c7e", fontWeight: "bold",
                           fontSize: "12px", padding: "4px 0px"
@@ -248,6 +371,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                         />
                         Reply
                       </Button>
+                      {commentCode}
                     </Box>
                   </Box>
 
@@ -362,7 +486,8 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
     classInfo: classInfo,
     isDataFetched: classes != undefined && state.threadPage.isPostFetched,
     users: state.firestore.ordered.users,
-    currentUser: state.auth.lastCheckedUsername
+    currentUser: state.auth.lastCheckedUsername,
+    description: ""
   }
 }
 
@@ -370,6 +495,8 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
   return {
     deletePost: (post: any) => dispatch(deletePost(post)),
     fetchPost: (classID: string, postID: string) => dispatch(fetchPost(classID, postID)),
+    addComment: (post: any) => dispatch(addComment(post)),
+    addCommentOnComment: (post: any) => dispatch(addCommentOnComment(post)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         reduxDispatch(threadPageSlice.actions.fetchPostBegin())
