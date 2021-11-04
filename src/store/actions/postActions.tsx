@@ -169,17 +169,14 @@ export const deleteComment = (commentID: any) => {
                 if (listAncestorIDs) {
                     for (let i = 0; i < listAncestorIDs.length; i++) {
                         currentDoc = collection.doc(listAncestorIDs[i]);
-                        console.log(listAncestorIDs[i])
-                        console.log("THEN")
                         currentDoc.get().then((doc: any) => {
-                            console.log(doc.data().content)
-
-                            let numComment = doc.data().numComments
-                            numComment = numComment - 1;
-                            collection.doc(doc.id).update({
-                                numComments: numComment
-                            })
-
+                            if (doc.data()) {
+                                let numComment = doc.data().numComments
+                                numComment = numComment - 1;
+                                collection.doc(doc.id).update({
+                                    numComments: numComment
+                                })
+                            }
                         })
                     }
                 }
