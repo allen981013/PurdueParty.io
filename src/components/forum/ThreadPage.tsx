@@ -122,11 +122,16 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
   }
 
   showComment2(reply: ThreadNode) {
-    if(this.state.commentID){
+    console.log(this);
+    if(window.getComputedStyle(document.getElementById("myComment")).display !== "none"){
+      document.getElementById("myComment").classList.toggle("show");
+    }
+    if(this.state.commentID && this.state.commentID !== reply.ID && window.getComputedStyle(document.getElementById(this.state.commentID)).display !== "none"){
       document.getElementById(this.state.commentID).classList.toggle("show");
     }
     this.setState({
       commentID: reply.ID,
+      description: "",
     })
     document.getElementById(reply.ID).classList.toggle("show");
   }
@@ -154,7 +159,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         postId: this.props.postID,
         classID: this.props.classID
       });
-      window.history.back();
     }
   }
 
@@ -181,7 +185,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         classID: this.props.classID,
         commentID: this.state.commentID,
       });
-      window.history.back();
     }
   }
 
