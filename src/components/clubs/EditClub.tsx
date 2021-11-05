@@ -193,29 +193,38 @@ class EditClub extends Component<EditClubProps, ClubState> {
     }
     else {
       // Create temp editor array with owner's ID
-      var uid_arr = [];
+      var uid_arr: string[] = [];
 
-      // Add other editors if they exist
-      if (this.state.value.length > 1) {
-        // For each editor in the editors arr
-        for (let i = 0; i < this.state.value.length; i++) {
-          // Get the user object from users array with matching username
-          var result = this.props.users.find(({ userName }: any) => userName === this.state.value[i].value);
+      console.log("STATE HERE");
+      console.log(this.state);
 
-          // Check if result if valid
-          if (result == undefined) {
-            window.alert("There was an invalid username that was entered. Please enter a valid username.")
-            return;
-          }
-          else {
-            // Push the uid onto a new array
-            uid_arr.push(result.id);
-          }
+      // For each editor in the editors arr
+      for (let i = 0; i < this.state.value.length; i++) {
+        // Get the user object from users array with matching username
+        var result = this.props.users.find(({ userName }: any) => userName === this.state.value[i].value);
+
+        // Check if result if valid
+        if (result == undefined) {
+          window.alert("There was an invalid username that was entered. Please enter a valid username.")
+          return;
+        }
+        else if (uid_arr.includes(result.id)) {
+          window.alert("There was a duplicate username that was entered. Please remove the duplicate username.")
+          return;
+        }
+        else {
+          // Push the uid onto a new array
+          uid_arr.push(result.id);
         }
       }
-      else {
+
+      // Add owner as an editor if not already in there
+      if (!uid_arr.includes(this.props.auth.uid)) {
         uid_arr.push(this.props.auth.uid);
       }
+
+      console.log("UID ARR HERE");
+      console.log(uid_arr);
 
       // Edit the club with the new information after updating editors state
       this.setState({ editors: uid_arr }, () => {

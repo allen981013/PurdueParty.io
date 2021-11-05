@@ -28,8 +28,7 @@ const MenuProps = {
   },
 };
 
-
-interface EditorNameOption {
+interface Option {
   readonly label: string;
   readonly value: string;
 }
@@ -53,8 +52,9 @@ interface ClubState {
   attendees: string[],
   category: string[],
   events: string[],
-  pendingEditorName: string,
-  selectedEditorNames: readonly EditorNameOption[],
+  readonly inputValue: string,
+  readonly value: readonly Option[],
+  hasUpdated: boolean
 }
 
 // Interface/type for Clubs Props
@@ -63,7 +63,6 @@ interface ClubProps {
   clubs: any,
   addClub: (state: ClubState) => void,
   users: any,
-  currentUsername?: string;
 }
 
 class CreateClub extends Component<ClubProps, ClubState> {
@@ -83,42 +82,44 @@ class CreateClub extends Component<ClubProps, ClubState> {
       contactInfo: "",
       postedDateTime: new Timestamp(0, 0),
       image: null as any,
-      attendees: [""],
+      attendees: [],
       category: [],
       events: [],
-      pendingEditorName: "",
-      selectedEditorNames: this.props.currentUsername
-        ? [{ label: this.props.currentUsername, value: this.props.currentUsername }]
-        : []
-    };
+      inputValue: "",
+      value: [],
+      hasUpdated: false
+    }
   }
 
   handleChange = (
-    value: OnChangeValue<EditorNameOption, true>,
-    actionMeta: ActionMeta<EditorNameOption>
+    value: OnChangeValue<Option, true>,
+    actionMeta: ActionMeta<Option>
   ) => {
+    console.log(this.state);
     console.group('Value Changed');
     console.log(value);
     console.log(`action: ${actionMeta.action}`);
     console.groupEnd();
 
-    this.setState({ selectedEditorNames: value });
+    this.setState({ value });
   };
 
   handleInputChange = (inputValue: string) => {
-    this.setState({ pendingEditorName: inputValue });
+    console.log(this.state);
+    this.setState({ inputValue });
   };
 
   handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
-    const { pendingEditorName: inputValue, selectedEditorNames: value } = this.state;
+    console.log(this.state);
+    const { inputValue, value } = this.state;
     if (!inputValue) return;
     switch (event.key) {
       case 'Enter':
       case 'Tab':
 
         this.setState({
-          pendingEditorName: '',
-          selectedEditorNames: [...value, createOption(inputValue)],
+          inputValue: '',
+          value: [...value, createOption(inputValue)],
         });
 
         event.preventDefault();
@@ -194,33 +195,44 @@ class CreateClub extends Component<ClubProps, ClubState> {
       window.alert("Please select at least 1 category relating to your club.");
     }
     else {
-      // Create temp array
-      var uid_arr = [this.props.auth.uid];
+      // Create temp editor array with owner's ID
+      var uid_arr: string[] = [];
 
-      console.log("STATE NOW ON SUBMIT");
+      console.log("STATE HERE");
       console.log(this.state);
 
-      if (this.state.selectedEditorNames.length > 0) {
-        // For each editor in the editors arr
-        for (let i = 0; i < this.state.selectedEditorNames.length; i++) {
-          // Get the user object from users array with matching username
-          var result = this.props.users.find(({ userName }: any) => userName === this.state.selectedEditorNames[i].value);
+      // For each editor in the editors arr
+      for (let i = 0; i < this.state.value.length; i++) {
+        // Get the user object from users array with matching username
+        var result = this.props.users.find(({ userName }: any) => userName === this.state.value[i].value);
 
-          // Check if result if valid
-          if (result == undefined) {
-            window.alert("There was an invalid username that was entered. Please enter a valid username.")
-            return;
-          }
-          else {
-            // Push the uid onto a new array
-            uid_arr.push(result.id);
-          }
+        // Check if result if valid
+        if (result == undefined) {
+          window.alert("There was an invalid username that was entered. Please enter a valid username.")
+          return;
+        }
+        else if (uid_arr.includes(result.id)) {
+          window.alert("There was a duplicate username that was entered. Please remove the duplicate username.")
+          return;
+        }
+        else {
+          // Push the uid onto a new array
+          uid_arr.push(result.id);
         }
       }
-      // Change the editors state
+
+      // Add owner as an editor if not already in there
+      if (!uid_arr.includes(this.props.auth.uid)) {
+        uid_arr.push(this.props.auth.uid);
+      }
+
+      console.log("UID ARR HERE");
+      console.log(uid_arr);
+
+      // Edit the club with the new information after updating editors state
       this.setState({ editors: uid_arr }, () => {
         this.props.addClub(this.state);
-        window.alert("Club posted successfully!")
+
         this.setState({
           orgId: "",
           owner: "",
@@ -232,9 +244,11 @@ class CreateClub extends Component<ClubProps, ClubState> {
           attendees: [""],
           category: [],
           events: [],
-          pendingEditorName: "",
-          selectedEditorNames: [{ label: this.props.currentUsername, value: this.props.currentUsername }]
+          inputValue: "",
+          value: []
         })
+        window.alert("Club posted successfully!")
+        window.history.back();
       })
     }
   }
@@ -244,7 +258,12 @@ class CreateClub extends Component<ClubProps, ClubState> {
     if (!(this.props.users && this.props.clubs)) {
       return (<CircularProgress sx={{ alignSelf: "center", padding: "164px" }}></CircularProgress>)
     }
-    
+
+    // Check if props has loaded correctly
+    if (!(this.props.users && this.props.clubs)) {
+      return (<CircularProgress sx={{ alignSelf: "center", padding: "164px" }}></CircularProgress>)
+    }
+
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -265,7 +284,7 @@ class CreateClub extends Component<ClubProps, ClubState> {
           <h1>List username of club editors:</h1>
           <CreatableSelect
             components={{ DropdownIndicator: null }}
-            inputValue={this.state.pendingEditorName}
+            inputValue={this.state.inputValue}
             isClearable
             isMulti
             menuIsOpen={false}
@@ -273,7 +292,7 @@ class CreateClub extends Component<ClubProps, ClubState> {
             onInputChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}
             placeholder="Enter usernames and hit enter/tab after each..."
-            value={this.state.selectedEditorNames}
+            value={this.state.value}
           />
 
           <h1>Enter Club contact information:</h1>
