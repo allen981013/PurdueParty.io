@@ -88,7 +88,12 @@ export const addClub = (newClub: any) => {
                             //imageURL = downloadURL
                             newDocRef.update({
                                 image: downloadURL
-                            })
+                            }).then((newDocRef: any) => {
+                                window.alert("Posted New Club Successfully!")
+                                window.history.back()
+                            }).catch((err: any) => {
+                                window.alert("Failed to post club!")
+                            });
                         })
                     })
             } else {
@@ -96,7 +101,12 @@ export const addClub = (newClub: any) => {
                 fileRef.getDownloadURL().then((downloadURL) => {
                     newDocRef.update({
                         image: downloadURL
-                    })
+                    }).then((newDocRef: any) => {
+                        window.alert("Posted New Club Successfully!")
+                        window.history.back()
+                    }).catch((err: any) => {
+                        window.alert("Failed to post club!")
+                    });
                 })
             }
 
@@ -255,6 +265,8 @@ export const editClub = (editedClub: any) => {
                                 docref.update({
                                     image: downloadURL
                                 }).then((docref: any) => {
+                                    window.alert("Posted New Club Successfully!")
+                                    window.history.back()
                                     dispatch({ type: 'EDIT_CLUB_SUCCESS', docref });
                                 }).catch((err: any) => {
                                     dispatch({ type: 'EDIT_CLUB_ERR', err });

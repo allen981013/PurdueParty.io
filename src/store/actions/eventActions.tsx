@@ -94,6 +94,10 @@ export const addEvent = (newEvent: any) => {
                             //imageURL = downloadURL
                             newDocRef.update({
                                 image: downloadURL
+                            }).then((docref: any) => {
+                                dispatch({ type: 'ADD_EVENT_SUCCESS', docref });
+                                window.alert("Event created Successfully!")
+                                window.history.back()
                             })
 
                         })
@@ -103,6 +107,10 @@ export const addEvent = (newEvent: any) => {
                 fileRef.getDownloadURL().then((downloadURL) => {
                     newDocRef.update({
                         image: downloadURL
+                    }).then((docref: any) => {
+                        dispatch({ type: 'ADD_EVENT_SUCCESS', docref });
+                        window.alert("Event created Successfully!")
+                        window.history.back()
                     })
                 })
             }
@@ -176,13 +184,16 @@ export const editEvent = (newEvent: any) => {
                                 image: downloadURL
                             }).then((docref: any) => {
                                 dispatch({ type: 'UPDATE_EVENT_SUCCESS', docref });
+                                window.alert("Event Edit Successfully!")
+                                window.history.back()
                             }).catch((err: any) => {
                                 dispatch({ type: 'UPDATE_EVENT_ERR', err });
                             });
                         })
                     })
-            } 
+            }
             console.log("Event Edit Successfully!");
+
             dispatch({ type: 'EDIT_EVENT_SUCCESS' });
         });
     }
@@ -222,7 +233,9 @@ export const deleteEvent = (eventToDelete: any) => {
             }
             // delete the event
             eventDocRef.delete().then(() => {
-                dispatch({ type: 'DELETE_EVENT_SUCCESS'})
+                dispatch({ type: 'DELETE_EVENT_SUCCESS' })
+                window.alert("Event deleted Successfully!")
+                window.history.back()
             }).catch((err: any) => {
                 dispatch({ type: 'DELETE_EVENT_ERROR', err })
             });;
