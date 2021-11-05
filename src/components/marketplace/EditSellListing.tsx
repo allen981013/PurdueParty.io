@@ -26,6 +26,7 @@ interface EditSellListingProps {
     firebase: any,
     match: any,
     history: any,
+    sellListings: any,
     editListingTitle: (state: EditSellListingState) => void,
     editListingDescription: (state: EditSellListingState) => void,
     editListingPrice: (state: EditSellListingState) => void,
@@ -195,8 +196,10 @@ class EditSellListing extends Component<EditSellListingProps, EditSellListingSta
         if (!auth.uid) return <Redirect to='/signin'/>
         
         // Prevent non-owner from accessing this page through URL manipulation
-        if (auth.uid != this.props.match.params.userID) {
-            return <Redirect to='/signin'/>
+        if (this.props.sellListings) {
+            if (auth.uid != this.props.sellListings[0].owner) {
+                return <Redirect to='/signin'/>
+            }    
         }
 
         return (
@@ -283,8 +286,17 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
 
 export default compose<React.ComponentType<EditSellListingProps>>(
     connect(mapStateToProps, mapDispatchToProps),
-    firestoreConnect([
-        { collection: 'sellListings' }
-    ])
+    firestoreConnect((props:EditSellListingProps) => {
+        if (typeof props.match.params != undefined) {
+          return [
+            { 
+              collection: 'sellListings',
+              doc: props.match.params.listingID
+            }
+          ]
+        } else {
+          return []
+        }
+      })
 )(EditSellListing)
   
