@@ -230,9 +230,11 @@ class EditClub extends Component<EditClubProps, ClubState> {
       this.setState({ editors: uid_arr }, () => {
         this.props.editClub(this.state);
 
+        window.alert("Information submitted.")
+
         this.setState({
           orgId: "",
-          owner: "",
+          //owner: "",
           editors: [""],
           title: "",
           description: "",
@@ -244,8 +246,8 @@ class EditClub extends Component<EditClubProps, ClubState> {
           inputValue: "",
           value: []
         })
-        window.alert("Club posted successfully!")
-        window.history.back();
+        // window.alert("Club posted successfully!")
+        // window.history.back();
       })
     }
   }

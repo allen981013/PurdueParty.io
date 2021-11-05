@@ -200,7 +200,9 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
     else {
       console.log("Event Edit Successfully!");
       this.props.editEvent({ ...this.state, id: this.props.match.params.eventID });
-      window.alert("Event Edit Successfully!")
+
+      window.alert("Information submitted.")
+
       this.setState({
         id: "",
         ownerID: "",
@@ -218,7 +220,8 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
         attendees: [""]
       })
 
-      window.history.back()
+      // window.alert("Event Edit Successfully!")
+      // window.history.back()
     }
   }
 

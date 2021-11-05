@@ -221,10 +221,10 @@ class CreateEvent extends Component<EventProps, EventState> {
       window.alert("Please select a perk from the dropdown")
     }
     else {
-      console.log("Event Posted Successfully!");
-      window.alert("Event posted successfully!")
-
       this.props.addEvent(this.state);
+
+      window.alert("Information submitted.")
+
 
       this.setState({
         id: "",
