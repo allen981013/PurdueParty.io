@@ -265,7 +265,7 @@ export const editClub = (editedClub: any) => {
                                 docref.update({
                                     image: downloadURL
                                 }).then((docref: any) => {
-                                    window.alert("Posted New Club Successfully!")
+                                    window.alert("Edited Club Successfully!")
                                     window.history.back()
                                     dispatch({ type: 'EDIT_CLUB_SUCCESS', docref });
                                 }).catch((err: any) => {
@@ -274,6 +274,7 @@ export const editClub = (editedClub: any) => {
                             })
                         })
                 }
+                window.alert("Edited Club Successfully!")
                 console.log("Club Edit Successfully!");
                 dispatch({ type: 'EDIT_CLUB_SUCCESS' })
             }).catch((err: any) => {
