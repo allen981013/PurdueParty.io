@@ -177,7 +177,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
                   sx={{ color: "black", height: "32px" }}
                 >
                   <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
-                  Edit Club
+                  {/* Edit Club */}
                 </Button>}
               </Box>
 

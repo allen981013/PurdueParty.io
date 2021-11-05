@@ -233,6 +233,8 @@ class CreateClub extends Component<ClubProps, ClubState> {
       this.setState({ editors: uid_arr }, () => {
         this.props.addClub(this.state);
 
+        window.alert("Information submitted.")
+
         this.setState({
           orgId: "",
           owner: "",
@@ -247,8 +249,8 @@ class CreateClub extends Component<ClubProps, ClubState> {
           inputValue: "",
           value: []
         })
-        window.alert("Club posted successfully!")
-        window.history.back();
+        // window.alert("Club posted successfully!")
+        // window.history.back();
       })
     }
   }
