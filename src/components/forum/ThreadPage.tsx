@@ -122,7 +122,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     this.setState({
       commentID: reply.ID,
     })
-    document.getElementById("myComment2").classList.toggle("show");
+    document.getElementById(reply.ID).classList.toggle("show");
   }
 
   // General purpose state updater during form modification
@@ -285,9 +285,9 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   getReply = (reply: ThreadNode) => {
     // TODO: Abstract away some operations here into several util functions
-    var commentCode: any = <div id="myComment2" hidden>
+    var commentCode: any = <div id={reply.ID} hidden>
       {console.log(this)}
-      <input type="text" value={this.state.description} placeholder="Tell us more!" id="myComment2"
+      <input type="text" value={this.state.description} placeholder="Tell us more!" id={reply.ID}
         onChange={this.handleChangeDescription2} />
       <div></div>
       <Button
@@ -296,7 +296,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
           textTransform: "none", color: "#787c7e", fontWeight: "bold",
           fontSize: "12px", padding: "4px 4px"
         }}
-        id="myComment2"
+        id={reply.ID}
         hidden
       >
         Submit
