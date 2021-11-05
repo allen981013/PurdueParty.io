@@ -122,6 +122,9 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
   }
 
   showComment2(reply: ThreadNode) {
+    if(this.state.commentID){
+      document.getElementById(this.state.commentID).classList.toggle("show");
+    }
     this.setState({
       commentID: reply.ID,
     })
