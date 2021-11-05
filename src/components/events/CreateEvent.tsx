@@ -453,7 +453,7 @@ const mapStateToProps = (state: any) => {
     createWasSuccessful: state.event.createWasSuccessful,
     users: state.firestore.ordered.users,
     events: state.firestore.ordered.events,
-    clubs: state.firestore.ordered.clubs
+    clubs: state.firestore.ordered.createEventClubs
   }
 }
 
@@ -477,7 +477,7 @@ export default compose<React.ComponentType<EventProps>>(
           collection: 'events'
         },
         {
-          collection: 'clubs'
+          collection: 'clubs', storeAs: 'createEventClubs'
         }
       ]
     } else {
