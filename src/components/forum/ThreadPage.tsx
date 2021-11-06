@@ -17,6 +17,11 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
+import ToggleButton from '@mui/material/ToggleButton';
+
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+
 export interface ThreadNode { // Refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
   ID: string;
@@ -52,7 +57,12 @@ interface ThreadPageStates {
   dropdownAnchor: any,
   commentID: string,
   description: string,
-  dropdownReplyID: string
+  dropdownReplyID: string,
+  voteStates: {
+    ID: string,
+    upvoted: boolean,
+    downvoted: boolean
+  }[]
 }
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
@@ -63,7 +73,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       description: "",
       commentID: "",
       dropdownAnchor: null,
-      dropdownReplyID: ""
+      dropdownReplyID: "",
+      voteStates: []
     }
   }
 
@@ -123,10 +134,10 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   showComment2(reply: ThreadNode) {
     console.log(this);
-    if(window.getComputedStyle(document.getElementById("myComment")).display !== "none"){
+    if (window.getComputedStyle(document.getElementById("myComment")).display !== "none") {
       document.getElementById("myComment").classList.toggle("show");
     }
-    if(this.state.commentID && this.state.commentID !== reply.ID && window.getComputedStyle(document.getElementById(this.state.commentID)).display !== "none"){
+    if (this.state.commentID && this.state.commentID !== reply.ID && window.getComputedStyle(document.getElementById(this.state.commentID)).display !== "none") {
       document.getElementById(this.state.commentID).classList.toggle("show");
     }
     this.setState({
@@ -188,7 +199,49 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     }
   }
 
+  changeUpvoteState = (index: any) => {
+    let voteState = this.state.voteStates
+    voteState[index].upvoted = !voteState[index].upvoted
+
+    if (!voteState[index].downvoted) {
+      this.setState({
+        voteStates: voteState
+      })
+    } else {
+      voteState[index].downvoted = !voteState[index].downvoted
+      this.setState({
+        voteStates: voteState
+      })
+    }
+  }
+
+  changeDownvoteState = (index: any) => {
+    let voteState = this.state.voteStates
+    voteState[index].downvoted = !voteState[index].downvoted
+
+    if (!voteState[index].upvoted) {
+      this.setState({
+        voteStates: voteState
+      })
+    } else {
+      voteState[index].upvoted = !voteState[index].upvoted
+      this.setState({
+        voteStates: voteState
+      })
+    }
+  }
+
   getPost = (post: ThreadNode) => {
+    let index = this.state.voteStates.findIndex(element => element.ID === post.ID)
+    if (index == -1) {
+      let voteState = this.state.voteStates
+      voteState[this.state.voteStates.length] = { ID: post.ID, upvoted: false, downvoted: false, }
+      this.setState({
+        voteStates: voteState
+      })
+      index = voteState.length - 1
+    }
+
     var editCode: any = <div></div>;
     var commentCode: any = <div id="myComment" hidden>
       <input type="text" value={this.state.description} placeholder="Tell us more!" id="myComment"
@@ -287,15 +340,43 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             Reply ({post.numComments} Comments)
           </Button>
           {commentCode}
+
+
+          <ToggleButton
+            value="thumbup"
+            selected={this.state.voteStates[index].upvoted}
+            onChange={() => this.changeUpvoteState(index)}
+          >
+            <ThumbUpIcon sx={{ fontSize: "16px" }} />
+          </ToggleButton>
+
+          <ToggleButton
+            value="thumbdown"
+            selected={this.state.voteStates[index].downvoted}
+            onChange={() => this.changeDownvoteState(index)}
+          >
+            <ThumbDownIcon sx={{ fontSize: "16px" }} />
+          </ToggleButton>
         </Box>
       </Box>
     )
   }
 
+
+
   getReply = (reply: ThreadNode) => {
-    // TODO: Abstract away some operations here into several util functions
+    //TODO: Abstract away some operations here into several util functions
+    let index = this.state.voteStates.findIndex(element => element.ID === reply.ID)
+    if (index == -1) {
+      let voteState = this.state.voteStates
+      voteState[this.state.voteStates.length] = { ID: reply.ID, upvoted: false, downvoted: false, }
+      this.setState({
+        voteStates: voteState
+      })
+      index = voteState.length - 1
+    }
+
     var commentCode: any = <div id={reply.ID} hidden>
-      {console.log(this)}
       <input type="text" value={this.state.description} placeholder="Tell us more!" id={reply.ID}
         onChange={this.handleChangeDescription2} />
       <div></div>
@@ -430,7 +511,27 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                         Reply
                       </Button>
                       {commentCode}
+
+                      <ToggleButton
+                        value="thumbup"
+                        selected={this.state.voteStates[index].upvoted}
+                        onChange={() => this.changeUpvoteState(index)}
+                      >
+                        <ThumbUpIcon sx={{ fontSize: "16px" }} />
+                      </ToggleButton>
+
+                      <ToggleButton
+                        value="thumbdown"
+                        selected={this.state.voteStates[index].downvoted}
+                        onChange={() => this.changeDownvoteState(index)}
+                      >
+                        <ThumbDownIcon sx={{ fontSize: "16px" }} />
+                      </ToggleButton>
+
                       {dropdownMenu}
+
+
+
                     </Box >
                   </Box >
 
