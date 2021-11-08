@@ -5,6 +5,8 @@ import { FirebaseReducer } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import Moment from 'moment';
+import { deleteStaleData, submitSurveyData } from '../../store/actions/diningActions';
+import { firestoreConnect } from 'react-redux-firebase';
 import {
     Box, Button, CircularProgress, Grid, Card, CardActionArea,
     CardMedia, CardContent, Typography
@@ -14,12 +16,18 @@ interface DiningInfoState {
     isLoaded: boolean,
     error: string,
     items: any,
-    date: any
+    date: any,
+    surveyResult: any,
+    diningCourt: string
 }
 
 interface DiningInfoProps {
     auth?: FirebaseReducer.AuthState;
     diningName: string;
+    diningErr?: string;
+    diningCourt?: any;
+    deleteStaleData?: (diningCourt: string) => void;
+    submitSurveyData?: (diningInfo: any) => void;
 }
 
 class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
@@ -30,11 +38,16 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
             isLoaded: false,
             error: null,
             items: null,
-            date: Moment(new Date()).format('MM-DD-YYYY')
+            date: Moment(new Date()).format('MM-DD-YYYY'),
+            surveyResult: null,
+            diningCourt: this.props.diningName
         };
     }
 
     componentDidMount() {
+        //Delete stale data
+        //deleteStaleData(this.props.diningName);
+
         //Query the API
         const endpoint = "https://api.hfs.purdue.edu/menus/v2/locations/" + this.props.diningName + "/" + this.state.date;
         fetch(endpoint).then(res => res.json()).then((result) => {
@@ -52,7 +65,6 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
     }
 
     displayStationSection(station: any) {
-        console.log(station);
         return (
             <div style={{ backgroundColor: "lightgray", borderRadius: "5px" }}>
                 <h4 style={{ paddingBottom: "0px", marginBottom: "0px"}}>{station.Name}</h4>
@@ -75,7 +87,6 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
     }
 
     displayMealSection(meal: any) {
-        //console.log(meal);
         return (
             <div>
                 <div style={{ display: "table", borderCollapse: "separate", borderSpacing: "12px" }}>
@@ -95,10 +106,31 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
         )
     }
 
+    handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            surveyResult: e.target.value
+        })
+    }
+
+    handleSubmit = (event : any) => {
+        event.preventDefault();
+
+        if (this.state.surveyResult == null) {
+            window.alert("Please select an option before submitting!")
+        } else {
+            this.props.submitSurveyData(this.state);
+        }
+    }
+
     render() {
         const { auth } = this.props;
         const { error, isLoaded, items } = this.state;
         if (!auth.uid) return <Redirect to='/signin' />
+
+        var diningInfo = undefined;
+        if (diningInfo == undefined && this.props.diningCourt != undefined) {
+            diningInfo = this.props.diningCourt[0];
+        }
 
         if (error) {
             return (
@@ -147,7 +179,36 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
                         <Box id="cropped-purdue-img" />
                         {this.state.items.Meals.map((meal: any) => this.displayMealSection(meal))}
-                    </Box>         
+                    </Box>
+
+                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
+                    <div style={{ display: "table", borderCollapse: "separate", borderSpacing: "12px" }}>
+                        <div style={{ background: "var(--dull-gold)", borderRadius: "15px", height: "44px", width: "75vw",  display: "table-cell"}}>
+                            <h3 style={{ paddingBottom: "0px" }}>Status Form</h3>
+                        </div>
+                    </div>
+                    </Box>
+                    <h4 style = {{ margin: "16px"}}>On a scale from 1-5, how crowded is the dining hall?</h4>
+                    <form style = {{ margin: "24px"}} onSubmit={this.handleSubmit}>
+                        <label className="radio-inline" style={{ marginRight: "20px" }}>
+                        <input type="radio" name="optradio" value="1" onChange={this.handleChange}/>1 (Not Crowded)
+                        </label>
+                        <label className="radio-inline" style={{ marginRight: "20px" }}>
+                        <input type="radio" name="optradio" value="2" onChange={this.handleChange} />2 (Slightly Crowded)
+                        </label>
+                        <label className="radio-inline" style={{ marginRight: "20px" }}>
+                        <input type="radio" name="optradio" value="3" onChange={this.handleChange} />3 (Moderately Crowded)
+                        </label>
+                        <label className="radio-inline" style={{ marginRight: "20px" }}>
+                        <input type="radio" name="optradio" value="4" onChange={this.handleChange} />4 (Pretty Crowded)
+                        </label>
+                        <label className="radio-inline" style={{ marginRight: "20px" }}>
+                        <input type="radio" name="optradio" value="5" onChange={this.handleChange} />5 (Extremely Crowded)
+                        </label>
+                        <div style = {{ margin: "20px" }}>
+                            <button className = "button">Submit Updates</button>
+                        </div>
+                    </form>     
                 </div>
             )
         }
@@ -156,16 +217,31 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
 
 const mapStateToProps = (state: RootState) => {
     return {
-      auth: state.firebase.auth
+      auth: state.firebase.auth,
+      diningCourt: state.firestore.ordered.diningCourts,
+      diningErr: state.dining.diningErr
     }
 }
   
 const mapDispatchToProps = (dispatch: AppDispatch) => {
     return {
-        
+        deleteStaleData: (diningCourt: string) => dispatch(deleteStaleData(diningCourt)),
+        submitSurveyData: (diningInfo: any) => dispatch(submitSurveyData(diningInfo))
     }
 }
 
   export default compose<React.ComponentType<DiningInfoProps>>(
-    connect(mapStateToProps, mapDispatchToProps)
+    connect(mapStateToProps, mapDispatchToProps),
+    firestoreConnect((props : DiningInfoProps) => {
+        if (typeof props != undefined) {
+          return [
+            { 
+              collection: 'diningCourts',
+              doc: props.diningName
+            }
+          ]
+        } else {
+          return []
+        }
+      })
   )(DiningInfo)
