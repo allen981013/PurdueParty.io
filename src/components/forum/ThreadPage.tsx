@@ -10,12 +10,17 @@ import { Link, Redirect } from 'react-router-dom'
 import { EditOutlined } from '@mui/icons-material';
 import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
-import { addComment, addCommentOnComment, deletePost, deleteComment } from '../../store/actions/postActions';
+import { addComment, addCommentOnComment, deletePost, deleteComment, addOrRemovePostVotes, addOrRemoveUserVotes } from '../../store/actions/postActions';
 
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+
+import ToggleButton from '@mui/material/ToggleButton';
+
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 
 export interface ThreadNode { // Refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
@@ -30,16 +35,20 @@ export interface ThreadNode { // Refers to a post or a reply
   numComments: number;
   timeSincePosted: string;
   isDeleted: boolean;
+  voteCount: Number
 }
 
 interface ThreadPageProps {
   classID: string;
   postID: string;
   classInfo?: ClassPageProps["classInfo"]
+  authUserInfo?: any;
   post?: ThreadNode;
   auth?: FirebaseReducer.AuthState;
   currentUsername?: string;
   isDataFetched?: boolean;
+  addOrRemoveUserVotes?: (userID: string, postOrCommentID: string, upvoted: boolean, downvoted: boolean) => void
+  addOrRemovePostVotes?: (postOrCommentID: string, numVotesChanged: any) => void
   clearFetchedDocs?: () => void;
   fetchPost?: (classID: string, postID: string) => void;
   deletePost?: (post: any) => void;   // TODO: I type-annotate this hackily since the actual redux action doesn't have proper type annotation  - Raziq
@@ -52,7 +61,13 @@ interface ThreadPageStates {
   dropdownAnchor: any,
   commentID: string,
   description: string,
-  dropdownReplyID: string
+  dropdownReplyID: string,
+  voteStates: {
+    ID: string,
+    upvoted: boolean,
+    downvoted: boolean,
+    voteCount: any
+  }[],
 }
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
@@ -63,7 +78,8 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       description: "",
       commentID: "",
       dropdownAnchor: null,
-      dropdownReplyID: ""
+      dropdownReplyID: "",
+      voteStates: [],
     }
   }
 
@@ -123,10 +139,10 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   showComment2(reply: ThreadNode) {
     console.log(this);
-    if(window.getComputedStyle(document.getElementById("myComment")).display !== "none"){
+    if (window.getComputedStyle(document.getElementById("myComment")).display !== "none") {
       document.getElementById("myComment").classList.toggle("show");
     }
-    if(this.state.commentID && this.state.commentID !== reply.ID && window.getComputedStyle(document.getElementById(this.state.commentID)).display !== "none"){
+    if (this.state.commentID && this.state.commentID !== reply.ID && window.getComputedStyle(document.getElementById(this.state.commentID)).display !== "none") {
       document.getElementById(this.state.commentID).classList.toggle("show");
     }
     this.setState({
@@ -188,7 +204,97 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     }
   }
 
+  changeUpvoteState = (index: any, postOrReplyID: string) => {
+    let voteState = this.state.voteStates
+    var numVotesChanged
+
+    voteState[index].upvoted = !voteState[index].upvoted
+
+    if (!voteState[index].downvoted) {
+      if (voteState[index].upvoted) {
+        numVotesChanged = 1
+      } else {
+        numVotesChanged = -1
+      }
+    } else {
+      voteState[index].downvoted = !voteState[index].downvoted
+      numVotesChanged = 2
+    }
+    this.props.addOrRemovePostVotes(voteState[index].ID, numVotesChanged)
+    this.props.addOrRemoveUserVotes(this.props.auth.uid, voteState[index].ID, voteState[index].upvoted, voteState[index].downvoted)
+
+    voteState[index].voteCount = voteState[index].voteCount + numVotesChanged
+    this.setState({
+      voteStates: voteState
+    })
+  }
+
+  changeDownvoteState = (index: any, postOrReplyID: string) => {
+    let voteState = this.state.voteStates
+    var numVotesChanged
+
+    voteState[index].downvoted = !voteState[index].downvoted
+
+    if (!voteState[index].upvoted) {
+      if (voteState[index].downvoted) {
+        numVotesChanged = -1
+      } else {
+        numVotesChanged = 1
+      }
+    } else {
+      voteState[index].upvoted = !voteState[index].upvoted
+      numVotesChanged = -2
+    }
+    this.props.addOrRemovePostVotes(voteState[index].ID, numVotesChanged)
+    this.props.addOrRemoveUserVotes(this.props.auth.uid, voteState[index].ID, voteState[index].upvoted, voteState[index].downvoted)
+
+    voteState[index].voteCount = voteState[index].voteCount + numVotesChanged
+    this.setState({
+      voteStates: voteState
+    })
+  }
+
+  createNewVoteState = (postOrComment: any) => {
+    var postOrCommentID = postOrComment.ID
+    var votedPostIDs = this.props.authUserInfo.votedPostIDs
+    let voteState = this.state.voteStates
+    var votedPostID: string
+    var postIDprefix: string
+
+    if (votedPostIDs != undefined) {
+      for (let i = 0; i < votedPostIDs.length; i++) {
+        votedPostID = votedPostIDs[i].substring(2)
+        postIDprefix = votedPostIDs[i].substring(0, 2)
+
+        if (votedPostID === postOrCommentID) {
+          if (postIDprefix === "10") {
+            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: true, downvoted: false, voteCount: postOrComment.voteCount }
+          } else if (postIDprefix === "01") {
+            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: true, voteCount: postOrComment.voteCount }
+          } else {
+            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, voteCount: postOrComment.voteCount }
+          }
+          this.setState({
+            voteStates: voteState
+          })
+          return
+        }
+      }
+    }
+
+    voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, voteCount: postOrComment.voteCount }
+    this.setState({
+      voteStates: voteState
+    })
+  }
+
   getPost = (post: ThreadNode) => {
+    let index = this.state.voteStates.findIndex(element => element.ID === post.ID)
+    if (index == -1) {
+      this.createNewVoteState(post)
+    }
+    index = this.state.voteStates.findIndex(element => element.ID === post.ID)
+
     var editCode: any = <div></div>;
     var commentCode: any = <div id="myComment" hidden>
       <input type="text" value={this.state.description} placeholder="Tell us more!" id="myComment"
@@ -287,15 +393,41 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             Reply ({post.numComments} Comments)
           </Button>
           {commentCode}
+
+
+          <ToggleButton
+            value="thumbup"
+            selected={this.state.voteStates[index].upvoted}
+            onChange={() => this.changeUpvoteState(index, post.ID)}
+          >
+            <ThumbUpIcon sx={{ fontSize: "16px" }} />
+          </ToggleButton>
+          <Box component="span" sx={{ p: 1.5 }}>
+            {this.state.voteStates[index].voteCount}
+          </Box>
+          <ToggleButton
+            value="thumbdown"
+            selected={this.state.voteStates[index].downvoted}
+            onChange={() => this.changeDownvoteState(index, post.ID)}
+          >
+            <ThumbDownIcon sx={{ fontSize: "16px" }} />
+          </ToggleButton>
         </Box>
       </Box>
     )
   }
 
   getReply = (reply: ThreadNode) => {
-    // TODO: Abstract away some operations here into several util functions
+    //TODO: Abstract away some operations here into several util functions
+
+
+    let index = this.state.voteStates.findIndex(element => element.ID === reply.ID)
+    if (index == -1) {
+      this.createNewVoteState(reply)
+    }
+    index = this.state.voteStates.findIndex(element => element.ID === reply.ID)
+
     var commentCode: any = <div id={reply.ID} hidden>
-      {console.log(this)}
       <input type="text" value={this.state.description} placeholder="Tell us more!" id={reply.ID}
         onChange={this.handleChangeDescription2} />
       <div></div>
@@ -430,7 +562,29 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                         Reply
                       </Button>
                       {commentCode}
+
+                      <ToggleButton
+                        value="thumbup"
+                        selected={this.state.voteStates[index].upvoted}
+                        onChange={() => this.changeUpvoteState(index, reply.ID)}
+                      >
+                        <ThumbUpIcon sx={{ fontSize: "16px" }} />
+                      </ToggleButton>
+                      <Box component="span" sx={{ p: 1.5 }}>
+                        {this.state.voteStates[index].voteCount}
+                      </Box>
+                      <ToggleButton
+                        value="thumbdown"
+                        selected={this.state.voteStates[index].downvoted}
+                        onChange={() => this.changeDownvoteState(index, reply.ID)}
+                      >
+                        <ThumbDownIcon sx={{ fontSize: "16px" }} />
+                      </ToggleButton>
+
                       {dropdownMenu}
+
+
+
                     </Box >
                   </Box >
 
@@ -539,8 +693,10 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
     })[0]
     : undefined
   // Return processed data
+
   return {
     auth: state.firebase.auth,
+    authUserInfo: state.firestore.ordered.authUserInfo !== undefined ? state.firestore.ordered.authUserInfo[0] : undefined,
     post: state.threadPage.post,
     classInfo: classInfo,
     isDataFetched: classes != undefined && state.threadPage.isPostFetched,
@@ -555,6 +711,8 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
     fetchPost: (classID: string, postID: string) => dispatch(fetchPost(classID, postID)),
     addComment: (post: any) => dispatch(addComment(post)),
     addCommentOnComment: (post: any) => dispatch(addCommentOnComment(post)),
+    addOrRemoveUserVotes: (userID: string, postOrCommentID: string, upvoted: boolean, downvoted: boolean) => dispatch(addOrRemoveUserVotes(userID, postOrCommentID, upvoted, downvoted)),
+    addOrRemovePostVotes: (postOrCommentID: string, numVotesChanged: any) => dispatch(addOrRemovePostVotes(postOrCommentID, numVotesChanged)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         reduxDispatch(threadPageSlice.actions.fetchPostBegin())
@@ -575,6 +733,14 @@ export default compose<React.ComponentType<ThreadPageProps>>(
           ["courseID", "==", props.classID],
         ],
         storeAs: "classPageClasses",
+        limit: 1,
+      },
+      {
+        collection: "users",
+        where: [
+          ["userName", "==", props.currentUsername],
+        ],
+        storeAs: "authUserInfo",
         limit: 1,
       }
     ]

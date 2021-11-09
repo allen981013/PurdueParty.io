@@ -75,6 +75,7 @@ export const fetchPost = (classID: string, postID: string) => {
         numComments: node.numComments,
         timeSincePosted: moment(node.postedDateTime.toDate()).fromNow(),
         isDeleted: false,
+        voteCount: node.voteCount != undefined ? node.voteCount : 0
       }
     })
     // Build set of user IDs
@@ -126,6 +127,7 @@ export const fetchPost = (classID: string, postID: string) => {
         numComments: 0,
         timeSincePosted: "",
         isDeleted: true,
+        voteCount: 0
       }
     })
     // - create/replace entries for fetched thread nodes 
