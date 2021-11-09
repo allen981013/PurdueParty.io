@@ -268,11 +268,11 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
         if (votedPostID === postOrCommentID) {
           if (postIDprefix === "10") {
-            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: true, downvoted: false, voteCount: postOrComment.voteCount}
+            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: true, downvoted: false, voteCount: postOrComment.voteCount }
           } else if (postIDprefix === "01") {
-            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: true, voteCount: postOrComment.voteCount}
+            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: true, voteCount: postOrComment.voteCount }
           } else {
-            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, voteCount: postOrComment.voteCount}
+            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, voteCount: postOrComment.voteCount }
           }
           this.setState({
             voteStates: voteState
@@ -282,7 +282,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       }
     }
 
-    voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, voteCount: postOrComment.voteCount}
+    voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, voteCount: postOrComment.voteCount }
     this.setState({
       voteStates: voteState
     })
@@ -402,7 +402,9 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
           >
             <ThumbUpIcon sx={{ fontSize: "16px" }} />
           </ToggleButton>
-          {this.state.voteStates[index].voteCount}
+          <Box component="span" sx={{ p: 1.5 }}>
+            {this.state.voteStates[index].voteCount}
+          </Box>
           <ToggleButton
             value="thumbdown"
             selected={this.state.voteStates[index].downvoted}
@@ -568,7 +570,9 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                       >
                         <ThumbUpIcon sx={{ fontSize: "16px" }} />
                       </ToggleButton>
-                      {this.state.voteStates[index].voteCount}
+                      <Box component="span" sx={{ p: 1.5 }}>
+                        {this.state.voteStates[index].voteCount}
+                      </Box>
                       <ToggleButton
                         value="thumbdown"
                         selected={this.state.voteStates[index].downvoted}
