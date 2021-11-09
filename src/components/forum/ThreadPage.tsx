@@ -10,7 +10,7 @@ import { Link, Redirect } from 'react-router-dom'
 import { EditOutlined } from '@mui/icons-material';
 import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
-import { addComment, addCommentOnComment, deletePost, deleteComment } from '../../store/actions/postActions';
+import { addComment, addCommentOnComment, deletePost, deleteComment, addOrRemovePostVotes, addOrRemoveUserVotes } from '../../store/actions/postActions';
 
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -45,6 +45,8 @@ interface ThreadPageProps {
   auth?: FirebaseReducer.AuthState;
   currentUsername?: string;
   isDataFetched?: boolean;
+  addOrRemoveUserVotes?: (userID: string, postOrCommentID: string, upvoted: boolean, downvoted: boolean) => void
+  addOrRemovePostVotes?: (postOrCommentID: string, numVotesChanged: any) => void
   clearFetchedDocs?: () => void;
   fetchPost?: (classID: string, postID: string) => void;
   deletePost?: (post: any) => void;   // TODO: I type-annotate this hackily since the actual redux action doesn't have proper type annotation  - Raziq
@@ -201,34 +203,48 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   changeUpvoteState = (index: any) => {
     let voteState = this.state.voteStates
+    var numVotesChanged
     voteState[index].upvoted = !voteState[index].upvoted
 
     if (!voteState[index].downvoted) {
-      this.setState({
-        voteStates: voteState
-      })
+      if (voteState[index].upvoted) {
+        numVotesChanged = 1
+      } else {
+        numVotesChanged = -1
+      }
     } else {
       voteState[index].downvoted = !voteState[index].downvoted
-      this.setState({
-        voteStates: voteState
-      })
+      numVotesChanged = 2
     }
+    this.props.addOrRemovePostVotes(voteState[index].ID, numVotesChanged)
+    this.props.addOrRemoveUserVotes(this.props.auth.uid, voteState[index].ID, voteState[index].upvoted, voteState[index].downvoted)
+
+    this.setState({
+      voteStates: voteState
+    })
   }
 
   changeDownvoteState = (index: any) => {
     let voteState = this.state.voteStates
+    var numVotesChanged
     voteState[index].downvoted = !voteState[index].downvoted
 
     if (!voteState[index].upvoted) {
-      this.setState({
-        voteStates: voteState
-      })
+      if (voteState[index].downvoted) {
+        numVotesChanged = -1
+      } else {
+        numVotesChanged = 1
+      }
     } else {
       voteState[index].upvoted = !voteState[index].upvoted
-      this.setState({
-        voteStates: voteState
-      })
+      numVotesChanged = -2
     }
+    this.props.addOrRemovePostVotes(voteState[index].ID, numVotesChanged)
+    this.props.addOrRemoveUserVotes(this.props.auth.uid, voteState[index].ID, voteState[index].upvoted, voteState[index].downvoted)
+
+    this.setState({
+      voteStates: voteState
+    })
   }
 
   getPost = (post: ThreadNode) => {
@@ -656,6 +672,8 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
     fetchPost: (classID: string, postID: string) => dispatch(fetchPost(classID, postID)),
     addComment: (post: any) => dispatch(addComment(post)),
     addCommentOnComment: (post: any) => dispatch(addCommentOnComment(post)),
+    addOrRemoveUserVotes: (userID: string, postOrCommentID: string, upvoted: boolean, downvoted: boolean) => dispatch(addOrRemoveUserVotes(userID, postOrCommentID, upvoted, downvoted)),
+    addOrRemovePostVotes: (postOrCommentID: string, numVotesChanged: any) => dispatch(addOrRemovePostVotes(postOrCommentID, numVotesChanged)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         reduxDispatch(threadPageSlice.actions.fetchPostBegin())

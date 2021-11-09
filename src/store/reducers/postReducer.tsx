@@ -52,6 +52,18 @@ const postReducer = (state = initState, action: Action) => {
         case 'DELETE_POST_ERR':
             console.log('error deleting post');
             return state;
+        case 'UPDATE_VOTECOUNT_SUCCESS':
+            console.log('votecount altered successfully');
+            return state;
+        case 'UPDATE_VOTECOUNT_ERR':
+            console.log('error altering votecount');
+            return state;
+        case 'UPDATE_USERVOTES_SUCCESS':
+            console.log('user vote altered successfully');
+            return state;
+        case 'UPDATE_USERVOTES_ERR':
+            console.log('error altering user vote');
+            return state;
         case 'DELETE_COMMENT_SUCCESS':
             console.log('deleted comment');
             return state;
