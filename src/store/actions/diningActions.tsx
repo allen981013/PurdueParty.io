@@ -54,17 +54,19 @@ export const placeDownloadURLS = () => {
 export const deleteStaleData = (diningCourt: string) => {
     return (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
-        var docref = db.collection('diningCourts').doc(diningCourt);
-        
-        /**
-         * var ref = firebase.database().ref('/path/to/items/');
-            var now = Date.now();
-            var cutoff = now - 2 * 60 * 60 * 1000;
-            var old = ref.orderByChild('timestamp').endAt(cutoff).limitToLast(1);
-            var listener = old.on('child_added', function(snapshot) {
-                snapshot.ref.remove();
+        var ref = db.collection('diningCourts').doc(diningCourt).collection('surveyData');
+        var now = Date.now();
+        var old = ref.orderBy('timestamp', 'desc');
+        old.get().then((querySnapshot : any) => {
+            querySnapshot.forEach((doc : any) => {
+                //console.log(doc.id, " => ", doc.data());
+                const milliseconds = Math.abs(now - doc.data().timestamp);
+                const hours = milliseconds / 36e5;
+                if (hours >= 1) {
+                    ref.doc(doc.id).delete();
+                }
             });
-         */
+        });
     }
 }
 

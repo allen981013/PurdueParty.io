@@ -18,7 +18,8 @@ interface DiningInfoState {
     items: any,
     date: any,
     surveyResult: any,
-    diningCourt: string
+    diningCourt: string,
+    needUpdate: boolean
 }
 
 interface DiningInfoProps {
@@ -40,13 +41,14 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
             items: null,
             date: Moment(new Date()).format('MM-DD-YYYY'),
             surveyResult: null,
-            diningCourt: this.props.diningName
+            diningCourt: this.props.diningName,
+            needUpdate: true
         };
     }
 
     componentDidMount() {
         //Delete stale data
-        //deleteStaleData(this.props.diningName);
+        this.props.deleteStaleData(this.props.diningName);
 
         //Query the API
         const endpoint = "https://api.hfs.purdue.edu/menus/v2/locations/" + this.props.diningName + "/" + this.state.date;
@@ -119,6 +121,9 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
             window.alert("Please select an option before submitting!")
         } else {
             this.props.submitSurveyData(this.state);
+            this.setState({
+                needUpdate: true
+            })
         }
     }
 
@@ -128,8 +133,34 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
         if (!auth.uid) return <Redirect to='/signin' />
 
         var diningInfo = undefined;
-        if (diningInfo == undefined && this.props.diningCourt != undefined) {
-            diningInfo = this.props.diningCourt[0];
+        var status = "";
+        if (this.props.diningCourt != undefined && this.state.needUpdate) {
+            const surveyInfo = this.props.diningCourt;
+            if (surveyInfo.length < 5) {
+                status = "Not Enough Data Points"
+            } else {
+                var avgScore = 0;
+                for (let i = 0; i < surveyInfo.length; i++) {
+                    avgScore += parseInt(surveyInfo[i].rating);
+                }
+
+                avgScore /= surveyInfo.length;
+
+                if (avgScore >= 1 && avgScore <= 2) {
+                    status = "Slightly Crowded";
+                } else if (avgScore > 2 && avgScore < 4) {
+                    status = "Moderately Crowded";
+                } else {
+                    status = "Very Crowded";
+                }
+
+            }
+
+            this.setState({
+                needUpdate: false
+            })
+
+            console.log(status);
         }
 
         if (error) {
@@ -218,7 +249,7 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
 const mapStateToProps = (state: RootState) => {
     return {
       auth: state.firebase.auth,
-      diningCourt: state.firestore.ordered.diningCourts,
+      diningCourt: state.firestore.ordered.diningCourtInfo,
       diningErr: state.dining.diningErr
     }
 }
@@ -237,7 +268,9 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
           return [
             { 
               collection: 'diningCourts',
-              doc: props.diningName
+              doc: props.diningName,
+              subcollections: [{ collection: "surveyData" }],
+              storeAs: 'diningCourtInfo'
             }
           ]
         } else {
