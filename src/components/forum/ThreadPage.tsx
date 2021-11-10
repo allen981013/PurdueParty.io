@@ -66,7 +66,8 @@ interface ThreadPageStates {
     ID: string,
     upvoted: boolean,
     downvoted: boolean,
-    voteCount: any
+    voteCount: any,
+    initialVoteCount: any
   }[],
 }
 
@@ -206,24 +207,20 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   changeUpvoteState = (index: any, postOrReplyID: string) => {
     let voteState = this.state.voteStates
-    var numVotesChanged
+    var numVotes
 
     voteState[index].upvoted = !voteState[index].upvoted
 
-    if (!voteState[index].downvoted) {
-      if (voteState[index].upvoted) {
-        numVotesChanged = 1
-      } else {
-        numVotesChanged = -1
-      }
+    if (voteState[index].upvoted) {
+      numVotes = this.state.voteStates[index].initialVoteCount + 1
+      voteState[index].downvoted = false
     } else {
-      voteState[index].downvoted = !voteState[index].downvoted
-      numVotesChanged = 2
+      numVotes = this.state.voteStates[index].initialVoteCount
     }
-    this.props.addOrRemovePostVotes(voteState[index].ID, numVotesChanged)
+    this.props.addOrRemovePostVotes(voteState[index].ID, numVotes)
     this.props.addOrRemoveUserVotes(this.props.auth.uid, voteState[index].ID, voteState[index].upvoted, voteState[index].downvoted)
 
-    voteState[index].voteCount = voteState[index].voteCount + numVotesChanged
+    voteState[index].voteCount = numVotes
     this.setState({
       voteStates: voteState
     })
@@ -231,24 +228,21 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   changeDownvoteState = (index: any, postOrReplyID: string) => {
     let voteState = this.state.voteStates
-    var numVotesChanged
+    var numVotes
 
     voteState[index].downvoted = !voteState[index].downvoted
 
-    if (!voteState[index].upvoted) {
-      if (voteState[index].downvoted) {
-        numVotesChanged = -1
-      } else {
-        numVotesChanged = 1
-      }
+    if (voteState[index].downvoted) {
+      numVotes = this.state.voteStates[index].initialVoteCount - 1
+      voteState[index].upvoted = false
     } else {
-      voteState[index].upvoted = !voteState[index].upvoted
-      numVotesChanged = -2
+      numVotes = this.state.voteStates[index].initialVoteCount
     }
-    this.props.addOrRemovePostVotes(voteState[index].ID, numVotesChanged)
+
+    this.props.addOrRemovePostVotes(voteState[index].ID, numVotes)
     this.props.addOrRemoveUserVotes(this.props.auth.uid, voteState[index].ID, voteState[index].upvoted, voteState[index].downvoted)
 
-    voteState[index].voteCount = voteState[index].voteCount + numVotesChanged
+    voteState[index].voteCount = numVotes
     this.setState({
       voteStates: voteState
     })
@@ -268,11 +262,11 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
         if (votedPostID === postOrCommentID) {
           if (postIDprefix === "10") {
-            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: true, downvoted: false, voteCount: postOrComment.voteCount }
+            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: true, downvoted: false, initialVoteCount: postOrComment.voteCount - 1, voteCount: postOrComment.voteCount }
           } else if (postIDprefix === "01") {
-            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: true, voteCount: postOrComment.voteCount }
+            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: true, initialVoteCount: postOrComment.voteCount + 1, voteCount: postOrComment.voteCount }
           } else {
-            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, voteCount: postOrComment.voteCount }
+            voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, initialVoteCount: postOrComment.voteCount, voteCount: postOrComment.voteCount }
           }
           this.setState({
             voteStates: voteState
@@ -282,7 +276,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       }
     }
 
-    voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, voteCount: postOrComment.voteCount }
+    voteState[this.state.voteStates.length] = { ID: postOrCommentID, upvoted: false, downvoted: false, initialVoteCount: postOrComment.voteCount, voteCount: postOrComment.voteCount }
     this.setState({
       voteStates: voteState
     })
