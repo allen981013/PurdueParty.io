@@ -255,28 +255,17 @@ export const addOrRemoveUserVotes = (userID: string, postOrCommentID: string, up
 
 export const addOrRemovePostVotes = (postOrCommentID: string, numVotesChanged: Number) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const firebase = getFirebase();
         const db = getFirestore();
         var docref = db.collection('posts').doc(postOrCommentID);
-        var voteCount
 
-        docref.get().then((doc: any) => {
-            if (doc.data().voteCount) {
-                voteCount = doc.data().voteCount + numVotesChanged.valueOf()
-            } else {
-                voteCount = numVotesChanged.valueOf()
-            }
-
-            docref.set({
-                voteCount: voteCount
-            }, { merge: true }).then((newDocRef: any) => {
-                dispatch({ type: 'UPDATE_VOTECOUNT_SUCCESS', newDocRef });
-            }).catch((err: any) => {
-                dispatch({ type: 'UPDATE_VOTECOUNT_ERR', err });
-            });
+        docref.set({
+            voteCount: firebase.firestore.FieldValue.increment(numVotesChanged.valueOf())
+        }, { merge: true }).then((newDocRef: any) => {
+            dispatch({ type: 'UPDATE_VOTECOUNT_SUCCESS', newDocRef });
         }).catch((err: any) => {
             dispatch({ type: 'UPDATE_VOTECOUNT_ERR', err });
         });
-
     }
 }
 
