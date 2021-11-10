@@ -23,6 +23,7 @@ import Profile from './components/profile/Profile';
 import Classes from './components/forum/Classes';
 import ClassPage from './components/forum/ClassPage';
 import EditProfile from './components/profile/EditProfile';
+import ProfileMessages from './components/profile/ProfileMessages';
 import EditEvent from './components/events/EditEvent';
 import CreateClass from './components/forum/CreateClass';
 import EditSellListing from './components/marketplace/EditSellListing';
@@ -81,6 +82,7 @@ function App() {
           <Route path='/create-post/:classID' component={CreatePost} />
 
           <Route path='/search-profiles' component={SearchProfiles} />
+          <Route path='/profile-messages' component={ProfileMessages} />
 
 
           <Route path='/create-post/:classID' component={CreatePost} />
