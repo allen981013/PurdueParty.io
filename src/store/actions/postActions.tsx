@@ -208,6 +208,7 @@ export const addClass = (newClass: any) => {
         docref.add({
             courseID: newClass.courseID,
             title: newClass.title,
+            students: newClass.students
         }).then((newDocRef: any) => {
             newDocRef.update({
                 ID: newDocRef.id
@@ -215,6 +216,25 @@ export const addClass = (newClass: any) => {
             dispatch({ type: 'ADD_CLASS_SUCCESS', newDocRef });
         }).catch((err: any) => {
             dispatch({ type: 'ADD_CLASS_ERR', err });
+        });
+    }
+}
+
+export const joinClass = (newClass: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        var docref = db.collection('classes').where("ID", "==", newClass.id)
+        console.log(docref)
+
+        docref.update({
+            students: newClass.students
+        }).then((newDocRef: any) => {
+            newDocRef.update({
+                ID: newDocRef.id
+            })
+            dispatch({ type: 'JOIN_CLASS_SUCCESS', newDocRef });
+        }).catch((err: any) => {
+            dispatch({ type: 'JOIN_CLASS_ERR', err });
         });
     }
 }

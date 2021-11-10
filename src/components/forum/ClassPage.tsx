@@ -12,7 +12,6 @@ import { styled } from '@mui/material/styles';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import StarRateIcon from '@mui/icons-material/StarRate';
-import moment from 'moment';
 import { classPageSlice, fetchClassPosts, FetchCriteria } from '../../components/forum/ClassPageSlice';
 import { actionTypes } from 'redux-firestore';
 
@@ -41,10 +40,12 @@ export interface ClassPageProps {
     department: string,
     instructorName: string,
     instructorEmail: string,
-    classID: string;
+    classID: string,
+    students: string[];
   };
   fetchClassPosts?: (classID: string, fetchCriteria: FetchCriteria) => void;
   clearFetchedDocs?: () => void;
+  joinClass?: (props: ClassPageProps) => void;
 }
 
 class ClassPage extends Component<ClassPageProps, ClassPageState> {
@@ -71,6 +72,11 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
       this.props.clearFetchedDocs()
     }
     this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
+  }
+
+
+  handleJoin() {
+    console.log("Join")
   }
 
   getPost(post: Post) {
@@ -138,33 +144,74 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
 
   getClass(class_: ClassPageProps["classInfo"]) {
     return (
-      <Card>
-        <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
-          Class Info
-        </Box>
-        <CardContent sx={{ textAlign: "left" }}>
-          <label htmlFor="title">Course:</label>
-          <Typography noWrap variant="body2" component="div" marginBottom="8px">
-            {class_.title}
-          </Typography>
-          <label htmlFor="title">Department:</label>
-          <Typography noWrap variant="body2" component="div" marginBottom="8px">
-            {class_.department}
-          </Typography>
-          {/* <label htmlFor="title">Description:</label>
+      <Box>
+        <Card>
+          <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
+            Class Info
+          </Box>
+          <CardContent sx={{ textAlign: "left" }}>
+            <label htmlFor="title">Course:</label>
+            <Typography noWrap variant="body2" component="div" marginBottom="8px">
+              {class_.title}
+            </Typography>
+            <label htmlFor="title">Department:</label>
+            <Typography noWrap variant="body2" component="div" marginBottom="8px">
+              {class_.department}
+            </Typography>
+            {/* <label htmlFor="title">Description:</label>
           <Typography noWrap variant="body2" component="div" marginBottom="8px">
             {class_.description}
           </Typography> */}
-          <label htmlFor="title">Instructor:</label>
-          <Typography noWrap variant="body2" component="div" marginBottom="8px">
-            {class_.instructorName}
-          </Typography>
-          <label htmlFor="title">Instructor Email:</label>
-          <Typography noWrap variant="body2" component="div">
-            {class_.instructorEmail}
-          </Typography>
-        </CardContent>
-      </Card>
+            <label htmlFor="title">Instructor:</label>
+            <Typography noWrap variant="body2" component="div" marginBottom="8px">
+              {class_.instructorName}
+            </Typography>
+            <label htmlFor="title">Instructor Email:</label>
+            <Typography noWrap variant="body2" component="div">
+              {class_.instructorEmail}
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <Button
+          onClick={this.handleJoin}
+          variant="outlined"
+          sx={{ color: "black", border: "1px solid black", height: "38px", marginTop: "40px" }}
+        > Join This Class
+        </Button>
+
+        <Card sx={{ marginTop: "15px" }}>
+          <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
+            Student
+          </Box>
+          <CardContent>
+            {class_.students != undefined && class_.students.length != 0
+              ?
+              this.getStudents(class_.students)
+              :
+              <div> There is no student yet.</div>
+            }
+          </CardContent>
+        </Card>
+
+
+      </Box>
+    )
+  }
+
+  getStudents(students: string[]) {
+    return (
+
+      <CardContent sx={{ textAlign: "left" }}>
+        {
+          students.map((student) =>
+            <Typography gutterBottom noWrap component="div" marginBottom="10px">
+              {student}
+            </Typography>
+          )
+        }
+      </CardContent>
+
     )
   }
 

@@ -10,7 +10,8 @@ import { Box } from '@mui/material';
 
 interface CreateClassState {
   courseID: string,
-  title: string
+  title: string,
+  students: string[]
 }
 
 // Interface/type for EditProfile Props
@@ -26,7 +27,8 @@ class CreateClass extends Component<CreateClassProps, CreateClassState> {
     super(props);
     this.state = {
       courseID: "",
-      title: ""
+      title: "",
+      students: []
     }
   }
 
@@ -63,7 +65,8 @@ class CreateClass extends Component<CreateClassProps, CreateClassState> {
 
       this.setState({
         courseID: "",
-        title: ""
+        title: "",
+        students: [""]
       })
     }
   }
