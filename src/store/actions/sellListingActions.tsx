@@ -18,7 +18,7 @@ export const messageListingOwner = (senderID: string, receiverID: string, listin
             var marketMessages
             if (marketMessages = doc.data().marketMessages) {
                 newMarketMessagesArr = marketMessages
-                let index = newMarketMessagesArr.findIndex(element => element.senderID === senderID)
+                let index = newMarketMessagesArr.findIndex(element => element.senderID === senderID && element.listingID === listingID)
                 
                 if(index != -1){
                     window.alert("Message not sent, you have already sent the owner a message about this listing. Navigate to your profile page to check for a reply")
