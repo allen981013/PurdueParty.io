@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
+import { replyListingMessage, deleteMarketMessages } from '../../store/actions/profileActions';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Box, Button, Grid, Card, CardContent, Typography, } from '@mui/material';
@@ -16,11 +17,14 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import CommentIcon from '@mui/icons-material/Comment';
 
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 // Interface/type for Profile State
 interface ProfileMessagesState {
-    checked: number[],
-    messageToBuyer: string
+    checked: any[],
+    messageToBuyer: string,
+    messageToReply: any
 }
 
 // Interface/type for Profile Props
@@ -29,7 +33,9 @@ interface ProfileMessagesProps {
     auth: any,
     firebase: any,
     users: any,
-    sellListings: any
+    sellListings: any,
+    deleteMarketMessages: (marketMessage: any, userID: string) => void,
+    replyListingMessage: (marketMessage: any, userID: string, newMessage: string) => void
 }
 
 class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesState> {
@@ -37,7 +43,8 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
         super(props);
         this.state = {
             checked: [],
-            messageToBuyer: ""
+            messageToBuyer: "",
+            messageToReply: null
         }
     }
 
@@ -56,8 +63,38 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
         })
     }
 
-    handleReplyClick = (event: React.MouseEvent<HTMLElement>) => {
+    handleReplyClick = (messageObj: any) => {
+        if(messageObj.closed){
+            window.alert("This message thread is closed, the listing owner has responded to your message.")
+            return
+        }
+        if (messageObj == this.state.messageToReply) {
+            this.setState({
+                messageToReply: null
+            })
+        } else {
+            this.setState({
+                messageToReply: messageObj
+            })
+        }
+    }
 
+    handleDeleteClick = () => {
+        let newChecked = this.state.checked
+        const {auth} = this.props
+        if (newChecked.length < 1) {
+            window.alert("Please select the messages you would like to delete.")
+            return
+        }
+
+        var answer = window.confirm("Are you sure you want to delete these messages?");
+        if (answer) {
+            this.props.deleteMarketMessages(newChecked, auth.uid)
+
+            this.setState({
+                checked: []
+            })
+        }
     }
 
     handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,17 +102,18 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
             messageToBuyer: e.target.value,
         })
     }
-    handleSubmitMessage = () => {
+    handleSubmitMessage = (messageObj: any) => {
         const { auth } = this.props;
 
         if (this.state.messageToBuyer.length < 4) {
             window.alert("Your message must be at least 4 characters")
         } else {
-            //this.props.messageListingOwner(auth.uid, this.props.marketplace[0].owner, this.props.match.params.itemID, this.state.messageToOwner)
+            this.props.replyListingMessage(messageObj, auth.uid, this.state.messageToBuyer)
+            this.setState({
+                messageToBuyer: "",
+                messageToReply: null
+            })
         }
-        this.setState({
-            messageToBuyer: ""
-        })
     }
 
     render() {
@@ -93,11 +131,13 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
             authUserInfo = undefined
         }
 
-        if (authUserInfo == undefined || this.props.sellListings == undefined) {
+        if (authUserInfo == undefined || this.props.sellListings == undefined || authUserInfo.marketMessages == undefined || authUserInfo.marketMessages.length < 1) {
             return (
                 <div>
                     <p></p>
+                    <p>
                     You have no marketplace messages.
+                    </p>
                 </div>
             )
         }
@@ -106,9 +146,11 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
         }
         return (
             <div>
+                <p></p>
                 <p>
                     Marketplace Messages
                 </p>
+                <p></p>
                 <List sx={{ width: '100%', maxWidth: 720, bgcolor: 'background.paper' }}>
                     {
                         authUserInfo.marketMessages.map((messageObj: any) => {
@@ -135,13 +177,13 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
                                 }
                             }
                             var messageField = <div></div>
-                            if (true) {
+                            if (this.state.messageToReply == messageObj && !messageObj.closed) {
                                 messageField = <div id={labelId + "messageField"}>
                                     <input type="text" value={this.state.messageToBuyer} placeholder="Enter your response" id={labelId + "replyField"}
                                         onChange={this.handleChangeMessage} />
                                     <div></div>
                                     <Button
-                                        onClick={this.handleSubmitMessage}
+                                        onClick={() => this.handleSubmitMessage(messageObj)}
                                         sx={{
                                             textTransform: "none", color: "#787c7e", fontWeight: "bold",
                                             fontSize: "12px", padding: "4px 4px"
@@ -158,7 +200,7 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
                                     <ListItem
                                         key={messageObj.listingID + messageObj.senderID}
                                         secondaryAction={
-                                            <IconButton edge="end" aria-label="comments" onClick={(event) => this.handleReplyClick(event)}>
+                                            <IconButton edge="end" aria-label="comments" onClick={() => this.handleReplyClick(messageObj)}>
                                                 <CommentIcon />
                                             </IconButton>
                                         }
@@ -205,6 +247,10 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
                         })
                     }
                 </List>
+                <IconButton edge="end" aria-label="delete" onClick={() => this.handleDeleteClick()}>
+                    <DeleteIcon />
+                </IconButton>
+
             </div>
 
         )
@@ -222,6 +268,8 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
     return {
+        deleteMarketMessages: (marketMessage: any, userID: string) => dispatch(deleteMarketMessages(marketMessage, userID)),
+        replyListingMessage: (marketMessage: any, userID: string, newMessage: string) => dispatch(replyListingMessage(marketMessage, userID, newMessage))
     }
 }
 

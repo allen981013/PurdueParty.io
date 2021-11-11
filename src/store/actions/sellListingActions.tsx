@@ -9,7 +9,7 @@ export const messageListingOwner = (senderID: string, receiverID: string, listin
         const db = getFirestore();
         var docref = db.collection('users').doc(receiverID);
 
-        var newMarketMessagesArr: { senderID: string, listingID: string, message: string, messageDate: Timestamp}[];
+        var newMarketMessagesArr: { senderID: string, listingID: string, message: string, messageDate: Timestamp, closed: boolean}[];
         newMarketMessagesArr = []
 
         var newDate = Timestamp.now()
@@ -29,14 +29,16 @@ export const messageListingOwner = (senderID: string, receiverID: string, listin
                     senderID: senderID,
                     listingID: listingID,
                     message: message,
-                    messageDate: newDate
+                    messageDate: newDate,
+                    closed: false
                 }
             } else {
                 newMarketMessagesArr[0] = {
                     senderID: senderID,
                     listingID: listingID,
                     message: message,
-                    messageDate: newDate
+                    messageDate: newDate,
+                    closed: false
                 }
             }
             
