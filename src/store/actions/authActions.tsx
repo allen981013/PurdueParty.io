@@ -202,6 +202,7 @@ export const signUp = (newUser: any) => {
         const firebase = getFirebase();
         const db = getFirestore();
         var imageURL = "";
+        var newUserID: string
 
         // Create a reference to the cities collection
         //var citiesRef = db.collection("users");
@@ -220,11 +221,20 @@ export const signUp = (newUser: any) => {
         ).then((newUserRef: any) => {
             const user = firebase.auth().currentUser
             user.sendEmailVerification();
+            newUserID = newUserRef.user.uid
+            var docRef2 = db.collection('users').doc(newUserRef.user.uid)
+            // Get default fireRef first
+            var path = 'clubs/P.JPG'
+            var fileRef = firebaseStorageRef.child(path);
+            var fileType = '.png'
+            var metadata = {
+                contentType: 'image/png',
+            };
 
             //put profile pic in firebase storage
-            if (newUser.profilePic != null as any) {
-                var fileType = ''
-                var metadata = {
+            if (newUser.profilePic != null as any && newUser.profilePic != undefined) {
+                fileType = ''
+                metadata = {
                     contentType: '',
                 };
                 //configure metadata
@@ -237,8 +247,9 @@ export const signUp = (newUser: any) => {
                     fileType = '.png'
                 }
                 //create proper filename with user uid and path
-                var fileRef = firebaseStorageRef.child('profilePics/' + user.uid + fileType);
-
+                fileRef = firebaseStorageRef.child('profilePics/' + newUserID + fileType);
+            }
+            if (newUser.profilePic != null as any) {
                 //upload to firebase storage
                 var waitOnUpload = fileRef.put(newUser.profilePic, metadata)
 
@@ -250,10 +261,19 @@ export const signUp = (newUser: any) => {
                     },
                     () => {
                         fileRef.getDownloadURL().then((downloadURL) => {
-                            imageURL = downloadURL
+                            //imageURL = downloadURL
+                            docRef2.set({
+                                image: downloadURL
+                            }, { merge: true })
                         })
                     })
-
+            } else {
+                fileRef = firebaseStorageRef.child('clubs/P.JPG');
+                fileRef.getDownloadURL().then((downloadURL) => {
+                    docRef2.set({
+                        image: downloadURL
+                    }, { merge: true })
+                })
             }
 
             return db.collection('users').doc(newUserRef.user.uid).set({
@@ -262,7 +282,7 @@ export const signUp = (newUser: any) => {
                 email: newUser.email,
                 canEditClubs: []
                 // profilePicURL: imageURL
-            })
+            }, { merge: true })
         }).then(() => {
             dispatch({ type: 'SIGNUP_SUCCESS' })
         }).catch((err: any) => {

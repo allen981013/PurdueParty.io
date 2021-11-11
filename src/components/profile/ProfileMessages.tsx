@@ -123,7 +123,7 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
         }
     }
     sortMarketMessages = (marketMessages: any) => {
-        var sortedMarketMessages: { closed: boolean; listingID: string; message: string; messageDate: Timestamp; senderID: string}[];
+        var sortedMarketMessages: { closed: boolean; listingID: string; message: string; messageDate: Timestamp; senderID: string }[];
         sortedMarketMessages = []
         for (let i = 0; i < marketMessages.length; i++) {
             sortedMarketMessages[i] = marketMessages[i]
@@ -192,112 +192,113 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
                     Marketplace Messages
                 </p>
                 <p></p>
-                <List sx={{ width: '100%', maxWidth: 720, bgcolor: 'background.paper' }}>
-                    {
-                        this.state.sortedMarketMessages.map((messageObj: any) => {
-                            const labelId = `checkbox-list-label-${messageObj.listingID}-${messageObj.senderID}`;
-                            var listingInfo
-                            var senderInfo
-                            var index = this.props.sellListings.findIndex((element: any) => element.id === messageObj.listingID)
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <List sx={{ width: '100%', maxWidth: 720, bgcolor: 'background.paper' }}>
+                        {
+                            this.state.sortedMarketMessages.map((messageObj: any) => {
+                                const labelId = `checkbox-list-label-${messageObj.listingID}-${messageObj.senderID}`;
+                                var listingInfo
+                                var senderInfo
+                                var index = this.props.sellListings.findIndex((element: any) => element.id === messageObj.listingID)
 
-                            if (index != -1) {
-                                listingInfo = this.props.sellListings[index]
-                            } else {
-                                listingInfo = {
-                                    title: "",
-                                    description: ""
+                                if (index != -1) {
+                                    listingInfo = this.props.sellListings[index]
+                                } else {
+                                    listingInfo = {
+                                        title: "",
+                                        description: ""
+                                    }
                                 }
-                            }
 
-                            var index = this.props.users.findIndex((element: any) => element.id === messageObj.senderID)
-                            if (index != -1) {
-                                senderInfo = this.props.users[index]
-                            } else {
-                                senderInfo = {
-                                    userName: "",
+                                var index = this.props.users.findIndex((element: any) => element.id === messageObj.senderID)
+                                if (index != -1) {
+                                    senderInfo = this.props.users[index]
+                                } else {
+                                    senderInfo = {
+                                        userName: "",
+                                    }
                                 }
-                            }
-                            var messageField = <div></div>
-                            if (this.state.messageToReply == messageObj && !messageObj.closed) {
-                                messageField = <div id={labelId + "messageField"}>
-                                    <input type="text" value={this.state.messageToBuyer} placeholder="Enter your response" id={labelId + "replyField"}
-                                        onChange={this.handleChangeMessage} />
-                                    <div></div>
-                                    <Button
-                                        onClick={() => this.handleSubmitMessage(messageObj)}
-                                        sx={{
-                                            textTransform: "none", color: "#787c7e", fontWeight: "bold",
-                                            fontSize: "12px", padding: "4px 4px"
-                                        }}
-                                        id={labelId + "replyButton"}
-                                    >
-                                        Submit
-                                    </Button>
-                                </div>;
-                            }
+                                var messageField = <div></div>
+                                if (this.state.messageToReply == messageObj && !messageObj.closed) {
+                                    messageField = <div id={labelId + "messageField"}>
+                                        <input type="text" value={this.state.messageToBuyer} placeholder="Enter your response" id={labelId + "replyField"}
+                                            onChange={this.handleChangeMessage} />
+                                        <div></div>
+                                        <Button
+                                            onClick={() => this.handleSubmitMessage(messageObj)}
+                                            sx={{
+                                                textTransform: "none", color: "#787c7e", fontWeight: "bold",
+                                                fontSize: "12px", padding: "4px 4px"
+                                            }}
+                                            id={labelId + "replyButton"}
+                                        >
+                                            Submit
+                                        </Button>
+                                    </div>;
+                                }
 
-                            var dateString =  "Message received on: " + messageObj.messageDate.toDate().toDateString() + " at " + 
-                            ((parseInt(messageObj.messageDate.toDate().getHours()) > 12) 
-                            ? parseInt(messageObj.messageDate.toDate().getHours()) - 12 + ":" + ((parseInt(messageObj.messageDate.toDate().getMinutes()) < 10) ? '0' + messageObj.messageDate.toDate().getMinutes() : messageObj.messageDate.toDate().getMinutes()) + " PM" 
-                            : messageObj.messageDate.toDate().getHours() + ":" + ((parseInt(messageObj.messageDate.toDate().getMinutes()) < 10) ? '0' + messageObj.messageDate.toDate().getMinutes() : messageObj.messageDate.toDate().getMinutes()) + " AM")
-                            return (
-                                
-                                <div>
-                                    <ListItem
-                                        key={messageObj.listingID + messageObj.senderID}
-                                        secondaryAction={
-                                            <IconButton edge="end" aria-label="comments" onClick={() => this.handleReplyClick(messageObj)}>
-                                                <CommentIcon />
-                                            </IconButton>
-                                        }
-                                        divider={true}
-                                        disablePadding
-                                    >
-                                        <ListItemButton role={undefined} onClick={() => this.handleToggle(messageObj)} dense>
-                                            <ListItemIcon>
-                                                <Checkbox
-                                                    edge="start"
-                                                    checked={this.state.checked.indexOf(messageObj) !== -1}
-                                                    tabIndex={-1}
-                                                    disableRipple
-                                                    inputProps={{ 'aria-labelledby': labelId }}
+                                var dateString = "Message received on: " + messageObj.messageDate.toDate().toDateString() + " at " +
+                                    ((parseInt(messageObj.messageDate.toDate().getHours()) > 12)
+                                        ? parseInt(messageObj.messageDate.toDate().getHours()) - 12 + ":" + ((parseInt(messageObj.messageDate.toDate().getMinutes()) < 10) ? '0' + messageObj.messageDate.toDate().getMinutes() : messageObj.messageDate.toDate().getMinutes()) + " PM"
+                                        : messageObj.messageDate.toDate().getHours() + ":" + ((parseInt(messageObj.messageDate.toDate().getMinutes()) < 10) ? '0' + messageObj.messageDate.toDate().getMinutes() : messageObj.messageDate.toDate().getMinutes()) + " AM")
+                                return (
+
+                                    <div>
+                                        <ListItem
+                                            key={messageObj.listingID + messageObj.senderID}
+                                            secondaryAction={
+                                                <IconButton edge="end" aria-label="comments" onClick={() => this.handleReplyClick(messageObj)}>
+                                                    <CommentIcon />
+                                                </IconButton>
+                                            }
+                                            divider={true}
+                                            disablePadding
+                                        >
+                                            <ListItemButton role={undefined} onClick={() => this.handleToggle(messageObj)} dense>
+                                                <ListItemIcon>
+                                                    <Checkbox
+                                                        edge="start"
+                                                        checked={this.state.checked.indexOf(messageObj) !== -1}
+                                                        tabIndex={-1}
+                                                        disableRipple
+                                                        inputProps={{ 'aria-labelledby': labelId }}
+                                                    />
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                    id={labelId}
+                                                    primary={'Sell listing: ' + listingInfo.title + "   (" + dateString + ")"}
+                                                    secondary={
+                                                        <React.Fragment>
+                                                            <Typography
+                                                                sx={{ display: 'inline' }}
+                                                                component="span"
+                                                                variant="body2"
+                                                                color="text.primary"
+                                                            >
+                                                                {'From: ' + senderInfo.userName}
+                                                            </Typography>
+                                                            {' — ' + messageObj.message}
+                                                        </React.Fragment>
+                                                    }
                                                 />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                id={labelId}
-                                                primary={'Sell listing: ' + listingInfo.title + "   (" + dateString + ")"}
-                                                secondary={
-                                                    <React.Fragment>
-                                                        <Typography
-                                                            sx={{ display: 'inline' }}
-                                                            component="span"
-                                                            variant="body2"
-                                                            color="text.primary"
-                                                        >
-                                                            {'From: ' + senderInfo.userName}
-                                                        </Typography>
-                                                        {' — ' + messageObj.message}
-                                                    </React.Fragment>
-                                                }
-                                            />
-                                            {/* 'Listing description: ' + listingInfo.description */}
+                                                {/* 'Listing description: ' + listingInfo.description */}
 
 
-                                        </ListItemButton>
+                                            </ListItemButton>
 
-                                    </ListItem>
+                                        </ListItem>
 
-                                    {messageField}
-                                </div>
-                            );
-                        })
-                    }
-                </List>
-                <IconButton edge="end" aria-label="delete" onClick={() => this.handleDeleteClick()}>
-                    <DeleteIcon />
-                </IconButton>
-
-            </div>
+                                        {messageField}
+                                    </div>
+                                );
+                            })
+                        }
+                    </List>
+                    </div >
+                    <IconButton edge="end" aria-label="delete" onClick={() => this.handleDeleteClick()}>
+                        <DeleteIcon />
+                    </IconButton>
+            </div >
 
         )
     }
