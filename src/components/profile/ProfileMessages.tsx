@@ -236,7 +236,7 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
                                 </div>;
                             }
 
-                            var dateString =  messageObj.messageDate.toDate().toDateString() + " at " + 
+                            var dateString =  "Message received on: " + messageObj.messageDate.toDate().toDateString() + " at " + 
                             ((parseInt(messageObj.messageDate.toDate().getHours()) > 12) 
                             ? parseInt(messageObj.messageDate.toDate().getHours()) - 12 + ":" + ((parseInt(messageObj.messageDate.toDate().getMinutes()) < 10) ? '0' + messageObj.messageDate.toDate().getMinutes() : messageObj.messageDate.toDate().getMinutes()) + " PM" 
                             : messageObj.messageDate.toDate().getHours() + ":" + ((parseInt(messageObj.messageDate.toDate().getMinutes()) < 10) ? '0' + messageObj.messageDate.toDate().getMinutes() : messageObj.messageDate.toDate().getMinutes()) + " AM")
