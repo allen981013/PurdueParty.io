@@ -19,12 +19,17 @@ import CommentIcon from '@mui/icons-material/Comment';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import { Timestamp } from 'firebase/firestore';
+import { positions } from '@mui/system';
+
 
 // Interface/type for Profile State
 interface ProfileMessagesState {
     checked: any[],
     messageToBuyer: string,
-    messageToReply: any
+    messageToReply: any,
+    sortedMarketMessages: any,
+    messagesSorted: boolean
 }
 
 // Interface/type for Profile Props
@@ -44,7 +49,9 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
         this.state = {
             checked: [],
             messageToBuyer: "",
-            messageToReply: null
+            messageToReply: null,
+            sortedMarketMessages: null,
+            messagesSorted: false
         }
     }
 
@@ -64,7 +71,7 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
     }
 
     handleReplyClick = (messageObj: any) => {
-        if(messageObj.closed){
+        if (messageObj.closed) {
             window.alert("This message thread is closed, the listing owner has responded to your message.")
             return
         }
@@ -81,7 +88,7 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
 
     handleDeleteClick = () => {
         let newChecked = this.state.checked
-        const {auth} = this.props
+        const { auth } = this.props
         if (newChecked.length < 1) {
             window.alert("Please select the messages you would like to delete.")
             return
@@ -115,6 +122,31 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
             })
         }
     }
+    sortMarketMessages = (marketMessages: any) => {
+        var sortedMarketMessages: { closed: boolean; listingID: string; message: string; messageDate: Timestamp; senderID: string}[];
+        sortedMarketMessages = []
+        for (let i = 0; i < marketMessages.length; i++) {
+            sortedMarketMessages[i] = marketMessages[i]
+        }
+
+        for (let i = 0; i < sortedMarketMessages.length; i++) {
+            for (let j = 0; j < sortedMarketMessages.length - i - 1; j++) {
+                if (sortedMarketMessages[j + 1].messageDate.toDate() > sortedMarketMessages[j].messageDate.toDate()) {
+                    var hold = sortedMarketMessages[j];
+
+                    sortedMarketMessages[j] = sortedMarketMessages[j + 1];
+                    sortedMarketMessages[j + 1] = hold;
+                }
+            }
+        }
+
+        this.setState({
+            sortedMarketMessages: sortedMarketMessages,
+            messagesSorted: true
+        })
+
+
+    }
 
     render() {
         var authUserInfo: any
@@ -131,16 +163,25 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
             authUserInfo = undefined
         }
 
-        if (authUserInfo == undefined || this.props.sellListings == undefined || authUserInfo.marketMessages == undefined || authUserInfo.marketMessages.length < 1) {
+        if (!this.state.messagesSorted && authUserInfo != undefined && authUserInfo.marketMessages != undefined) {
+            this.sortMarketMessages(authUserInfo.marketMessages)
+        }
+
+        if (authUserInfo == undefined || this.props.sellListings == undefined || authUserInfo.marketMessages == undefined || authUserInfo.marketMessages.length < 1 || this.state.sortedMarketMessages == null) {
             return (
                 <div>
                     <p></p>
                     <p>
-                    You have no marketplace messages.
+                        You have no marketplace messages.
                     </p>
                 </div>
             )
         }
+
+        if (!this.state.messagesSorted) {
+            this.sortMarketMessages(authUserInfo.marketMessages)
+        }
+
         const boldText = {
             fontWeight: 'bold' as 'bold'
         }
@@ -153,7 +194,7 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
                 <p></p>
                 <List sx={{ width: '100%', maxWidth: 720, bgcolor: 'background.paper' }}>
                     {
-                        authUserInfo.marketMessages.map((messageObj: any) => {
+                        this.state.sortedMarketMessages.map((messageObj: any) => {
                             const labelId = `checkbox-list-label-${messageObj.listingID}-${messageObj.senderID}`;
                             var listingInfo
                             var senderInfo
@@ -195,7 +236,12 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
                                 </div>;
                             }
 
+                            var dateString =  messageObj.messageDate.toDate().toDateString() + " at " + 
+                            ((parseInt(messageObj.messageDate.toDate().getHours()) > 12) 
+                            ? parseInt(messageObj.messageDate.toDate().getHours()) - 12 + ":" + ((parseInt(messageObj.messageDate.toDate().getMinutes()) < 10) ? '0' + messageObj.messageDate.toDate().getMinutes() : messageObj.messageDate.toDate().getMinutes()) + " PM" 
+                            : messageObj.messageDate.toDate().getHours() + ":" + ((parseInt(messageObj.messageDate.toDate().getMinutes()) < 10) ? '0' + messageObj.messageDate.toDate().getMinutes() : messageObj.messageDate.toDate().getMinutes()) + " AM")
                             return (
+                                
                                 <div>
                                     <ListItem
                                         key={messageObj.listingID + messageObj.senderID}
@@ -219,7 +265,7 @@ class ProfileMessages extends Component<ProfileMessagesProps, ProfileMessagesSta
                                             </ListItemIcon>
                                             <ListItemText
                                                 id={labelId}
-                                                primary={'Sell listing: ' + listingInfo.title}
+                                                primary={'Sell listing: ' + listingInfo.title + "   (" + dateString + ")"}
                                                 secondary={
                                                     <React.Fragment>
                                                         <Typography
