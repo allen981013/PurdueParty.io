@@ -102,6 +102,17 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     </Grid>
                 </Box>
 
+                <div className="input-field-messages">
+                    <Button
+                        component={Link}
+                        to="profile-messages"
+                        variant="outlined"
+                        sx={{ color: "black", border: "1px solid black" }}
+                    > Marketplace Messages
+                    </Button></div>
+
+                <p></p>
+
                 <div className="input-field-search">
                 <Button
                 component={Link}

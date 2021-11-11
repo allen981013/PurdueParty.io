@@ -444,7 +444,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       const open = Boolean(this.state.dropdownAnchor);
 
       if (this.state.dropdownReplyID === reply.ID) {
-        console.log(reply.ID + " " + this.state.dropdownReplyID)
         showMenu =
           <Menu
             id="long-menu"

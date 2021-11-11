@@ -3,6 +3,61 @@ import { addDoc, Timestamp } from '@firebase/firestore';
 import { firebaseStorageRef } from '../..';
 
 
+export const messageListingOwner = (senderID: string, receiverID: string, listingID: string, message: string) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const firebase = getFirebase();
+        const db = getFirestore();
+        var docref = db.collection('users').doc(receiverID);
+
+        var newMarketMessagesArr: { senderID: string, listingID: string, message: string, messageDate: Timestamp, closed: boolean}[];
+        newMarketMessagesArr = []
+
+        var newDate = Timestamp.now()
+
+        docref.get().then((doc: any) => {
+            var marketMessages
+            if (marketMessages = doc.data().marketMessages) {
+                newMarketMessagesArr = marketMessages
+                let index = newMarketMessagesArr.findIndex(element => element.senderID === senderID && element.listingID === listingID)
+                
+                if(index != -1){
+                    window.alert("Message not sent, you have already sent the owner a message about this listing. Navigate to your profile page to check for a reply")
+                    dispatch({ type: 'CREATE_MESSAGE_SUCCESS', doc });
+                    return
+                }
+                newMarketMessagesArr[newMarketMessagesArr.length] = {
+                    senderID: senderID,
+                    listingID: listingID,
+                    message: message,
+                    messageDate: newDate,
+                    closed: false
+                }
+            } else {
+                newMarketMessagesArr[0] = {
+                    senderID: senderID,
+                    listingID: listingID,
+                    message: message,
+                    messageDate: newDate,
+                    closed: false
+                }
+            }
+            
+            docref.set({
+                marketMessages: newMarketMessagesArr
+            }, { merge: true }).then((newDocRef: any) => {
+                window.alert("Message successfully sent!")
+                dispatch({ type: 'CREATE_MESSAGE_SUCCESS', newDocRef });
+            }).catch((err: any) => {
+                dispatch({ type: 'CREATE_MESSAGE_ERR', err });
+            });
+        }).catch((err: any) => {
+            console.log("error getting user doc likes dislkikes");
+            dispatch({ type: 'CREATE_MESSAGE_ERR', err });
+        });
+
+    }
+}
+
 // Need to explicitly define these types at some point
 export const addSellListing = (newSellListing: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
@@ -63,7 +118,7 @@ export const addSellListing = (newSellListing: any) => {
                             newDocRef.update({
                                 image: downloadURL
                             })
-                
+
                         })
                     })
 
@@ -73,7 +128,7 @@ export const addSellListing = (newSellListing: any) => {
                     newDocRef.update({
                         image: downloadURL
                     })
-                }) 
+                })
             }
 
             dispatch({ type: 'ADD_LISTING_SUCCESS', newDocRef });
@@ -87,7 +142,7 @@ export const editListingTitle = (listing: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         var docref = db.collection('sellListings').doc(listing.id);
-        
+
         docref.update({
             title: listing.title
         }).then((newDocRef: any) => {
@@ -103,7 +158,7 @@ export const editListingDescription = (listing: any) => {
         const db = getFirestore();
         console.log(listing);
         var docref = db.collection('sellListings').doc(listing.id);
-        
+
         docref.update({
             description: listing.description
         }).then((newDocRef: any) => {
@@ -119,7 +174,7 @@ export const editListingPrice = (listing: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         var docref = db.collection('sellListings').doc(listing.id);
-        
+
         docref.update({
             price: listing.price
         }).then((newDocRef: any) => {
@@ -134,7 +189,7 @@ export const editListingType = (listing: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         var docref = db.collection('sellListings').doc(listing.id);
-        
+
         docref.update({
             type: listing.type
         }).then((newDocRef: any) => {
@@ -149,7 +204,7 @@ export const editListingContact = (listing: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
         var docref = db.collection('sellListings').doc(listing.id);
-        
+
         docref.update({
             contactInfo: listing.contactInfo
         }).then((newDocRef: any) => {
@@ -165,32 +220,32 @@ export const editListingImage = (listing: any) => {
         const db = getFirestore();
         var docref = db.collection('sellListings').doc(listing.id);
 
-         // Get default fireRef first
-         var path = 'marketplace/P.JPG'
-         var fileRef = firebaseStorageRef.child(path);
-         var fileType = '.png'
-         var metadata = {
-             contentType: 'image/png',
-         };
+        // Get default fireRef first
+        var path = 'marketplace/P.JPG'
+        var fileRef = firebaseStorageRef.child(path);
+        var fileType = '.png'
+        var metadata = {
+            contentType: 'image/png',
+        };
 
-         //put profile pic in firebase storage
-         if (listing.image != null as any || listing.image != undefined) {
-             //configure metadata
-             if (listing.image.type == 'image/jpeg' || listing.image.type == 'image/jpg') {
-                 metadata.contentType = 'image/jpeg'
-                 fileType = '.jpeg'
-             }
-             else {
-                 metadata.contentType = 'image/png'
-                 fileType = '.png'
-             }
+        //put profile pic in firebase storage
+        if (listing.image != null as any || listing.image != undefined) {
+            //configure metadata
+            if (listing.image.type == 'image/jpeg' || listing.image.type == 'image/jpg') {
+                metadata.contentType = 'image/jpeg'
+                fileType = '.jpeg'
+            }
+            else {
+                metadata.contentType = 'image/png'
+                fileType = '.png'
+            }
 
-             //create proper filename with user uid and path
-             path = 'marketplace/' + docref.id + fileType;
-             fileRef = firebaseStorageRef.child(path);
-         }
+            //create proper filename with user uid and path
+            path = 'marketplace/' + docref.id + fileType;
+            fileRef = firebaseStorageRef.child(path);
+        }
 
-         if (listing.image != null as any) {
+        if (listing.image != null as any) {
             //upload to firebase storage
             var waitOnUpload = fileRef.put(listing.image, metadata)
 
@@ -223,7 +278,7 @@ export const editListingImage = (listing: any) => {
                 }).catch((err: any) => {
                     dispatch({ type: 'UPDATE_LISTING_ERR', err });
                 });
-            }) 
+            })
         }
     }
 }

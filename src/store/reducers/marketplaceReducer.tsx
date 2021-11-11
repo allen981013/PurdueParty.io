@@ -1,8 +1,8 @@
 const initState = {
     sellListings: [
-        {title: 'Space Jam Poster', price: 0, owner: "Michael Jordan"},
-        {title: 'Krabby Patty', price: 0, owner: "Spongebob"},
-        {title: 'Heelys', price: 0, owner: "Matt"}
+        { title: 'Space Jam Poster', price: 0, owner: "Michael Jordan" },
+        { title: 'Krabby Patty', price: 0, owner: "Spongebob" },
+        { title: 'Heelys', price: 0, owner: "Matt" }
     ]
 }
 
@@ -11,7 +11,7 @@ type Action = {
     payload?: any, // Annotate the payload with proper type, if there are any
 }
 
-const marketplaceReducer = (state=initState, action: Action) => {
+const marketplaceReducer = (state = initState, action: Action) => {
     switch (action.type) {
         case 'UPDATE_LISTING_SUCCESS':
             console.log("success updating listing");
@@ -25,7 +25,13 @@ const marketplaceReducer = (state=initState, action: Action) => {
         case 'DELETE_LISTING_ERR':
             console.log("err deleting listing");
             return state;
-        default :
+        case 'CREATE_MESSAGE_SUCCESS':
+            console.log("success creating message");
+            return state;
+        case 'CREATE_MESSAGE_ERR':
+            console.log("err creating message");
+            return state;
+        default:
             return state;
     }
 }
