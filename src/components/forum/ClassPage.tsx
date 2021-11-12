@@ -127,8 +127,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         this.props.joinClass(this.state)
       })
     }
-
-    window.location.reload()
   }
 
   getPost(post: Post) {
@@ -229,7 +227,18 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
           onClick={this.handleJoin}
           sx={{ color: "black", border: "1px solid black", height: "38px", marginTop: "40px" }}
         >
-          Join This Class
+          {this.props.classInfo.students != undefined && this.props.classInfo.students.length != 0
+            ?
+            (this.props.classInfo.students.includes(this.props.auth.uid)
+              ?
+              "Leave This Class"
+              :
+              "Join This Class"
+            )
+            :
+            "Join This Class"
+          }
+
         </Button>
 
         <Card sx={{ marginTop: "15px" }}>
