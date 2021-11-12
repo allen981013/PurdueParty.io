@@ -19,7 +19,8 @@ interface DiningInfoState {
     date: any,
     surveyResult: any,
     diningCourt: string,
-    needUpdate: boolean
+    needUpdate: boolean,
+    diningStatus: string
 }
 
 interface DiningInfoProps {
@@ -42,7 +43,8 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
             date: Moment(new Date()).format('MM-DD-YYYY'),
             surveyResult: null,
             diningCourt: this.props.diningName,
-            needUpdate: true
+            needUpdate: true,
+            diningStatus: ""
         };
     }
 
@@ -132,12 +134,11 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
         const { error, isLoaded, items } = this.state;
         if (!auth.uid) return <Redirect to='/signin' />
 
-        var diningInfo = undefined;
         var status = "";
         if (this.props.diningCourt != undefined && this.state.needUpdate) {
             const surveyInfo = this.props.diningCourt;
-            if (surveyInfo.length < 5) {
-                status = "Not Enough Data Points"
+            if (surveyInfo.length < 4) {
+                status = "Not Enough Data"
             } else {
                 var avgScore = 0;
                 for (let i = 0; i < surveyInfo.length; i++) {
@@ -157,11 +158,11 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
             }
 
             this.setState({
-                needUpdate: false
+                needUpdate: false,
+                diningStatus: status
             })
-
-            console.log(status);
         }
+        console.log(status);
 
         if (error) {
             return (
@@ -196,6 +197,14 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
                                 pb="8px"
                             >
                                 <h1 style={{ fontWeight: 1000, margin: "0px" }}>{this.props.diningName} Info</h1>
+                            </Box>
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                width="100%"
+                                pb="16px"
+                            >
+                                <p style={{ margin: "0px" }}>Current Status: {this.state.diningStatus}</p>
                             </Box>
                             <Box
                                 display="flex"
