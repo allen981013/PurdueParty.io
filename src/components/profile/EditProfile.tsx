@@ -124,7 +124,7 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
             year: "",
             hide: false
           })
-    
+
           this.props.refreshUserData()
           window.location.reload()
           window.history.back()
@@ -137,7 +137,7 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
     const { auth } = this.props;
 
     if (!auth.uid) return <Redirect to='/' />
-    var userProfile : any = undefined;
+    var userProfile: any = undefined;
 
     if (this.props.profile && this.props.profile.length == 1) {
       //console.log(this.props.profile);
@@ -156,7 +156,7 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
         })
       }
 
-      
+
       if (userProfile.hasOwnProperty('year')) {
         this.setState({
           year: userProfile.year
@@ -198,21 +198,21 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
 
           <h1>Hide Your Profile
             <input type="checkbox" checked={this.state.hide} placeholder=""
-              id="title" onChange={this.handleChangeHide} style={{marginLeft: "15px"}} />
+              id="title" onChange={this.handleChangeHide} style={{ marginLeft: "15px" }} />
           </h1>
 
           <div className="input-field">
             <button className="button">Save</button>
           </div>
-          <Button 
-            component={Link} 
+          <Button
+            component={Link}
             to="/changePassword"
             sx={{ color: "black", border: "1px solid black", margin: "8px 0px" }}
           >
             Change Password
           </Button>
           <Button sx={{ color: "black", border: "1px solid black" }} onClick={this.handleDelete}>
-            Delete Account 
+            Delete Account
           </Button>
 
         </form>
@@ -241,7 +241,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
 
 export default compose<React.ComponentType<EditProfileProps>>(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect((props:EditProfileProps) => {
+  firestoreConnect((props: EditProfileProps) => {
     if (typeof props.auth != undefined) {
       return [
         {

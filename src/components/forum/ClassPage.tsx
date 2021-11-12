@@ -14,6 +14,7 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 import StarRateIcon from '@mui/icons-material/StarRate';
 import { classPageSlice, fetchClassPosts, FetchCriteria } from '../../components/forum/ClassPageSlice';
 import { actionTypes } from 'redux-firestore';
+import { joinClass } from '../../store/actions/postActions';
 
 export interface Post {
   title: string;
@@ -27,6 +28,8 @@ export interface Post {
 
 interface ClassPageState {
   sortBy: FetchCriteria["sortBy"];
+  students: string[];
+  ID: string;
 }
 
 export interface ClassPageProps {
@@ -41,11 +44,12 @@ export interface ClassPageProps {
     instructorName: string,
     instructorEmail: string,
     classID: string,
+    ID: string,
     students: string[];
   };
   fetchClassPosts?: (classID: string, fetchCriteria: FetchCriteria) => void;
   clearFetchedDocs?: () => void;
-  joinClass?: (props: ClassPageProps) => void;
+  joinClass?: (state: ClassPageState) => void;
 }
 
 class ClassPage extends Component<ClassPageProps, ClassPageState> {
@@ -58,6 +62,8 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
     super(props);
     this.state = {
       sortBy: "RECENCY",
+      students: [],
+      ID: ""
     };
   }
 
@@ -75,8 +81,54 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
   }
 
 
-  handleJoin() {
-    console.log("Join")
+  handleJoin = (event: any) => {
+
+    if (this.props.classInfo.students != undefined && this.props.classInfo.students.length != 0) {
+      if (this.props.classInfo.students.includes(this.props.auth.uid)) {
+        console.log("List Not Empty")
+        console.log("Leave")
+      }
+      else {
+        console.log("List Not Empty")
+        console.log("Join")
+        var list = new Array()
+        if (this.props.classInfo.students == undefined) {
+          list.push(this.props.auth.uid)
+        }
+        else {
+          list = list.concat(this.props.classInfo.students)
+          list.push(this.props.auth.uid)
+        }
+
+        this.setState({
+          students: list,
+          ID: this.props.classInfo.ID
+        }, () => {
+          this.props.joinClass(this.state)
+        })
+      }
+    }
+    else {
+      console.log("List Empty")
+      console.log("Join")
+      var list = new Array()
+      if (this.props.classInfo.students == undefined) {
+        list.push(this.props.auth.uid)
+      }
+      else {
+        list = list.concat(this.props.classInfo.students)
+        list.push(this.props.auth.uid)
+      }
+
+      this.setState({
+        students: list,
+        ID: this.props.classInfo.ID
+      }, () => {
+        this.props.joinClass(this.state)
+      })
+    }
+
+    window.location.reload()
   }
 
   getPost(post: Post) {
@@ -175,9 +227,9 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
 
         <Button
           onClick={this.handleJoin}
-          variant="outlined"
           sx={{ color: "black", border: "1px solid black", height: "38px", marginTop: "40px" }}
-        > Join This Class
+        >
+          Join This Class
         </Button>
 
         <Card sx={{ marginTop: "15px" }}>
@@ -195,7 +247,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         </Card>
 
 
-      </Box>
+      </Box >
     )
   }
 
@@ -273,6 +325,8 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         <Box pt="32px">Class not found</Box>
       )
 
+
+
     return (
       <Box
         display="flex"
@@ -347,6 +401,8 @@ const mapStateToProps = (state: RootState) => {
         instructorName: class_.instructorName,
         instructorEmail: class_.profEmail,
         classID: class_.classID,
+        ID: class_.ID,
+        students: class_.students
       }
     })[0]
     : undefined
@@ -361,6 +417,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ClassPageProps) => {
   return {
+    joinClass: (classInfo: any) => dispatch(joinClass(classInfo)),
     fetchClassPosts: (classID: string, fetchCriteria: FetchCriteria) => dispatch(
       fetchClassPosts(classID, fetchCriteria)
     ),

@@ -223,8 +223,7 @@ export const addClass = (newClass: any) => {
 export const joinClass = (newClass: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
-        var docref = db.collection('classes').where("ID", "==", newClass.id)
-        console.log(docref)
+        var docref = db.collection('classes').doc(newClass.ID);
 
         docref.update({
             students: newClass.students
