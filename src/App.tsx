@@ -23,12 +23,16 @@ import Profile from './components/profile/Profile';
 import Classes from './components/forum/Classes';
 import ClassPage from './components/forum/ClassPage';
 import EditProfile from './components/profile/EditProfile';
+import ProfileMessages from './components/profile/ProfileMessages';
 import EditEvent from './components/events/EditEvent';
 import CreateClass from './components/forum/CreateClass';
 import EditSellListing from './components/marketplace/EditSellListing';
 import ThreadPage from './components/forum/ThreadPage';
 import ClubInfo from './components/clubs/ClubInfo';
 import EditClub from './components/clubs/EditClub';
+import DiningLanding from './components/dining/DiningLanding';
+import DiningInfo from './components/dining/DiningInfo';
+import BusInfo from './components/transportation/BusInfo';
 
 
 import SearchProfiles from './components/profile/SearchProfiles';
@@ -81,10 +85,16 @@ function App() {
           <Route path='/create-post/:classID' component={CreatePost} />
 
           <Route path='/search-profiles' component={SearchProfiles} />
+          <Route path='/profile-messages' component={ProfileMessages} />
 
 
           <Route path='/create-post/:classID' component={CreatePost} />
           <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
+          <Route exact path='/dining' component={DiningLanding} />
+          <Route path='/dining/:diningName' render={({ match }) => {
+            return <DiningInfo diningName={match.params.diningName} />
+          }} />
+          <Route path='/transportation' component={BusInfo} />
         </Switch>
         <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
         <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>

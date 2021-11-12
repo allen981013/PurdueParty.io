@@ -13,6 +13,7 @@ import { threadPageSlice } from '../../components/forum/ThreadPageSlice';
 import { classPageSlice } from '../../components/forum/ClassPageSlice';
 import { clubsPageSlice } from '../../components/clubs/ClubsPageSlice';
 import clubReducer from './clubReducer';
+import diningReducer from './diningReducer';
 
 // Add it to this list
 const rootReducer = combineReducers({
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
     classPage: classPageSlice.reducer,
     club: clubReducer,
     clubsPage: clubsPageSlice.reducer,
+    dining: diningReducer
 });
 
 export default rootReducer;

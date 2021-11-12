@@ -200,6 +200,75 @@ export const deleteComment = (commentID: any) => {
     }
 }
 
+export const addOrRemoveUserVotes = (userID: string, postOrCommentID: string, upvoted: boolean, downvoted: boolean) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        var docref = db.collection('users').doc(userID);
+        var postIDprefix: string
+        if (upvoted) {
+            postIDprefix = "10"
+        } else if (downvoted) {
+            postIDprefix = "01"
+        } else {
+            postIDprefix = "00"
+        }
+
+        var newPostsArr = [""]
+        docref.get().then((doc: any) => {
+            var votedPostsArr
+            if (votedPostsArr = doc.data().votedPostIDs) {
+                var postID
+                var i;
+                var newPostString;
+
+                for (i = 0; i < votedPostsArr.length; i++) {
+                    postID = votedPostsArr[i].substring(2)
+
+                    if (postID === postOrCommentID) {
+                        newPostString = postIDprefix + postOrCommentID
+                        break;
+                    }
+                }
+                if (i == votedPostsArr.length) {
+                    newPostString = postIDprefix + postOrCommentID
+                }
+                votedPostsArr[i] = newPostString
+                newPostsArr = votedPostsArr
+            } else {
+                newPostsArr[0] = postIDprefix + postOrCommentID
+            }
+
+            docref.set({
+                votedPostIDs: newPostsArr
+            }, { merge: true }).then((newDocRef: any) => {
+                dispatch({ type: 'UPDATE_USERVOTES_SUCCESS', newDocRef });
+            }).catch((err: any) => {
+                dispatch({ type: 'UPDATE_USERVOTES_ERR', err });
+            });
+        }).catch((err: any) => {
+            console.log("error getting user doc likes dislkikes");
+            dispatch({ type: 'UPDATE_USERVOTES_ERR', err });
+        });
+    }
+}
+
+
+export const addOrRemovePostVotes = (postOrCommentID: string, numVotes: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const firebase = getFirebase();
+        const db = getFirestore();
+        var docref = db.collection('posts').doc(postOrCommentID);
+
+        docref.set({
+            voteCount: numVotes
+        }, { merge: true }).then((newDocRef: any) => {
+            dispatch({ type: 'UPDATE_VOTECOUNT_SUCCESS', newDocRef });
+        }).catch((err: any) => {
+            dispatch({ type: 'UPDATE_VOTECOUNT_ERR', err });
+        });
+    }
+}
+
 export const addClass = (newClass: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();

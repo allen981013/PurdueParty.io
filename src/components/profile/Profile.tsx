@@ -5,20 +5,23 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import {Box, Button, Grid, Card, CardContent, Typography} from '@mui/material';
+import { Box, Button, Grid, Card, CardContent, Typography, Stack } from '@mui/material';
+import { EditOutlined } from '@mui/icons-material';
 
 // Interface/type for Profile State
-interface ProfileState{
+interface ProfileState {
 }
 
 // Interface/type for Profile Props
-interface ProfileProps{
+interface ProfileProps {
     profile: {
         bio: string,
         userName: string,
         major: string,
-        year: number
-    }[],
+        year: number,
+        email: string,
+        image: string
+    },
     currentUser: string,
     auth: any,
     firebase: any
@@ -26,102 +29,145 @@ interface ProfileProps{
 
 class Profile extends Component<ProfileProps, ProfileState> {
 
-    constructor(props:ProfileProps){
+    constructor(props: ProfileProps) {
         super(props);
         this.state = {
         }
     }
 
-    getUser(bio: string, userName: string, major: string, year: number){
-        
-        if(userName == this.props.currentUser){
-            return(
-                <Grid 
-                    item
-                    id="image-container"
-                    xs={12} 
-                    md={3}
+    getProfile() {
+        var profile = this.props.profile
+        return (
+            <Box
+                display="flex"
+                alignSelf="center"
+                flexDirection="column"
+                alignItems="center"
+                pt="8px"
+                maxWidth="1200px"
+                margin="56px 16px"
+            >
+                <Grid
+                    container
+                    id="top-page-container"
+                    spacing={2}
+                    sx={{ minWidth: { md: "900px" } }}
                 >
-                    <Card>
-                        <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
-                        <label htmlFor="title">User Name: </label>
-                        <Typography gutterBottom noWrap component="div" marginBottom="10px">
-                            {userName}
-                        </Typography>
-                        <label htmlFor="title">Bio: </label>
-                        <Typography gutterBottom noWrap component="div" marginBottom="10px">
-                            {bio}
-                        </Typography>
-                        <label htmlFor="title">Major: </label>
-                        <Typography gutterBottom noWrap component="div" marginBottom="10px">
-                            {major}
-                        </Typography>
-                        <label htmlFor="title">Year: </label>
-                        <Typography gutterBottom noWrap component="div" marginBottom="10px">
-                            {year}
-                        </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            )
-        }
-        return null
-    }
+                    <Grid
+                        item
+                        id="image-container"
+                        xs={12}
+                        md={6}
+                    >
+                        {profile.image != undefined ? <img width="100%" height="100%" src={profile.image} /> : "No profile image found."}
+                    </Grid>
 
-    checkUser(userName: string){
-        if(userName == this.props.currentUser){
-            return true;
-        }
-        return false;
+                    <Grid
+                        item
+                        id="details-container"
+                        xs={12}
+                        md={6}
+                    >
+                        <Box
+                            id="title-container"
+                            display="flex"
+                            flexDirection="column"
+                            alignItems="flex-start"
+                            justifyContent="flex-start"
+                            pl="16px"
+                        >
+                            <Box
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="space-between"
+                                width="100%"
+                                pb="32px"
+                            >
+                                <h1 style={{ fontWeight: 300, margin: "0px" }}>{profile.userName}</h1>
+
+
+                            </Box>
+
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="flex-start"
+                                pb="24px"
+                            >
+                                <strong style={{ paddingBottom: "8px" }}>Email</strong>
+                                <span>{profile.email}</span>
+                            </Box>
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="flex-start"
+                                pb="24px"
+                            >
+                                <strong style={{ paddingBottom: "8px" }}>Year</strong>
+                                <span style={{ paddingBottom: "4px" }}>{(profile.year == undefined ? "Navigate to 'Edit Profile' to set your graduation year." : profile.year)}</span>
+                            </Box>
+
+                        </Box>
+                    </Grid>
+                </Grid>
+
+                <hr style={{ width: "100%", border: "1px solid lightgrey", margin: "40px 0px 28px" }} />
+                <h1 style={{ fontWeight: 300, margin: "0px 0px 16px", alignSelf: "flex-start" }}>Profile Bio</h1>
+                <Box alignSelf="flex-start">{(profile.bio === "" || profile.bio == undefined ? "Navigate to 'Edit Profile' to create your bio." : profile.bio)}</Box>
+
+                <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Major</h1>
+                <Box alignSelf="flex-start">{(profile.major === "" || profile.major == undefined ? "Navigate to 'Edit Profile' to set your major." : profile.major)}</Box>
+
+                <hr style={{ width: "100%", border: "1px solid lightgrey", margin: "40px 0px 28px" }} />
+                <h1 style={{ fontWeight: 300, margin: "24px 0px 16px", alignSelf: "flex-start" }}>Links to other pages</h1>
+
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Stack direction="row" spacing={2}>
+                        <Button
+                            component={Link}
+                            to="profile-messages"
+                            variant="outlined"
+                            sx={{ color: "black", border: "1px solid black" }}
+                        > Marketplace Messages
+                        </Button>
+
+                        <Button
+                            component={Link}
+                            to="search-profiles"
+                            variant="outlined"
+                            sx={{ color: "black", border: "1px solid black" }}
+                        > Search For Other Profiles
+                        </Button>
+
+                        <Button
+                            component={Link}
+                            to="edit-profile"
+                            variant="outlined"
+                            sx={{ color: "black", border: "1px solid black" }}
+                        > Edit Profile
+                        </Button>
+                    </Stack>
+                </div>
+            </Box>
+        )
     }
 
     render() {
         const { auth } = this.props;
 
-        if (!auth.uid) return <Redirect to='/signin'/>
+        if (!auth.uid) return <Redirect to='/signin' />
 
         return (
-            <div> 
-                <Box
-                display="flex"
-                justifyContent="space-between"
-                width="100%"
-                pb="16px">
-                    <h1 style={{ fontWeight: 300, marginLeft: "15%", marginTop:"2%" }}>Welcome Back!</h1>
-                </Box>
-
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
-                    <Box id="cropped-purdue-img" />
-                    <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                    {this.props.profile != undefined && this.props.profile.length != 0 
-                    ?
-                    this.props.profile.map((users) => this.getUser(users.bio,users.userName,users.major,users.year))
-                    :
-                    <div>Profile Missing</div>
+            <div>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    {this.props.profile != undefined ?
+                        <Box>
+                            {this.getProfile()}
+                        </Box>
+                        :
+                        <div></div>
                     }
-                    </Grid>
-                </Box>
-
-                <div className="input-field-search">
-                <Button
-                component={Link}
-                to="search-profiles"
-                variant="outlined"
-                sx={{ color: "black", border: "1px solid black" }}
-                > Search For Other Profiles
-              </Button></div>
-
-              <p></p>
-
-                <div className="input-field">
-                <Button
-                component={Link}
-                to="edit-profile"
-                variant="outlined"
-                sx={{ color: "black", border: "1px solid black" }}
-                > Edit Profile
-              </Button></div>
-            
+                </div>
             </div>
         )
     }
@@ -129,20 +175,29 @@ class Profile extends Component<ProfileProps, ProfileState> {
 
 const mapStateToProps = (state: RootState) => {
     return {
-        profile: state.firestore.ordered.users,
+        profile: state.firestore.ordered.authUserInfo !== undefined ? state.firestore.ordered.authUserInfo[0] : undefined,
         auth: state.firebase.auth,
         currentUser: state.auth.lastCheckedUsername
     }
-  }
-  
-  const mapDispatchToProps = (dispatch: AppDispatch) => {
+}
+
+const mapDispatchToProps = (dispatch: AppDispatch) => {
     return {
     }
-  }
-  
-  export default compose<React.ComponentType<Profile>>(
+}
+
+export default compose<React.ComponentType<Profile>>(
     connect(mapStateToProps, mapDispatchToProps),
-    firestoreConnect([
-      { collection: 'users' }
-    ])
-  )(Profile)
+    firestoreConnect((props: ProfileProps) => {
+        return [
+            {
+                collection: "users",
+                where: [
+                    ["userName", "==", props.currentUser],
+                ],
+                storeAs: "authUserInfo",
+                limit: 1,
+            }
+        ]
+    })
+)(Profile)
