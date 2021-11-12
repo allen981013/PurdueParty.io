@@ -82,6 +82,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
 
 
   handleJoin = (event: any) => {
+    var action = false;
 
     if (this.props.classInfo.students != undefined && this.props.classInfo.students.length != 0) {
       if (this.props.classInfo.students.includes(this.props.auth.uid)) {
@@ -92,6 +93,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         list.forEach((element, index) => {
           if (element == this.props.auth.uid) list.splice(index, 1)
         });
+        action = false
       }
       else {
         console.log("List Not Empty")
@@ -104,6 +106,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
           list = list.concat(this.props.classInfo.students)
           list.push(this.props.auth.uid)
         }
+        action = true
       }
     }
     else {
@@ -117,6 +120,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         list = list.concat(this.props.classInfo.students)
         list.push(this.props.auth.uid)
       }
+      action = true
     }
 
     this.setState({
@@ -125,6 +129,14 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
     }, () => {
       this.props.joinClass(this.state)
     })
+
+    if (action) {
+      window.alert("Join Class Successfully.")
+    }
+    else {
+      window.alert("Leave Class Successfully.")
+    }
+
   }
 
   getPost(post: Post) {
