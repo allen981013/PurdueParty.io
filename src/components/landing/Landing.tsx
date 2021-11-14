@@ -44,7 +44,7 @@ class Landing extends Component<LandingProps, LandingStates> {
         to={href}
         title={detail ? title + ", " + detail : title}
         className="item-card"
-        sx={{color:"black", fontWeight:"light", textTransform: "unset"}}
+        sx={{ color: "black", fontWeight: "light", textTransform: "unset" }}
       >
         <div className="item-card__stripe" />
         <div className="item-card__body">
@@ -88,7 +88,7 @@ class Landing extends Component<LandingProps, LandingStates> {
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
-        <Box id="cropped-purdue-img" sx={{height:{xs:"250px", sm: "400px"}}}/>
+        <Box id="cropped-purdue-img" sx={{ height: { xs: "250px", sm: "400px" } }} />
         <Grid container className="sections" spacing={2} sx={{ padding: "32px 24px" }}>
           {
             this.getSectionCard("Events", "/events",
@@ -99,7 +99,7 @@ class Landing extends Component<LandingProps, LandingStates> {
               this.props.saleItems.map((item) => this.getItemCard(item.title, item.href, item.price)))
           }
           {
-            this.getSectionCard("Classes", "/classes",
+            this.getSectionCard("Forum", "/forum",
               this.props.classes.map((class_) => this.getItemCard(class_.title, class_.href)))
           }
           {

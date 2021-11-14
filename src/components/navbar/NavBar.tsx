@@ -81,7 +81,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             <Button component={Link} to="/">Home</Button>
             <Button component={Link} to="/events">Events</Button>
             <Button component={Link} to="/marketplace">Market</Button>
-            <Button component={Link} to="/classes">Classes</Button>
+            <Button component={Link} to="/forum">Forum</Button>
             <Button component={Link} to="/gym">Gym</Button>
             <Button component={Link} to="/dining">Dining</Button>
             <Button component={Link} to="/transportation">Bus</Button>
@@ -115,8 +115,8 @@ class NavBar extends Component<NavBarProps, NavBarState> {
               <ListItemButton alignItems={"center"} component={Link} to="/market">
                 <ListItemText>Market</ListItemText>
               </ListItemButton>
-              <ListItemButton alignItems={"center"} component={Link} to="/classes">
-                <ListItemText>Class</ListItemText>
+              <ListItemButton alignItems={"center"} component={Link} to="/forum">
+                <ListItemText>Forum</ListItemText>
               </ListItemButton>
               <ListItemButton alignItems={"center"} component={Link} to="/gym">
                 <ListItemText>Gym</ListItemText>

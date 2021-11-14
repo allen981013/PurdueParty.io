@@ -460,7 +460,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
               },
             }}
           >
-            <MenuItem component={Link} to={"/classes/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID + "/edit"}>
+            <MenuItem component={Link} to={"/forum/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID + "/edit"}>
               {"Edit"}
             </MenuItem>
             <MenuItem onClick={() => this.handleDeleteComment(reply.ID)}>
