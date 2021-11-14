@@ -20,7 +20,7 @@ import EditComment from './components/forum/EditComment';
 import createComment from './components/forum/createComment';
 import createCommentOnComment from './components/forum/createCommentOnComment';
 import Profile from './components/profile/Profile';
-import Classes from './components/forum/Classes';
+import ForumMainPage from './components/forum/ForumMainPage';
 import ClassPage from './components/forum/ClassPage';
 import EditProfile from './components/profile/EditProfile';
 import ProfileMessages from './components/profile/ProfileMessages';
@@ -67,7 +67,7 @@ function App() {
           <Route path='/forum/create-post' component={CreatePost} />
           <Route path='/profile' component={Profile} />
           <Route path='/edit-profile' component={EditProfile} />
-          <Route exact path='/forum' component={Classes} />
+          <Route exact path='/forum' component={ForumMainPage} />
           <Route path='/forum/:classID/:postID/:commentID/edit' component={EditComment} />
           <Route path='/forum/:classID/:postID' render={({ match }) => {
             return <ThreadPage classID={match.params.classID} postID={match.params.postID} />
