@@ -203,7 +203,6 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
         <Grid
           container
           spacing={3}
-          sx={{ maxWidth: "100%" }}
         >
           <Grid
             item

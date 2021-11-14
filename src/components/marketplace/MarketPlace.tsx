@@ -77,11 +77,8 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
   }
 
   render() {
-    //console.log(this.props.marketplace);
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     return (
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Box
             display="flex"
             alignSelf="center"
@@ -96,7 +93,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
               display="flex"
               justifyContent="space-between"
               width="100%"
-              pb="16px"
+              pb="32px"
             >
               <h1 style={{ fontWeight: 300, margin: "0px" }}>MarketPlace</h1>
               <Button
@@ -107,20 +104,15 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
               > Create
               </Button>
             </Box>
-          </Box></div>
-
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
-          <Box id="cropped-purdue-img" />
-          <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-            {this.props.marketplace != undefined && this.props.marketplace.length != 0
-              ?
-              this.props.marketplace.map((sellListing) => this.getCard(sellListing.title, sellListing.price, sellListing.id, sellListing.image))
-              :
-              <div>No SellListings Found</div>
-            }
-          </Grid>
+            <Grid container spacing={2} >
+              {this.props.marketplace != undefined && this.props.marketplace.length != 0
+                ?
+                this.props.marketplace.map((sellListing) => this.getCard(sellListing.title, sellListing.price, sellListing.id, sellListing.image))
+                :
+                <div>No SellListings Found</div>
+              }
+            </Grid>
         </Box>
-      </div>
     )
   }
 }

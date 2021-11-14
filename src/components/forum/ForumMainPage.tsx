@@ -24,7 +24,6 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
       </Box>
     )
   }
-
 }
 
 const mapStateToProps = (state: RootState) => {
