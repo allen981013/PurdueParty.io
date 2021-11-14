@@ -12,17 +12,17 @@ import {
 
 // Interface/type for Classes State
 interface ClassesState {
-  
+
 }
 
 // Interface/type for Clubs Props
 interface ClassesProps {
-    class: {
-        title: string,
-        courseID: string
-    }[],
-    auth: any,
-    firebase: any
+  class: {
+    title: string,
+    courseID: string
+  }[],
+  auth: any,
+  firebase: any
 }
 
 class Classes extends Component<ClassesProps, ClassesState> {
@@ -33,63 +33,57 @@ class Classes extends Component<ClassesProps, ClassesState> {
     }
   }
 
-  getClass(title: string, courseID: string){
-        
-        return(
-            <Grid
-            item
-            id="image-container"
-            xs={12}
-            md={3}
-            >
-            <Card>
-                <CardActionArea component={Link} to={"/classes/" + courseID}>
-                    <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                    <label htmlFor="title"> {courseID} </label>
-                    <Typography noWrap variant="body2" color="text.secondary" component="div" marginBottom="10px">
-                        {title}
-                    </Typography>
-                    </CardContent>
-                </CardActionArea>
-            </Card>
-            </Grid>
-        )
-}
+  getClass(title: string, courseID: string) {
+
+    return (
+      <Grid
+        item
+        id="image-container"
+        xs={12}
+        md={12}
+      >
+        <Card>
+          <CardActionArea component={Link} to={"/forum/" + courseID}>
+            <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <label htmlFor="title"> {courseID} </label>
+              <Typography noWrap variant="body2" color="text.secondary" component="div" marginBottom="10px">
+                {title}
+              </Typography>
+            </CardContent>
+          </CardActionArea>
+        </Card>
+      </Grid>
+    )
+  }
 
   render() {
-    const { auth } = this.props;
     if (!this.props.auth.uid) return <Redirect to='/signin' />
-    
     return (
-      <div>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              width="100%"
-              pb="16px"
-            >
-              <h1 style={{ fontWeight: 300, marginLeft: "20%", marginTop:"3%" }}>Classes</h1>
-              <Button
-                component={Link}
-                to="create-class"
-                variant="outlined"
-                sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-              > Create
-              </Button>
-            </Box>
-
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
-                    <Box id="cropped-purdue-img" />
-                    <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
-                    {this.props.class != undefined && this.props.class.length != 0 
-                    ?
-                    this.props.class.map((classes) => this.getClass(classes.title, classes.courseID))
-                    :
-                    <div>Classes Missing</div>
-                    }
-                    </Grid>
-            </Box>
-      </div>
+      <Box 
+        pt="32px" 
+        width="1200px" 
+        alignSelf="center" 
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        flexGrow={1}
+      >
+        <Button
+          component={Link}
+          to="create-class"
+          variant="outlined"
+          sx={{ color: "black", border: "1px solid black", alignSelf: "flex-end" }}
+        > Create
+        </Button>
+        <Grid container spacing={2} sx={{paddingTop: "16px"}}>
+          {this.props.class != undefined && this.props.class.length != 0
+            ?
+            this.props.class.map((classes) => this.getClass(classes.title, classes.courseID))
+            :
+            <div>Classes Missing</div>
+          }
+        </Grid>
+      </Box>
     )
   }
 }
