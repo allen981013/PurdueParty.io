@@ -220,7 +220,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
             </Typography>
           </CardContent>
         </Card>
-
         <Button
           onClick={this.handleJoin}
           sx={{ color: "black", border: "1px solid black", height: "38px", marginTop: "40px" }}
@@ -236,9 +235,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
             :
             "Join This Class"
           }
-
         </Button>
-
         <Card sx={{ marginTop: "15px" }}>
           <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
             Student
@@ -252,8 +249,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
             }
           </CardContent>
         </Card>
-
-
       </Box >
     )
   }
@@ -331,9 +326,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
       return (
         <Box pt="32px">Class not found</Box>
       )
-
-
-
     return (
       <Box
         display="flex"

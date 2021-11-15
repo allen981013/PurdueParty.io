@@ -17,12 +17,12 @@ interface ClassesState {
 
 // Interface/type for Clubs Props
 interface ClassesProps {
-  class: {
+  class?: {
     title: string,
     courseID: string
   }[],
-  auth: any,
-  firebase: any
+  auth?: any,
+  firebase?: any
 }
 
 class Classes extends Component<ClassesProps, ClassesState> {
