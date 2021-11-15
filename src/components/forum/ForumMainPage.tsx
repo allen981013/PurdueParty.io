@@ -5,16 +5,16 @@ import { compose } from "redux"
 import { AppDispatch, RootState } from '../../store';
 import { Box, CircularProgress, Grid, Tab, Tabs } from '@mui/material'
 import Classes from "./Classes";
-import { Post } from "./ClassPage";
+import { getPostCardComponent , Post } from "./ClassPage";
 import { Redirect } from "react-router-dom";
+import { fetchPostsFromAllClasses, fetchPostsFromFollowedClasses } from "./ForumMainPageSlice";
 
 interface ForumMainPageProps {
   auth: FirebaseReducer.AuthState;
   postsFromAllClasses: Post[];
   postsFromFollowedClasses: Post[];
-  isPostsFromAllClassesFetched: boolean;
-  isPostsFromFollowedClassesFetched: boolean;
-  fetchPostsFromAllClasses: () => void; 
+  fetchErrForPostsFromFollowedClasses: string;
+  fetchPostsFromAllClasses: () => void;
   fetchPostsFromFollowedClasses: () => void;
 }
 
@@ -32,62 +32,71 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
   }
 
   componentDidMount() {
-    // this.props.fetchPostsFromAllClasses();
-    // this.props.fetchPostsFromFollowedClasses();
+    this.props.fetchPostsFromAllClasses();
+    this.props.fetchPostsFromFollowedClasses();
   }
 
-  getPostsFromAllClassesSubPage() {
-    if (!this.props.isPostsFromAllClassesFetched)
+  getPostComponent(post: Post) {
+    return getPostCardComponent(post)
+  }
+
+  getSubPageForPostsFromAllClasses() {
+    if (this.props.postsFromAllClasses == null)
       return (
         <Box pt="32px"><CircularProgress /></Box>
       )
     return (
-      <Box>
-        Main posts
+      <Box pt="32px">
+        {this.props.postsFromAllClasses.length != 0
+          && this.props.postsFromAllClasses.map((post: Post) => this.getPostComponent(post))}
+        {this.props.postsFromAllClasses.length == 0
+          && "No posts have been created yet"}
       </Box>
     )
   }
-  
-  getPostsFromFollowedClassesSubPage() {
-    if (!this.props.isPostsFromAllClassesFetched)
+
+  getSubPageForPostsFromFollowedClasses() {
+    if (this.props.postsFromFollowedClasses == null)
       return (
         <Box pt="32px"><CircularProgress /></Box>
       )
     return (
-      <Box>
-        Main posts
+      <Box pt="32px">
+        {this.props.postsFromFollowedClasses.length == 0
+          && "The forums you joined do not have any posts yet"}
+        {this.props.postsFromFollowedClasses.length != 0
+          && this.props.postsFromFollowedClasses.map((post: Post) => this.getPostComponent(post))}
       </Box>
     )
   }
 
   getClassesSidebar() {
-
+    return <Box> Class sidebar </Box>
   }
 
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     return (
-      <Box width="1200px" p="32px 0px 40px" display="flex" flexDirection="column" alignSelf="center">
+      <Box width="1200px" p="40px 0px 40px" display="flex" flexDirection="column" alignSelf="center">
         <Box width="100%" display="flex" justifyContent="space-between" alignItems="center">
-          <h1 style={{ fontWeight: 300, margin: "0px" }}>Forum</h1>
+          <h1 style={{ fontWeight: 300, margin: "0px" }}>Timeline</h1>
           <Tabs
             value={this.state.currentTabIndex}
             onChange={(e: any, newIndex: number) => this.setState({ currentTabIndex: newIndex })}
           >
             <Tab label="Followed" />
-            <Tab label="All" />
+            <Tab label="Global" />
           </Tabs>
         </Box>
-        <Grid container>
-          <Grid item xs={12} md={9}>
-            {this.state.currentTabIndex == 0 && this.getPostsFromFollowedClassesSubPage()}
-            {this.state.currentTabIndex == 1 && this.getPostsFromAllClassesSubPage()}
+        {/* <Grid container> */}
+          {/* <Grid item xs={12} md={9}> */}
+            {this.state.currentTabIndex == 0 && this.getSubPageForPostsFromFollowedClasses()}
+            {this.state.currentTabIndex == 1 && this.getSubPageForPostsFromAllClasses()}
             {/* {this.state.currentTabIndex == 2 && <Classes />} */}
-          </Grid>
-          <Grid item xs={12} md={3}>
-
-          </Grid>
-        </Grid>
+          {/* </Grid> */}
+          {/* <Grid item xs={12} md={3}> */}
+          {/* </Grid> */}
+        {/* </Grid> */}
       </Box>
     )
   }
@@ -96,11 +105,15 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
 const mapStateToProps = (state: RootState) => {
   return {
     auth: state.firebase.auth,
+    postsFromFollowedClasses: state.forumMainPage.postsFromFollowedClasses,
+    postsFromAllClasses: state.forumMainPage.postsFromAllClasses,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
+    fetchPostsFromAllClasses: () => dispatch(fetchPostsFromAllClasses()),
+    fetchPostsFromFollowedClasses: () => dispatch(fetchPostsFromFollowedClasses()),
   }
 }
 

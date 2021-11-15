@@ -36,6 +36,7 @@ import BusInfo from './components/transportation/BusInfo';
 
 
 import SearchProfiles from './components/profile/SearchProfiles';
+import Classes from './components/forum/Classes';
 
 function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
@@ -64,10 +65,11 @@ function App() {
           }} />
           <Route path='/edit-club/:clubID' component={EditClub} />
 
-          <Route path='/forum/create-post' component={CreatePost} />
           <Route path='/profile' component={Profile} />
           <Route path='/edit-profile' component={EditProfile} />
           <Route exact path='/forum' component={ForumMainPage} />
+          <Route path='/forum/create-post' component={CreatePost} />
+          <Route path='/forum/all' component={Classes} />
           <Route path='/forum/:classID/:postID/:commentID/edit' component={EditComment} />
           <Route path='/forum/:classID/:postID' render={({ match }) => {
             return <ThreadPage classID={match.params.classID} postID={match.params.postID} />
