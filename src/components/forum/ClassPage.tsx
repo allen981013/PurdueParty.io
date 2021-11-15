@@ -52,6 +52,70 @@ export interface ClassPageProps {
   joinClass?: (state: ClassPageState) => void;
 }
 
+export function getPostCardComponent(post: Post) {
+  // Get UI for post cards
+  return (
+    <Grid
+      item
+      xs={12}
+      md={12}
+    >
+      <Card sx={{ marginBottom: "16px" }}>
+        <CardActionArea disableRipple component={Link} to={post.href}>
+          <CardContent sx={{ textAlign: "left" }}>
+            <Box display="flex" flexDirection="row" pb="4px">
+              {/* Note: We split the following text into separate tags in case we want to 
+                  proceed with the idea of making username & time clickable` */}
+              <Typography
+                variant="subtitle2"
+                sx={{ color: "#787c7e", fontSize: "12px" }}
+              >Posted by&nbsp;
+              </Typography>
+              <Typography
+                noWrap
+                variant="subtitle2"
+                sx={{ color: "#787c7e", fontSize: "12px" }}
+              >{post.poster ? post.poster : "[ deleted ]"}&nbsp;
+              </Typography>
+              <Typography
+                noWrap
+                variant="subtitle2"
+                sx={{ color: "#787c7e", fontSize: "12px" }}
+              >{post.timeSincePosted}
+              </Typography>
+            </Box>
+            <Typography
+              noWrap
+              variant="h6"
+              sx={{ fontSize: "18px", paddingBottom: "4px" }}
+            >
+              {post.title}
+            </Typography>
+            <Typography
+              noWrap
+              variant="body2"
+              sx={{ paddingBottom: "0px" }}
+            >
+              {post.content}
+            </Typography>
+            <Box pt="8px" position="relative">
+              <Button
+                onClick={e => { e.stopPropagation(); e.preventDefault() }}
+                sx={{ textTransform: "none", color: "#787c7e", fontWeight: "bold", fontSize: "12px" }}
+              >
+                <ChatBubbleOutlineOutlinedIcon
+                  sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
+                />
+                {post.numComments} Comments
+              </Button>
+            </Box>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </Grid >
+  )
+}
+
 class ClassPage extends Component<ClassPageProps, ClassPageState> {
 
   // Instance attributes
@@ -128,66 +192,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
   }
 
   getPost(post: Post) {
-    return (
-      <Grid
-        item
-        xs={12}
-        md={12}
-      >
-        <Card sx={{ marginBottom: "16px" }}>
-          <CardActionArea disableRipple component={Link} to={post.href}>
-            <CardContent sx={{ textAlign: "left" }}>
-              <Box display="flex" flexDirection="row" pb="4px">
-                {/* Note: We split the following text into separate tags in case we want to 
-                  proceed with the idea of making username & time clickable` */}
-                <Typography
-                  variant="subtitle2"
-                  sx={{ color: "#787c7e", fontSize: "12px" }}
-                >Posted by&nbsp;
-                </Typography>
-                <Typography
-                  noWrap
-                  variant="subtitle2"
-                  sx={{ color: "#787c7e", fontSize: "12px" }}
-                >{post.poster ? post.poster : "[ deleted ]"}&nbsp;
-                </Typography>
-                <Typography
-                  noWrap
-                  variant="subtitle2"
-                  sx={{ color: "#787c7e", fontSize: "12px" }}
-                >{post.timeSincePosted}
-                </Typography>
-              </Box>
-              <Typography
-                noWrap
-                variant="h6"
-                sx={{ fontSize: "18px", paddingBottom: "4px" }}
-              >
-                {post.title}
-              </Typography>
-              <Typography
-                noWrap
-                variant="body2"
-                sx={{ paddingBottom: "0px" }}
-              >
-                {post.content}
-              </Typography>
-              <Box pt="8px" position="relative">
-                <Button
-                  onClick={e => { e.stopPropagation(); e.preventDefault() }}
-                  sx={{ textTransform: "none", color: "#787c7e", fontWeight: "bold", fontSize: "12px" }}
-                >
-                  <ChatBubbleOutlineOutlinedIcon
-                    sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
-                  />
-                  {post.numComments} Comments
-                </Button>
-              </Box>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid >
-    )
+    return getPostCardComponent(post)
   }
 
   getClass(class_: ClassPageProps["classInfo"]) {
