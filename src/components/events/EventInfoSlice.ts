@@ -126,7 +126,7 @@ export const fetchEventInfo = (eventID: string) => {
             .then((userDoc: any) => {
               // Map host info 
               hostName = userDoc.data().userName
-              hostHref = "/users/" + hostName
+              hostHref = "/users/" + userDoc.id
             })
         }
         else if (orgID.length != 0) {

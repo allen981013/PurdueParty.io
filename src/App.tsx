@@ -61,7 +61,9 @@ function App() {
           <Route path='/edit-club/:clubID' component={EditClub} />
 
           <Route path='/forum/create-post' component={CreatePost} />
-          <Route path='/profile' component={Profile} />
+          <Route path='/users/:uid' render={({ match }) => {
+            return <Profile  uid={match.params.uid} />
+          }} />
           <Route path='/edit-profile' component={EditProfile} />
           <Route exact path='/classes' component={Classes} />
           <Route path='/classes/:classID/:postID/:commentID/edit' component={EditComment} />
