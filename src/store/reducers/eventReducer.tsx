@@ -25,6 +25,18 @@ const eventReducer = (state = initState, action: Action) => {
         case 'ADD_EVENT_ERR':
             console.log('error adding new event');
             return state;
+        case 'RSVP_EVENT_SUCCESS':
+            console.log('rsvp to event');
+            return state;
+        case 'RSVP_EVENT_ERR':
+            console.log('error rsvp to event');
+            return state;
+        case 'RSVP_REMOVE_EVENT_SUCCESS':
+            console.log('removing rsvp to event');
+            return state;
+        case 'RSVP_REMOVE_EVENT_ERR':
+            console.log('error removing rsvp to event');
+            return state;
         case 'DELETE_EVENT_SUCCESS':
             console.log("deleted event");
             return {

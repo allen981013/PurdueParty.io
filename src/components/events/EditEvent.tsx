@@ -83,7 +83,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
       endTime: new Date(),
       postedDateTime: new Timestamp(0, 0),
       attendees: [""],
-      hasUpdated: false
+      hasUpdated: false,
     }
   }
 
@@ -217,7 +217,7 @@ class EditEvent extends Component<EditEventProps, EditEventState> {
         startTime: new Date(),
         endTime: new Date(),
         postedDateTime: new Timestamp(0, 0),
-        attendees: [""]
+        attendees: [""],
       })
 
       // window.alert("Event Edit Successfully!")
