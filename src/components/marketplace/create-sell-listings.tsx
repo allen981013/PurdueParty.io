@@ -6,11 +6,21 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Redirect } from 'react-router-dom'
 import { Timestamp } from '@firebase/firestore';
-import { IconButton, Grid, Box } from '@mui/material';
+import { IconButton, Grid, Box, FormControl, InputLabel, Select, OutlinedInput, MenuItem } from '@mui/material';
 import { PasswordTwoTone } from '@mui/icons-material';
 import ReactModal from 'react-modal';
 import Dropzone from 'react-dropzone'
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 // Interface/type for sellListing State
 interface sellListingState {
@@ -34,6 +44,8 @@ interface sellListingProps {
 }
 
 class createSellListings extends Component<sellListingProps, sellListingState> {
+  types = ["Artwork", "Clothing", "Electronics", "Furniture", "Gaming", "Housing",
+    "Miscellaneous", "Music/Instruments", "Services", "Vehicles"];
 
   // Initialize state
   constructor(props: sellListingProps) {
@@ -68,18 +80,17 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
   }
 
   // General purpose state updater during form modification
-  handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      type: e.target.value
-    })
-  }
-
-  // General purpose state updater during form modification
   handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(typeof (e.target.value))
 
     this.setState({
       price: parseFloat(parseFloat(e.target.value).toFixed(2))
+    })
+  }
+
+  handleChangeType = (e: any) => {
+    this.setState({
+      type: e.target.value
     })
   }
 
@@ -95,8 +106,6 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
     console.log(typeof (e));
     console.log(e);
     console.log(this.state);
-
-
 
     if (e == undefined) {
       window.alert("Please enter a valid file with a .JPG, .PNG, .JPEG extension.")
@@ -128,7 +137,7 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
     else if (this.state.type === "") {
       // Pop modal for no type error
       console.log("Please select type from dropdown");
-      window.alert("Please enter a type of sell-listing. Example types:\nAutomotive\nClothing\nTechnology\nMusic\netc")
+      window.alert("Please enter a type of sell-listing. Example types:\nArtwork\nClothing\nGaming\nMusical\netc")
     }
     else if (isNaN(this.state.price)) { //
       // Pop modal for no price error
@@ -193,12 +202,24 @@ class createSellListings extends Component<sellListingProps, sellListingState> {
             <input type="text" value={this.state.description} id="description" onChange={this.handleDescriptionChange} />
           </div>
 
-          <h1>Enter the type of listing this is:</h1>
-          <div className="input-field">
-            <label htmlFor="type">Sell-Listing type: </label>
-            <input type="text" placeholder="What type of thing are you selling?"
-              value={this.state.type} id="type" onChange={this.handleTypeChange} />
-          </div>
+          <h1>Enter sell-listing type: </h1>
+          <FormControl sx={{ m: 1, width: 300 }}>
+            <InputLabel id="demo-simple-select-label">Type</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={this.state.type}
+              label="type"
+              onChange={this.handleChangeType}
+            >
+
+              {this.types.map((types) => {
+                return (
+                  <MenuItem value={types}>{types}</MenuItem>
+                )
+              })}
+            </Select>
+          </FormControl>
 
           <h1>Enter a price for your listing:</h1>
           <div className="input-field">

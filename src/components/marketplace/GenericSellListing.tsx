@@ -149,6 +149,10 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
             <div>
               <h3>{this.props.marketplace[0].title}</h3>
               <div className="container-card__body">
+                <p style={boldText}>List-Type</p>
+                <p>{this.props.marketplace[0].type}</p>
+              </div>
+              <div className="container-card__body">
                 <p style={boldText}>Sold By</p>
                 <p>{curUser.userName}</p>
               </div>
