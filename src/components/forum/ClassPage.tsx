@@ -270,14 +270,28 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
       <CardContent sx={{ textAlign: "left" }}>
         {
           students.map((student) =>
-            <Typography gutterBottom noWrap component="div" marginBottom="10px">
-              {student}
-            </Typography>
+            <Card sx={{ width: "100%", height: 40, marginBottom: "10px" }}>
+              <CardActionArea
+                component={Link}
+                to={"/users/" + student}
+                sx={{ display: "inline-flex", width: "100%", height: "100%" }}
+              >
+                <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "100%" }}>
+                  <Typography gutterBottom noWrap component="div">
+                    {student}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
           )
         }
       </CardContent>
 
     )
+  }
+
+  getName(student: string[], props: ClassPageProps) {
+
   }
 
   getSortingBar() {
