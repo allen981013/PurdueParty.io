@@ -52,7 +52,6 @@ export const forumMainPageSlice = createSlice({
 
 export const fetchPostsFromAllClasses = () => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
-    console.log("fetching all posts")
     // Build queries
     const db = getFirestore();
     var postsQueryPromise = db.collection("posts")
@@ -98,7 +97,6 @@ export const fetchPostsFromAllClasses = () => {
         poster: userName,
       }
     })
-    console.log({posts})
     dispatch(forumMainPageSlice.actions.fetchPostsFromAllClassesSuccess(posts))
   }
 }
@@ -106,7 +104,6 @@ export const fetchPostsFromAllClasses = () => {
 
 export const fetchPostsFromFollowedClasses = () => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
-    console.log("fetching followed posts")
     // Build queries
     const db = getFirestore();
     var postsQueryPromise = db.collection("posts")
@@ -152,7 +149,6 @@ export const fetchPostsFromFollowedClasses = () => {
         poster: userName,
       }
     })
-    console.log({posts})
     dispatch(forumMainPageSlice.actions.fetchPostsFromFollowedClassesSuccess(posts))
   }
 }

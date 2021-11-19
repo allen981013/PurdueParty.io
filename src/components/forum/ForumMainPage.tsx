@@ -3,10 +3,10 @@ import { connect } from "react-redux"
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
 import { compose } from "redux"
 import { AppDispatch, RootState } from '../../store';
-import { Box, CircularProgress, Grid, Tab, Tabs } from '@mui/material'
+import { Box, Button, Card, CardContent, CircularProgress, Grid, Tab, Tabs, Typography } from '@mui/material'
 import Classes from "./Classes";
-import { getPostCardComponent , Post } from "./ClassPage";
-import { Redirect } from "react-router-dom";
+import { getPostCardComponent, Post } from "./ClassPage";
+import { Link, Redirect } from "react-router-dom";
 import { fetchPostsFromAllClasses, fetchPostsFromFollowedClasses } from "./ForumMainPageSlice";
 
 interface ForumMainPageProps {
@@ -71,32 +71,51 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
   }
 
   getClassesSidebar() {
-    return <Box> Class sidebar </Box>
+    return (
+      <Box mt="80px">
+        {/* <Box> */}
+        <Card>
+          <Box
+            p="12px 16px"
+            sx={{ background: "#f3f4f6", color: "black", fontSize: "15px" }}
+          >
+            My classes
+          </Box>
+          <CardContent sx={{ textAlign: "center" }}>
+            <Typography noWrap variant="body2" component="div">
+              {"You haven't joined any classes yet."}
+            </Typography>
+            <Button component={Link} to="/forum/all/">Find classes</Button>
+          </CardContent>
+        </Card>
+      </Box >
+    )
   }
 
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     return (
       <Box width="1200px" p="40px 0px 40px" display="flex" flexDirection="column" alignSelf="center">
-        <Box width="100%" display="flex" justifyContent="space-between" alignItems="center">
-          <h1 style={{ fontWeight: 300, margin: "0px" }}>Timeline</h1>
-          <Tabs
-            value={this.state.currentTabIndex}
-            onChange={(e: any, newIndex: number) => this.setState({ currentTabIndex: newIndex })}
-          >
-            <Tab label="Followed" />
-            <Tab label="Global" />
-          </Tabs>
-        </Box>
-        {/* <Grid container> */}
-          {/* <Grid item xs={12} md={9}> */}
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={9}>
+            <Box width="100%" display="flex" justifyContent="space-between" alignItems="center">
+              <h1 style={{ fontWeight: 300, margin: "0px" }}>Timeline</h1>
+              <Tabs
+                value={this.state.currentTabIndex}
+                onChange={(e: any, newIndex: number) => this.setState({ currentTabIndex: newIndex })}
+              >
+                <Tab label="Followed" />
+                <Tab label="Global" />
+              </Tabs>
+            </Box>
             {this.state.currentTabIndex == 0 && this.getSubPageForPostsFromFollowedClasses()}
             {this.state.currentTabIndex == 1 && this.getSubPageForPostsFromAllClasses()}
             {/* {this.state.currentTabIndex == 2 && <Classes />} */}
-          {/* </Grid> */}
-          {/* <Grid item xs={12} md={3}> */}
-          {/* </Grid> */}
-        {/* </Grid> */}
+          </Grid>
+          <Grid item xs={12} md={3}>
+            {this.getClassesSidebar()}
+          </Grid>
+        </Grid>
       </Box>
     )
   }

@@ -26,10 +26,10 @@ interface LandingStates {
 class Landing extends Component<LandingProps, LandingStates> {
 
   livingPageItems = [
-    { title: "Gym", href: "living/gym" },
-    { title: "Laundry", href: "living/laundry" },
-    { title: "Bus", href: "living/bus" },
-    { title: "Dining", href: "living/dining" },
+    { title: "Gym", href: "/gym" },
+    { title: "Laundry", href: "/laundry" },
+    { title: "Bus", href: "/bus" },
+    { title: "Dining", href: "/dining" },
   ]
 
   constructor(props: LandingProps) {

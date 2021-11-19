@@ -59,23 +59,26 @@ class Classes extends Component<ClassesProps, ClassesState> {
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     return (
-      <Box 
-        pt="32px" 
-        width="1200px" 
-        alignSelf="center" 
+      <Box
+        pt="48px"
+        width="1200px"
+        alignSelf="center"
         display="flex"
         flexDirection="column"
         alignItems="center"
         flexGrow={1}
       >
-        <Button
-          component={Link}
-          to="create-class"
-          variant="outlined"
-          sx={{ color: "black", border: "1px solid black", alignSelf: "flex-end" }}
-        > Create
-        </Button>
-        <Grid container spacing={2} sx={{paddingTop: "16px"}}>
+        <Box display="flex" justifyContent="space-between" width="100%">
+          <h1 style={{ fontWeight: 300, margin: "0px" }}>Class List</h1>
+          <Button
+            component={Link}
+            to="create-class"
+            variant="outlined"
+            sx={{ color: "black", border: "1px solid black", alignSelf: "flex-end" }}
+          > Create
+          </Button>
+        </Box>
+        <Grid container spacing={2} sx={{ paddingTop: "32px" }}>
           {this.props.class != undefined && this.props.class.length != 0
             ?
             this.props.class.map((classes) => this.getClass(classes.title, classes.courseID))
