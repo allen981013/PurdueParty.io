@@ -3,7 +3,7 @@ import { Action, Dispatch } from 'redux'
 import { Timestamp } from 'firebase/firestore'
 import { RootState } from '../../store'
 import { EventsFetchParameter } from './EventsLanding'
-import HOST_OPTIONS  from './EventsLanding'
+import HOST_OPTIONS from './EventsLanding'
 
 // type for states returned by reducer
 export interface EventsLandingStatesRedux {
@@ -55,7 +55,7 @@ export const eventsLandingSlice = createSlice({
 export const fetchEvents = (fetchParameter: EventsFetchParameter) => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     const db = getFirestore()
-    const itemsPerPage = 12
+    const itemsPerPage = 24 
     // Prepare events query 
     var queryEventsPromise = db.collection("events")
     queryEventsPromise = queryEventsPromise

@@ -288,7 +288,6 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
       this.createNewVoteState(post)
     }
     index = this.state.voteStates.findIndex(element => element.ID === post.ID)
-
     var editCode: any = <div></div>;
     var commentCode: any = <div id="myComment" hidden>
       <input type="text" value={this.state.description} placeholder="Tell us more!" id="myComment"
@@ -335,9 +334,9 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     return (
       <Box display="inline" textAlign="left" padding="0px 4px 0px 4px">
         <Box display="flex" flexDirection="row" pb="4px">
-          {/* Note: We split the following text into separate tags in case we want to 
-            proceed with the idea of making username & time clickable` */}
           <Typography
+            component={Link}
+            to={"/forum/" + this.props.classID}
             variant="subtitle2"
             sx={{ color: "#000000", fontSize: "12px", fontWeight: "bold" }}
           >{this.props.classID}&nbsp;
@@ -460,7 +459,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
               },
             }}
           >
-            <MenuItem component={Link} to={"/classes/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID + "/edit"}>
+            <MenuItem component={Link} to={"/forum/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID + "/edit"}>
               {"Edit"}
             </MenuItem>
             <MenuItem onClick={() => this.handleDeleteComment(reply.ID)}>

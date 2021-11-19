@@ -111,7 +111,7 @@ export const loadLandingPageContent = () => {
             querySnapshot.forEach((doc: any) => {
                 payload.classes.push({
                     title: doc.data().title,
-                    href: "/classes/" + doc.data().courseID,
+                    href: "/forum/" + doc.data().courseID,
                 })
             });
         });
