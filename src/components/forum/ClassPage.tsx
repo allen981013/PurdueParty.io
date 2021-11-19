@@ -37,8 +37,12 @@ export interface ClassPageProps {
   classID: string;
   isDataFetched?: boolean;
   posts?: Post[];
+  users?: {
+    userName: string,
+    id: string
+  }[];
   classInfo?: {
-    title: string
+    title: string,
     description: string,
     department: string,
     instructorName: string,
@@ -264,12 +268,26 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
     )
   }
 
+
   getStudents(students: string[]) {
+    var nameList = new Array()
+    var usersList = this.props.users
+
+    if (students.length != 0 && usersList.length != 0) {
+      for (var index1 in usersList) {
+        for (var index2 in students) {
+          if (usersList[index1].id == students[index2]) {
+            nameList.push(usersList[index1].userName)
+          }
+        }
+      }
+    }
+
     return (
 
       <CardContent sx={{ textAlign: "left" }}>
         {
-          students.map((student) =>
+          nameList.map((student) =>
             <Card sx={{ width: "100%", height: 40, marginBottom: "10px" }}>
               <CardActionArea
                 component={Link}
@@ -288,10 +306,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
       </CardContent>
 
     )
-  }
-
-  getName(student: string[], props: ClassPageProps) {
-
   }
 
   getSortingBar() {
@@ -437,6 +451,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     auth: state.firebase.auth,
     posts: state.classPage.posts,
+    users: state.firestore.ordered.users,
     classInfo: classInfo,
     isDataFetched: state.classPage.posts !== undefined && classes !== undefined,
   }
@@ -482,7 +497,8 @@ export default compose<React.ComponentType<ClassPageProps>>(
         ],
         storeAs: "classPageClasses",
         limit: 1,
-      }
+      },
+      { collection: 'users' }
     ]
   })
 )(ClassPage)
