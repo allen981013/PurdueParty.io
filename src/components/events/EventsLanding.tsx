@@ -124,7 +124,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
   }
 
   handleResetFiltersClick = (e: any) => {
-    this.setState({ startDayRadioValue: "", myEventsChecked: false })
+    this.setState({ startDayRadioValue: "", myEventsChecked: false, startTime: new Date() })
     this.fetchParameter.startTimeLowerBound = new Date()
     this.fetchParameter.startTimeUpperBound = undefined
     this.fetchParameter.host = undefined;
@@ -148,7 +148,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
               height="140"
               image={event.imageUrl}
             />
-            <CardContent sx={{ display: "box", textAlign: "left"}}>
+            <CardContent sx={{ display: "box", textAlign: "left" }}>
               <Typography gutterBottom noWrap component="div">
                 {event.title}
               </Typography>
@@ -203,7 +203,6 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
         <Grid
           container
           spacing={3}
-          sx={{ maxWidth: "100%" }}
         >
           <Grid
             item
@@ -211,8 +210,8 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
             md={3}
           >
             <Box display="flex" flexDirection="column" maxWidth="100%">
-              <Typography style={{ color: "#00000099", alignSelf: "flex-start" }}>Filter by dates</Typography>
-              <FormControl component="fieldset" sx={{ padding: "12px 0px 12px" }}>
+              <Typography style={{ color: "#00000099", alignSelf: "flex-start" }} variant="body1">Filter by dates</Typography>
+              <FormControl component="fieldset" sx={{ padding: "4px 0px 12px" }}>
                 <RadioGroup
                   aria-label="gender"
                   name="controlled-radio-buttons-group"
@@ -223,21 +222,27 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
                     value={DATE_FILTERING_OPTIONS.tomorrow}
                     control={<Radio />}
                     checked={this.state.startDayRadioValue === DATE_FILTERING_OPTIONS.tomorrow}
-                    label="Tomorrow"
+                    label={
+                      <Typography style={{ color: "#00000099" }} variant="body2">Tomorrow</Typography>
+                    }
                     sx={{ color: "#00000099 !important" }}
                   />
                   <FormControlLabel
                     value={DATE_FILTERING_OPTIONS.thisWeekend}
                     control={<Radio />}
                     checked={this.state.startDayRadioValue === DATE_FILTERING_OPTIONS.thisWeekend}
-                    label="This Weekend"
+                    label={
+                      <Typography style={{ color: "#00000099" }} variant="body2">This weekend</Typography>
+                    }
                     sx={{ color: "#00000099 !important" }}
                   />
                   <FormControlLabel
                     value={DATE_FILTERING_OPTIONS.startingAfter}
                     control={<Radio />}
                     checked={this.state.startDayRadioValue === DATE_FILTERING_OPTIONS.startingAfter}
-                    label="Starting After"
+                    label={
+                      <Typography style={{ color: "#00000099" }} variant="body2">Starting after</Typography>
+                    }
                     sx={{ color: "#00000099 !important" }}
                   />
                 </RadioGroup>
@@ -251,10 +256,20 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
                 renderInput={(props, openCalendar, closeCalendar) => <input {...props} readOnly />}
                 timeFormat={false}
               />
-
-              <Typography style={{ color: "#00000099", alignSelf: "flex-start", padding: "20px 0px 12px" }}>Filter by Host</Typography>
+              <Typography style={{ color: "#00000099", alignSelf: "flex-start", padding: "20px 0px 4px" }}>Filter by host</Typography>
               <FormGroup>
-                <FormControlLabel control={<Checkbox onChange={this.handleHostChange} checked={this.state.myEventsChecked} />} label="My Events" />
+                <FormControlLabel
+                  sx={{ color: "#00000099" }}
+                  control={
+                    <Checkbox
+                      onChange={this.handleHostChange}
+                      checked={this.state.myEventsChecked}
+                    />
+                  }
+                  label={
+                    <Typography style={{ color: "#00000099" }} variant="body2">My events</Typography>
+                  }
+                />
               </FormGroup>
 
               <Button

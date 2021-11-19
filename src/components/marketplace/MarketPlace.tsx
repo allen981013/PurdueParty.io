@@ -55,14 +55,11 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
   }
 
   getCard(title: string, price: number, type: string, id: string, imageURL: string) {
-
-    //this.getImageDownload(imageURL);
     console.log(imageURL);
     if (this.state.type == "None" || this.state.type == type) {
       return (
         <Grid
           item
-          id="image-container"
           xs={12}
           md={3}
         >
@@ -89,51 +86,49 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
   }
 
   render() {
-    //console.log(this.props.marketplace);
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     return (
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Box
-            display="flex"
-            alignSelf="center"
-            flexDirection="column"
-            alignItems="center"
-            pt="8px"
-            width="100%"
-            maxWidth="1200px"
-            padding="48px 16px"
-          >
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              width="100%"
-              pb="16px"
-            >
-              <h1 style={{ fontWeight: 300, margin: "0px" }}>MarketPlace</h1>
-              <Button
-                component={Link}
-                to="marketplace/create-listing/"
-                variant="outlined"
-                sx={{ color: "black", border: "1px solid black" }}
-              > Create
-              </Button>
-            </Box>
-          </Box></div>
-
+      <Box
+        display="flex"
+        alignSelf="center"
+        flexDirection="column"
+        alignItems="center"
+        pt="8px"
+        width="100%"
+        maxWidth="1200px"
+        padding="48px 16px"
+      >
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          width="100%"
+          pb="32px"
+        >
+          <h1 style={{ fontWeight: 300, margin: "0px" }}>MarketPlace</h1>
+          <Button
+            component={Link}
+            to="marketplace/create-listing/"
+            variant="outlined"
+            sx={{ color: "black", border: "1px solid black" }}
+          > Create
+          </Button>
+        </Box>
         <Grid
           container
           spacing={3}
-          sx={{ maxWidth: "100%" }}
         >
           <Grid
             item
             xs={12}
             md={3}
           >
-            <Box display="flex" flexDirection="column" maxWidth="100%">
-              <Typography style={{ color: "#00000099", alignSelf: "flex-start", padding: "0px 120px 12px" }}>Filter by type</Typography>
-              <FormControl sx={{ m: 1, width: 300 }}>
+            <Box display="flex" flexDirection="column">
+              <Typography 
+                style={{ color: "#00000099", alignSelf: "flex-start", padding: "0px 0px 12px" }}
+              >
+                Filter by type
+              </Typography>
+              <FormControl sx={{ width: "100%"}}>
                 <InputLabel id="demo-simple-select-label">Type</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -151,14 +146,14 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
                   <MenuItem value={"None"}>None</MenuItem>
                 </Select>
               </FormControl>
-
             </Box>
           </Grid>
-
-
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
-            <Box id="cropped-purdue-img" />
-            <Grid container className="sections" spacing={2} sx={{ padding: "32px 16px" }}>
+          <Grid
+            item
+            xs={12}
+            md={9}
+          >
+            <Grid container spacing={2} >
               {this.props.marketplace != undefined && this.props.marketplace.length != 0
                 ?
                 this.props.marketplace.map((sellListing) => this.getCard(sellListing.title, sellListing.price, sellListing.type, sellListing.id, sellListing.image))
@@ -166,9 +161,9 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
                 <div>No SellListings Found</div>
               }
             </Grid>
-          </Box>
+          </Grid>
         </Grid>
-      </div>
+      </Box>
     )
   }
 }
