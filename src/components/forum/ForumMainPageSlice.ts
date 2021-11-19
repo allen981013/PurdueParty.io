@@ -81,9 +81,7 @@ export const fetchJoinedClasses = () => {
     const db = getFirestore();
     var classesQueryPromises = classIDs.map(id_ => db.collection("classes").where("courseID", "==", id_).get())
     var classesDocSnapshots = (await Promise.all(classesQueryPromises))
-    console.log("first: ", { classesDocs: classesDocSnapshots })
     classesDocSnapshots = classesDocSnapshots.map(docsSnapshot => docsSnapshot.docs).flat()
-    console.log({ classesDocs: classesDocSnapshots })
     // Transform classes into the correct schema
     var classes: Class[] = classesDocSnapshots.map((docSnapshot: any): Class => {
       let class_ = docSnapshot.data()
@@ -151,14 +149,18 @@ export const fetchAllClassesPosts = () => {
 
 export const fetchJoinedClassesPosts = () => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
+    // TODO: Get class IDs
+    let classIDs = ["CS407"]
     // Build queries
     const db = getFirestore();
-    var postsQueryPromise = db.collection("posts")
+    var postsQueryPromises = classIDs.map(id_ => db.collection("posts")
+      .where("classID", "==", id_)
       .where("ancestorsIDs", "==", [])
-    // TODO: Fetch posts based on joined class IDs
-    var postsDocSnapshots = await postsQueryPromise.get()
+      .get())
+    var postsQuerySnapshots = (await Promise.all(postsQueryPromises))
+    var postsDocSnapshots = postsQuerySnapshots.map(querySnapshot => querySnapshot.docs).flat()
     // Transform posts into the correct schema
-    var posts: Post[] = postsDocSnapshots.docs.map((docSnapshot: any): Post => {
+    var posts: Post[] = postsDocSnapshots.map((docSnapshot: any): Post => {
       let post = docSnapshot.data()
       return {
         title: post.title,
