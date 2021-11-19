@@ -4,6 +4,7 @@ import { firebaseStorageRef } from '../..';
 import { authIsReady } from 'react-redux-firebase';
 import { valueContainerCSS } from 'react-select/dist/declarations/src/components/containers';
 import { deleteFromStorage } from './authActions'
+import { arrayRemove, arrayUnion } from 'firebase/firestore';
 
 // Need to explicitly define these types at some point
 export const addEvent = (newEvent: any) => {
@@ -240,5 +241,43 @@ export const deleteEvent = (eventToDelete: any) => {
                 dispatch({ type: 'DELETE_EVENT_ERROR', err })
             });;
         })
+    }
+}
+
+export const rsvpEvent = (event: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        const firebase = getFirebase();
+        console.log(event);
+        var docref = db.collection('events').doc(event);
+        const user = firebase.auth().currentUser;
+
+        docref.update({
+            attendees: arrayUnion(getState().firebase.auth.uid),
+        }).then(() => {
+            dispatch({ type: 'RSVP_EVENT_SUCCESS' })
+            window.alert("RSVP Added Successfully!")
+        }).catch((err: any) => {
+            dispatch({ type: 'RSVP_EVENT_ERROR', err })
+        });;
+    }
+}
+
+export const removeRSVPEvent = (event: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        const firebase = getFirebase();
+        console.log(event);
+        var docref = db.collection('events').doc(event);
+        const user = firebase.auth().currentUser;
+
+        docref.update({
+            attendees: arrayRemove(getState().firebase.auth.uid),
+        }).then(() => {
+            dispatch({ type: 'RSVP_REMOVE_EVENT_SUCCESS' })
+            window.alert("RSVP Removed Successfully!")
+        }).catch((err: any) => {
+            dispatch({ type: 'RSVP_REMOVE_EVENT_ERROR', err })
+        });;
     }
 }

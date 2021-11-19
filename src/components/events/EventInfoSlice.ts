@@ -20,6 +20,7 @@ export interface EventInfoStatesRedux {
     categories: string[],
     perks: string[],
     imageUrl: string,
+    attendees: string[],
   },
   host: {
     name: string,
@@ -44,6 +45,7 @@ const initState: EventInfoStatesRedux = {
     categories: ["social", "event"],
     perks: ["Free food"],
     imageUrl: "https://firebasestorage.googleapis.com/v0/b/purdueparty-44444.appspot.com/o/events%2Fdefault.jpg?alt=media&token=1b1656e4-8f07-4f31-8f29-49a5f50bbe7c",
+    attendees: [""],
   },
   host: {
     name: "My name",
@@ -118,6 +120,7 @@ export const fetchEventInfo = (eventID: string) => {
         var ownerID = doc.data().ownerID
         var orgID = doc.data().orgID
         var imageUrl = doc.data().image
+        var attendees = doc.data().attendees
         // Query host info
         var hostName: string | undefined = undefined
         var hostHref: string | undefined = undefined
@@ -154,6 +157,7 @@ export const fetchEventInfo = (eventID: string) => {
                 imageUrl: imageUrl,
                 perks: perks,
                 categories: categories,
+                attendees: attendees,
               },
               host: {
                 name: hostName,

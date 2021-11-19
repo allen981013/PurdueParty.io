@@ -9,13 +9,14 @@ import { Link } from 'react-router-dom';
 import './MarketPlace.css';
 import {
   Box, Button, CircularProgress, Grid, Card, CardActionArea,
-  CardMedia, CardContent, Typography
+  CardMedia, CardContent, Typography, FormControl, RadioGroup, FormControlLabel, Radio, FormGroup, Checkbox, InputLabel, Select, MenuItem
 } from '@mui/material'
 
 
 // Interface/type for Marketplace State
 interface MarketPlaceState {
-  imageURL: string
+  imageURL: string,
+  type: string,
 }
 
 // Interface/type for MarketPlace Props
@@ -36,83 +37,133 @@ interface MarketPlaceProps {
 }
 
 class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
+  types = ["Artwork", "Clothing", "Electronics", "Furniture", "Gaming", "Housing",
+    "Miscellaneous", "Music/Instruments", "Services", "Vehicles"];
 
   constructor(props: MarketPlaceProps) {
     super(props);
     this.state = {
-      imageURL: ""
+      imageURL: "",
+      type: "None",
     }
   }
 
-  getCard(title: string, price: number, id: string, imageURL: string) {
+  handleChangeType = (e: any) => {
+    this.setState({
+      type: e.target.value
+    })
+  }
 
-    //this.getImageDownload(imageURL);
+  getCard(title: string, price: number, type: string, id: string, imageURL: string) {
     console.log(imageURL);
-    return (
-      <Grid
-        item
-        id="image-container"
-        xs={12}
-        md={3}
-      >
-        <Card>
-          <CardActionArea component={Link} to={"/sellListing/" + id}>
-            <CardMedia
-              component="img"
-              height="140"
-              image={imageURL}
-            />
-            <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-              <Typography gutterBottom noWrap component="div">
-                {title}
-              </Typography>
-              <Typography noWrap variant="body2" color="text.secondary" component="div">
-                {"$" + price}
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid>
-    )
+    if (this.state.type == "None" || this.state.type == type) {
+      return (
+        <Grid
+          item
+          xs={12}
+          md={3}
+        >
+          <Card>
+            <CardActionArea component={Link} to={"/sellListing/" + id}>
+              <CardMedia
+                component="img"
+                height="140"
+                image={imageURL}
+              />
+              <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                <Typography gutterBottom noWrap component="div">
+                  {title}
+                </Typography>
+                <Typography noWrap variant="body2" color="text.secondary" component="div">
+                  {"$" + price + "    -   " + type}
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
+      )
+    }
   }
 
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     return (
-          <Box
-            display="flex"
-            alignSelf="center"
-            flexDirection="column"
-            alignItems="center"
-            pt="8px"
-            width="100%"
-            maxWidth="1200px"
-            padding="48px 16px"
+      <Box
+        display="flex"
+        alignSelf="center"
+        flexDirection="column"
+        alignItems="center"
+        pt="8px"
+        width="100%"
+        maxWidth="1200px"
+        padding="48px 16px"
+      >
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          width="100%"
+          pb="32px"
+        >
+          <h1 style={{ fontWeight: 300, margin: "0px" }}>MarketPlace</h1>
+          <Button
+            component={Link}
+            to="marketplace/create-listing/"
+            variant="outlined"
+            sx={{ color: "black", border: "1px solid black" }}
+          > Create
+          </Button>
+        </Box>
+        <Grid
+          container
+          spacing={3}
+        >
+          <Grid
+            item
+            xs={12}
+            md={3}
           >
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              width="100%"
-              pb="32px"
-            >
-              <h1 style={{ fontWeight: 300, margin: "0px" }}>MarketPlace</h1>
-              <Button
-                component={Link}
-                to="marketplace/create-listing/"
-                variant="outlined"
-                sx={{ color: "black", border: "1px solid black" }}
-              > Create
-              </Button>
+            <Box display="flex" flexDirection="column">
+              <Typography 
+                style={{ color: "#00000099", alignSelf: "flex-start", padding: "0px 0px 12px" }}
+              >
+                Filter by type
+              </Typography>
+              <FormControl sx={{ width: "100%"}}>
+                <InputLabel id="demo-simple-select-label">Type</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={this.state.type}
+                  label="type"
+                  onChange={this.handleChangeType}
+                >
+
+                  {this.types.map((types) => {
+                    return (
+                      <MenuItem value={types}>{types}</MenuItem>
+                    )
+                  })}
+                  <MenuItem value={"None"}>None</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={9}
+          >
             <Grid container spacing={2} >
               {this.props.marketplace != undefined && this.props.marketplace.length != 0
                 ?
-                this.props.marketplace.map((sellListing) => this.getCard(sellListing.title, sellListing.price, sellListing.id, sellListing.image))
+                this.props.marketplace.map((sellListing) => this.getCard(sellListing.title, sellListing.price, sellListing.type, sellListing.id, sellListing.image))
                 :
                 <div>No SellListings Found</div>
               }
             </Grid>
-        </Box>
+          </Grid>
+        </Grid>
+      </Box>
     )
   }
 }

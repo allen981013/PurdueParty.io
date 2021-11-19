@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 import { firebaseStorageRef } from '../..'
 import { AppDispatch, RootState } from '../../store'
 import { EventInfoStatesRedux, fetchEventInfo } from './EventInfoSlice'
-import { deleteEvent } from '../../store/actions/eventActions'
+import { deleteEvent, removeRSVPEvent, rsvpEvent } from '../../store/actions/eventActions'
 
 interface EventInfoProps {
   eventID: string;
@@ -19,6 +19,8 @@ interface EventInfoProps {
   auth: any,
   fetchEventInfo: (eventID: string) => void,
   deleteEvent: (eventID: string) => void,
+  rsvpEvent: (eventID: string) => void,
+  removeRSVPEvent: (eventID: string) => void,
 }
 
 interface EventInfoStates {
@@ -31,7 +33,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
     super(props)
 
     this.state = {
-      deleteEventError: true
+      deleteEventError: true,
     };
   }
 
@@ -68,6 +70,20 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
     // User said no, do nothing
   }
 
+  handleRSVP = (event: any) => {
+    event.preventDefault();
+    console.log("RSVP TO EVENT");
+    this.props.rsvpEvent(this.props.eventID);
+    //window.location.reload();
+  }
+
+  handleRemoveRSVP = (event: any) => {
+    event.preventDefault();
+    console.log("RSVP TO EVENT");
+    this.props.removeRSVPEvent(this.props.eventID);
+    //window.location.reload();
+  }
+
   componentDidMount() {
     this.props.fetchEventInfo(this.props.eventID)
   }
@@ -83,6 +99,25 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
       return (
         <Box pt="32px">Event not found</Box>
       )
+    var rsvpCode: any = <div></div>;
+    if (this.props.event.attendees.indexOf(auth.uid) < 0){
+      rsvpCode = <Button 
+      // variant="outlined"
+      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      onClick={this.handleRSVP}
+      >
+    RSVP
+    </Button>
+    }
+    else {
+      rsvpCode = <Button 
+      // variant="outlined"
+      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      onClick={this.handleRemoveRSVP}
+      >
+    Remove RSVP
+    </Button>
+    }
     return (
       <Box
         display="flex"
@@ -184,6 +219,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                   {this.props.event.location}
                 </Box>
               </Box>
+              {rsvpCode}
               <Box
                 display="flex"
                 flexDirection="column"
@@ -245,7 +281,9 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
     fetchEventInfo: (eventID: string) => dispatch(fetchEventInfo(eventID)),
-    deleteEvent: (eventID: string) => dispatch(deleteEvent(eventID))
+    deleteEvent: (eventID: string) => dispatch(deleteEvent(eventID)),
+    rsvpEvent: (eventID: string) => dispatch(rsvpEvent(eventID)),
+    removeRSVPEvent: (eventID: string) => dispatch(removeRSVPEvent(eventID))
   }
 }
 
