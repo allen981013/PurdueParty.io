@@ -14,7 +14,8 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 import StarRateIcon from '@mui/icons-material/StarRate';
 import { classPageSlice, fetchClassPosts, FetchCriteria } from '../../components/forum/ClassPageSlice';
 import { actionTypes } from 'redux-firestore';
-import { joinClass } from '../../store/actions/postActions';
+import { joinClass, updateUserClass } from '../../store/actions/postActions';
+import { ControlCameraSharp } from '@mui/icons-material';
 
 export interface Post {
   title: string;
@@ -30,6 +31,8 @@ interface ClassPageState {
   sortBy: FetchCriteria["sortBy"];
   students: string[];
   ID: string;
+  classJoin: string[];
+  currID: string;
 }
 
 export interface ClassPageProps {
@@ -39,7 +42,8 @@ export interface ClassPageProps {
   posts?: Post[];
   users?: {
     userName: string,
-    id: string
+    id: string,
+    classJoin: string[]
   }[];
   classInfo?: {
     title: string,
@@ -54,6 +58,7 @@ export interface ClassPageProps {
   fetchClassPosts?: (classID: string, fetchCriteria: FetchCriteria) => void;
   clearFetchedDocs?: () => void;
   joinClass?: (state: ClassPageState) => void;
+  updateUserClass?: (state: ClassPageState) => void;
 }
 
 export function getPostCardComponent(post: Post) {
@@ -131,7 +136,9 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
     this.state = {
       sortBy: "RECENCY",
       students: [],
-      ID: ""
+      ID: "",
+      classJoin: [],
+      currID: ""
     };
   }
 
@@ -148,13 +155,35 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
     this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
   }
 
-
   handleJoin = (event: any) => {
     var action = false;
+    var list = new Array();
+    var joinList = new Array();
+
+    var userList = this.props.users
+    for (var index in userList) {
+      if (userList[index].id == this.props.auth.uid) {
+        if (userList[index].classJoin != undefined && userList[index].classJoin.length != 0)
+          joinList = userList[index].classJoin.slice()
+      }
+    }
+
+    if (joinList != undefined && joinList.length != 0) {
+      if (joinList.includes(this.props.classInfo.ID)) {
+        joinList.forEach((element, index) => {
+          if (element == this.props.classInfo.ID) joinList.splice(index, 1)
+        });
+      }
+      else {
+        joinList.push(this.props.classInfo.ID)
+      }
+    }
+    else {
+      joinList.push(this.props.classInfo.ID)
+    }
 
     if (this.props.classInfo.students != undefined && this.props.classInfo.students.length != 0) {
       if (this.props.classInfo.students.includes(this.props.auth.uid)) {
-        var list = new Array()
         list = list.concat(this.props.classInfo.students)
         list.forEach((element, index) => {
           if (element == this.props.auth.uid) list.splice(index, 1)
@@ -162,7 +191,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         action = false
       }
       else {
-        var list = new Array()
         if (this.props.classInfo.students == undefined) {
           list.push(this.props.auth.uid)
         }
@@ -174,7 +202,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
       }
     }
     else {
-      var list = new Array()
       if (this.props.classInfo.students == undefined) {
         list.push(this.props.auth.uid)
       }
@@ -187,9 +214,12 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
 
     this.setState({
       students: list,
-      ID: this.props.classInfo.ID
+      ID: this.props.classInfo.ID,
+      classJoin: joinList,
+      currID: this.props.auth.uid
     }, () => {
       this.props.joinClass(this.state)
+      this.props.updateUserClass(this.state)
     })
 
     if (action) {
@@ -335,7 +365,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
             exclusive
             onChange={(_, newVal: FetchCriteria["sortBy"]) => {
               if (newVal === null) return
-              console.log(newVal)
               this.setState({ sortBy: newVal })
               this.fetchCriteria.sortBy = newVal
               this.props.fetchClassPosts(this.props.classID, this.fetchCriteria)
@@ -444,6 +473,7 @@ const mapStateToProps = (state: RootState) => {
       }
     })[0]
     : undefined
+
   // Return mapped redux states  
   return {
     auth: state.firebase.auth,
@@ -455,8 +485,10 @@ const mapStateToProps = (state: RootState) => {
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ClassPageProps) => {
+
   return {
     joinClass: (classInfo: any) => dispatch(joinClass(classInfo)),
+    updateUserClass: (classInfo: any) => dispatch(updateUserClass(classInfo)),
     fetchClassPosts: (classID: string, fetchCriteria: FetchCriteria) => dispatch(
       fetchClassPosts(classID, fetchCriteria)
     ),
@@ -495,7 +527,7 @@ export default compose<React.ComponentType<ClassPageProps>>(
         storeAs: "classPageClasses",
         limit: 1,
       },
-      { collection: 'users' }
+      { collection: 'users' },
     ]
   })
 )(ClassPage)

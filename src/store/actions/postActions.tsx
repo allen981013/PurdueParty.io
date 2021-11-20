@@ -306,3 +306,20 @@ export const joinClass = (newClass: any) => {
         });
     }
 }
+
+export const updateUserClass = (userClass: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        var docref = db.collection('users').doc(userClass.currID);
+        docref.update({
+            classJoin: userClass.classJoin
+        }).then((newDocRef: any) => {
+            newDocRef.update({
+                ID: newDocRef.id
+            })
+            dispatch({ type: 'JOIN_CLASS_SUCCESS', newDocRef });
+        }).catch((err: any) => {
+            dispatch({ type: 'JOIN_CLASS_ERR', err });
+        });
+    }
+}
