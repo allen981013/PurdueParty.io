@@ -76,7 +76,9 @@ export const forumMainPageSlice = createSlice({
 export const fetchJoinedClasses = () => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     // TODO: Get joined classIDs
-    let classIDs: string[] = ["CS407"]
+    let classIDs: string[] = getState().auth.lastCheckedJoinedClassIDs
+    classIDs = (classIDs != null) ? classIDs : []
+    console.log("classes = ", classIDs)
     // Build queries
     const db = getFirestore();
     var classesQueryPromises = classIDs.map(id_ => db.collection("classes").where("courseID", "==", id_).get())
@@ -150,7 +152,9 @@ export const fetchAllClassesPosts = () => {
 export const fetchJoinedClassesPosts = () => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     // TODO: Get class IDs
-    let classIDs = ["CS407"]
+    let classIDs: string[] = getState().auth.lastCheckedJoinedClassIDs
+    console.log("posts = ", classIDs)
+    classIDs = (classIDs != null) ? classIDs : []
     // Build queries
     const db = getFirestore();
     var postsQueryPromises = classIDs.map(id_ => db.collection("posts")

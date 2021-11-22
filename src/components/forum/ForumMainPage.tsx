@@ -120,12 +120,12 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
   getSubPageForPosts(posts?: Post[]) {
     if (posts == null)
       return (
-        <Box pt="32px"><CircularProgress /></Box>
+        <Box pt="192px"><CircularProgress /></Box>
       )
     return (
       <Box pt="32px">
         {posts.length == 0
-          && "No posts have been created yet"}
+          && <Box pt="192px">No posts have been created yet</Box>}
         {posts.length != 0
           && posts.map((post) => this.getPostComponent(post))}
       </Box>
@@ -151,7 +151,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
             {this.props.joinedClasses
               && this.props.joinedClasses.length == 0
               && <Typography noWrap variant="body2" sx={{ padding: "16px 0px" }}>
-                "You haven't joined any classes yet."
+                You haven't joined any classes yet.
               </Typography>}
             {this.props.joinedClasses
               && this.props.joinedClasses.length != 0

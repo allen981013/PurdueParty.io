@@ -4,14 +4,15 @@ type AuthState = {
   authError?: string,
   lastCheckedUsername?: string,
   lastCheckedIsLoggedIn: boolean,
+  lastCheckedJoinedClassIDs: string[],
 }
 
 const initState: AuthState = {  // NOTE: We need this type annotation so that the RootState type can be inferred properly. 
   authError: undefined,       // Perhaps because initState prop, authError, can assume two types (string and undefined).
-  lastCheckedUsername: "guest",
+  lastCheckedUsername: null,
   lastCheckedIsLoggedIn: false,
+  lastCheckedJoinedClassIDs: [],
 };
-
 
 type Action = {
   type: string,
@@ -27,6 +28,7 @@ const authReducer = (state = initState, action: Action): AuthState => {
         ...state,
         lastCheckedUsername: action.payload.lastCheckedUsername,
         lastCheckedIsLoggedIn: true,
+        lastCheckedJoinedClassIDs: action.payload.lastCheckedJoinedClassIDs,
         authError: undefined
       }
     case 'LOGIN_ERROR':
@@ -40,6 +42,7 @@ const authReducer = (state = initState, action: Action): AuthState => {
       return {
         ...state,
         lastCheckedUsername: undefined,
+        lastCheckedJoinedClassIDs: null,
         lastCheckedIsLoggedIn: false,
       };
     case 'SIGNOUT_ERROR':
@@ -76,6 +79,7 @@ const authReducer = (state = initState, action: Action): AuthState => {
       return {
         ...state,
         lastCheckedUsername: action.payload.lastCheckedUsername,
+        lastCheckedJoinedClassIDs: action.payload.lastCheckedJoinedClassIDs,
         lastCheckedIsLoggedIn: action.payload.lastCheckedIsLoggedIn
       }
     case 'RESET_PASS_SUCCESS':
