@@ -28,7 +28,7 @@ class Landing extends Component<LandingProps, LandingStates> {
   livingPageItems = [
     { title: "Gym", href: "/gym" },
     { title: "Laundry", href: "/laundry" },
-    { title: "Bus", href: "/bus" },
+    { title: "Bus", href: "/transportation" },
     { title: "Dining", href: "/dining" },
   ]
 

@@ -159,7 +159,6 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
     var action = false;
     var list = new Array();
     var joinList = new Array();
-
     var userList = this.props.users
     for (var index in userList) {
       if (userList[index].id == this.props.auth.uid) {
@@ -169,17 +168,17 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
     }
 
     if (joinList != undefined && joinList.length != 0) {
-      if (joinList.includes(this.props.classInfo.ID)) {
+      if (joinList.includes(this.props.classInfo.classID)) {
         joinList.forEach((element, index) => {
-          if (element == this.props.classInfo.ID) joinList.splice(index, 1)
+          if (element == this.props.classInfo.classID) joinList.splice(index, 1)
         });
       }
       else {
-        joinList.push(this.props.classInfo.ID)
+        joinList.push(this.props.classInfo.classID)
       }
     }
     else {
-      joinList.push(this.props.classInfo.ID)
+      joinList.push(this.props.classInfo.classID)
     }
 
     if (this.props.classInfo.students != undefined && this.props.classInfo.students.length != 0) {
@@ -467,7 +466,7 @@ const mapStateToProps = (state: RootState) => {
         department: class_.department,
         instructorName: class_.instructorName,
         instructorEmail: class_.profEmail,
-        classID: class_.classID,
+        classID: class_.courseID,
         ID: class_.ID,
         students: class_.students
       }

@@ -7,7 +7,7 @@ import { firebaseStorageRef } from '../..';
 export const refreshUserData = () => {
     return (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
         const userId = getState().firebase.auth.uid
-        var payload: any = { lastCheckedUsername: undefined, lastCheckedIsLoggedIn: false }
+        var payload: any = { lastCheckedUsername: undefined, lastCheckedIsLoggedIn: false, lastCheckedJoinedClassIDs: null }
         if (!userId) {
             dispatch({ type: 'USER_DATA_REFRESHED', payload: payload })
             return
@@ -16,10 +16,13 @@ export const refreshUserData = () => {
         const db = getFirestore()
         db.collection("users").doc(userId).get()
             .then((doc: any) => {
-                payload = { lastCheckedUsername: doc.data().userName, lastCheckedIsLoggedIn: true }
+                payload = { 
+                  lastCheckedUsername: doc.data().userName, 
+                  lastCheckedJoinedClassIDs: doc.data().classJoin,
+                  lastCheckedIsLoggedIn: true 
+                }
                 dispatch({ type: 'USER_DATA_REFRESHED', payload: payload })
             });
-
     }
 }
 

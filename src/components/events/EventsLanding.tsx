@@ -305,7 +305,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
                 Load more
               </Button>
             }
-            {this.props.isEventsFetched && this.props.events.length == 0 && <div>No events found</div>}
+            {this.props.isEventsFetched && this.props.events.length == 0 && <Box pt="160px">No events found</Box>}
             {!this.props.isEventsFetched && <CircularProgress />}
           </Grid>
         </Grid>
