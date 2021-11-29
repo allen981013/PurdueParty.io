@@ -33,6 +33,7 @@ import EditClub from './components/clubs/EditClub';
 import DiningLanding from './components/dining/DiningLanding';
 import DiningInfo from './components/dining/DiningInfo';
 import BusInfo from './components/transportation/BusInfo';
+import Gym from './components/gym/Gym';
 
 
 import SearchProfiles from './components/profile/SearchProfiles';
@@ -53,6 +54,7 @@ function App() {
           <Route exact path='/marketplace' component={MarketPlace} />
           <Route path='/marketplace/create-listing' component={createSellListing} />
           <Route path='/sellListing/:itemID' component={GenericSellListing} />
+          <Route path='/gym' component={Gym} />
           <Route path='/events/create' component={CreateEvent} />
           <Route path='/events/:eventID' render={({ match }) => {
             return <EventInfo eventID={match.params.eventID} />
