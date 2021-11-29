@@ -8,10 +8,11 @@ import { combineReducers } from 'redux';
 import { landingSlice } from '../../components/landing/LandingSlice';
 import { eventInfoSlice } from '../../components/events/EventInfoSlice';
 import { eventsLandingSlice } from '../../components/events/EventsLandingSlice';
-import profileReducer  from './profileReducer';
+import profileReducer from './profileReducer';
 import { threadPageSlice } from '../../components/forum/ThreadPageSlice';
 import { classPageSlice } from '../../components/forum/ClassPageSlice';
 import { clubsPageSlice } from '../../components/clubs/ClubsPageSlice';
+import { gymSlice } from '../../components/gym/GymSlice';
 import clubReducer from './clubReducer';
 import diningReducer from './diningReducer';
 import { forumMainPageSlice } from '../../components/forum/ForumMainPageSlice';
@@ -32,7 +33,8 @@ const rootReducer = combineReducers({
     classPage: classPageSlice.reducer,
     club: clubReducer,
     clubsPage: clubsPageSlice.reducer,
-    dining: diningReducer
+    dining: diningReducer,
+    gym: gymSlice.reducer,
 });
 
 export default rootReducer;

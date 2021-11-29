@@ -144,7 +144,14 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
             My classes
           </Box>
           <CardContent
-            sx={{ textAlign: this.props.joinedClasses && this.props.joinedClasses.length > 0 ? "left" : "center" }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: this.props.joinedClasses && this.props.joinedClasses.length > 0 ?
+                "flex-start" :
+                "center",
+
+            }}
           >
             {!this.props.joinedClasses
               && <Box p="32px"><CircularProgress /></Box>}
@@ -160,7 +167,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
                   component={Link}
                   to={class_.href}
                   variant="body2"
-                  sx={{ color: "#00000099", padding: "12px 4px" }}
+                  sx={{ color: "#00000099", padding: "8px 4px" }}
                 >{class_.title}
                 </Typography>)
             }
