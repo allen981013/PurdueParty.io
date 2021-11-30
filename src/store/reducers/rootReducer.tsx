@@ -16,6 +16,7 @@ import { gymSlice } from '../../components/gym/GymSlice';
 import clubReducer from './clubReducer';
 import diningReducer from './diningReducer';
 import { forumMainPageSlice } from '../../components/forum/ForumMainPageSlice';
+import { tutorialSlice } from '../../components/tutorial/TutorialSlice';
 
 // Add it to this list
 const rootReducer = combineReducers({
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
     clubsPage: clubsPageSlice.reducer,
     dining: diningReducer,
     gym: gymSlice.reducer,
+    tutorial: tutorialSlice.reducer
 });
 
 export default rootReducer;
