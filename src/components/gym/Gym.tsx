@@ -22,7 +22,6 @@ interface GymProps {
 interface GymStates {
 }
 
-
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 12,
   borderRadius: 7,
@@ -35,8 +34,6 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
   },
 }));
-
-// TODO: Fix my classes in forum
 
 class Gym extends React.Component<GymProps, GymStates> {
 
@@ -55,12 +52,12 @@ class Gym extends React.Component<GymProps, GymStates> {
         <Box textAlign="left">
           <Typography variant="h6">{info.name}</Typography>
           <BorderLinearProgress variant="determinate" value={percentage} />
-          { !info.isClosed &&
+          {!info.isClosed &&
             <Typography variant="body2" sx={{ color: "#00000099" }}>
               Capacity: {info.lastParticipantCount}/{info.totalCapacity}  ({percentage}%)
             </Typography>
           }
-          { info.isClosed &&
+          {info.isClosed &&
             <Typography variant="body2" sx={{ color: "#00000099" }}>
               Closed Now
             </Typography>

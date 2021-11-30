@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { Button, IconButton } from '@mui/material'
 import { ArrowForwardOutlined } from "@mui/icons-material"
 import { Redirect } from 'react-router-dom';
+import { toast } from 'react-toastify'
 
 interface LandingProps {
   events: LandingStatesRedux["events"];
@@ -35,6 +36,12 @@ class Landing extends Component<LandingProps, LandingStates> {
   constructor(props: LandingProps) {
     super(props);
     this.props.loadLandingPageContent()
+  }
+
+  componentDidMount() {
+
+    toast.info("Welcome to PurdueParty.io!")
+    toast.info("To get started, navigate to any page from our wide array of options, which pertain to the events, marketplace, forums, clubs, and various facilities at Purdue!")
   }
 
   getItemCard(title: string, href: string, detail?: string) {
