@@ -43,7 +43,6 @@ import * as themeConf from './theme';
 import { useTheme } from './ThemeManager';
 import styled, { ThemeProvider } from 'styled-components';
 
-import { Button } from '@mui/material';
 
 
 function App() {
@@ -59,13 +58,18 @@ function App() {
     }
   `;
 
+  const Button = styled.button`
+  color: ${themeConf.buttonTextColor};
+  background: ${themeConf.buttonBackgroundColor};
+  border: none;
+`;
 
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
   return (
-
     <ThemeProvider theme={{ mode: theme.mode }}>
       <Wrapper>
-        <Button onClick={() => theme.toggle()}>
+        <Button
+          onClick={() => theme.toggle()}>
           {theme.mode === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
         </Button>
 

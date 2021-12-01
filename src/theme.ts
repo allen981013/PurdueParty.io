@@ -11,11 +11,11 @@ export const textColor: theme.ThemeSet = theme('mode', {
 });
 
 export const buttonBackgroundColor = theme('mode', {
-    light: '#222',
-    dark: '#eee'
+    light: '#fafafa',
+    dark: '#0e0f11'
 });
 
 export const buttonTextColor = theme('mode', {
-    light: '#eee',
-    dark: '#222'
+    light: '#191919',
+    dark: '#fafafa'
 });
