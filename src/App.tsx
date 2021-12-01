@@ -34,7 +34,7 @@ import DiningLanding from './components/dining/DiningLanding';
 import DiningInfo from './components/dining/DiningInfo';
 import BusInfo from './components/transportation/BusInfo';
 import Gym from './components/gym/Gym';
-
+import LaundryLanding from './components/laundry/LaundryLanding';
 
 import SearchProfiles from './components/profile/SearchProfiles';
 import Classes from './components/forum/Classes';
@@ -125,6 +125,10 @@ function App() {
                 return <DiningInfo diningName={match.params.diningName} />
               }} />
               <Route path='/transportation' component={BusInfo} />
+
+              <Route exact path='/laundry' component={LaundryLanding} />
+
+
             </Switch>
             <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
             <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
