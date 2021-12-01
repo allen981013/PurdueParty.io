@@ -16,6 +16,8 @@ import { getFirestore, createFirestoreInstance, reduxFirestore } from 'redux-fir
 import { RootState } from './store';
 import { refreshUserData } from './store/actions/authActions';
 
+import { ThemeManager } from './ThemeManager';
+
 const firebaseConfig: any = {
   apiKey: "AIzaSyAtGu2EAwCasekXH6yzYxy7NqqA3APpus0",
   authDomain: "purdueparty-44444.firebaseapp.com",
@@ -66,7 +68,9 @@ ReactDOM.render(
     <Provider store={store}>
       <ReactReduxFirebaseProvider {...rrfProps}>
         <AuthIsLoaded>
-          <App />
+          <ThemeManager>
+            <App />
+          </ThemeManager>
         </AuthIsLoaded>
       </ReactReduxFirebaseProvider>
     </Provider>
