@@ -1,4 +1,3 @@
-
 .custom-datetime-picker {
   display: block !important;
   position: relative !important;
@@ -7,7 +6,7 @@
   border: 1px solid #d3d3d3;
 }
 
-.custom-datetime-picker > div {
+.custom-datetime-picker>div {
   overflow: hidden;
 }
 

@@ -54,10 +54,10 @@ function App() {
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Theme />
       <BrowserRouter>
         <div className="App">
-          <CssBaseline />
-          <Theme />
           <NavBar />
           <Switch>
             <Route exact path='/' component={Landing} />

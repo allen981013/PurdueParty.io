@@ -44,7 +44,6 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
           texts.map((text) =>
             <Chip
               label={text}
-              // color="primary"
               variant="outlined"
               sx={{ marginRight: "8px" }}
             />
@@ -100,23 +99,23 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
         <Box pt="32px">Event not found</Box>
       )
     var rsvpCode: any = <div></div>;
-    if (this.props.event.attendees.indexOf(auth.uid) < 0){
-      rsvpCode = <Button 
-      // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-      onClick={this.handleRSVP}
+    if (this.props.event.attendees.indexOf(auth.uid) < 0) {
+      rsvpCode = <Button
+        // variant="outlined"
+        sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%" }}
+        onClick={this.handleRSVP}
       >
-    RSVP
-    </Button>
+        RSVP
+      </Button>
     }
     else {
-      rsvpCode = <Button 
-      // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-      onClick={this.handleRemoveRSVP}
+      rsvpCode = <Button
+        // variant="outlined"
+        sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%" }}
+        onClick={this.handleRemoveRSVP}
       >
-    Remove RSVP
-    </Button>
+        Remove RSVP
+      </Button>
     }
     return (
       <Box
