@@ -210,7 +210,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
             md={3}
           >
             <Box display="flex" flexDirection="column" maxWidth="100%">
-              <Typography style={{ color: "#00000099", alignSelf: "flex-start" }} variant="body1">Filter by dates</Typography>
+              <Typography style={{ alignSelf: "flex-start" }} variant="body1">Filter by dates</Typography>
               <FormControl component="fieldset" sx={{ padding: "4px 0px 12px" }}>
                 <RadioGroup
                   aria-label="gender"
@@ -223,27 +223,24 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
                     control={<Radio />}
                     checked={this.state.startDayRadioValue === DATE_FILTERING_OPTIONS.tomorrow}
                     label={
-                      <Typography style={{ color: "#00000099" }} variant="body2">Tomorrow</Typography>
+                      <Typography variant="body2">Tomorrow</Typography>
                     }
-                    sx={{ color: "#00000099 !important" }}
                   />
                   <FormControlLabel
                     value={DATE_FILTERING_OPTIONS.thisWeekend}
                     control={<Radio />}
                     checked={this.state.startDayRadioValue === DATE_FILTERING_OPTIONS.thisWeekend}
                     label={
-                      <Typography style={{ color: "#00000099" }} variant="body2">This weekend</Typography>
+                      <Typography variant="body2">This weekend</Typography>
                     }
-                    sx={{ color: "#00000099 !important" }}
                   />
                   <FormControlLabel
                     value={DATE_FILTERING_OPTIONS.startingAfter}
                     control={<Radio />}
                     checked={this.state.startDayRadioValue === DATE_FILTERING_OPTIONS.startingAfter}
                     label={
-                      <Typography style={{ color: "#00000099" }} variant="body2">Starting after</Typography>
+                      <Typography variant="body2">Starting after</Typography>
                     }
-                    sx={{ color: "#00000099 !important" }}
                   />
                 </RadioGroup>
               </FormControl>
@@ -256,10 +253,9 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
                 renderInput={(props, openCalendar, closeCalendar) => <input {...props} readOnly />}
                 timeFormat={false}
               />
-              <Typography style={{ color: "#00000099", alignSelf: "flex-start", padding: "20px 0px 4px" }}>Filter by host</Typography>
+              <Typography style={{ alignSelf: "flex-start", padding: "20px 0px 4px" }}>Filter by host</Typography>
               <FormGroup>
                 <FormControlLabel
-                  sx={{ color: "#00000099" }}
                   control={
                     <Checkbox
                       onChange={this.handleHostChange}
@@ -267,7 +263,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
                     />
                   }
                   label={
-                    <Typography style={{ color: "#00000099" }} variant="body2">My events</Typography>
+                    <Typography variant="body2">My events</Typography>
                   }
                 />
               </FormGroup>
