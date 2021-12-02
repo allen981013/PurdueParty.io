@@ -149,7 +149,7 @@ class Clubs extends Component<ClubsProps, ClubsState> {
             component={Link}
             to="/clubs/create-club"
             variant="outlined"
-            sx={{ color: "black", border: "1px solid black" }}
+            sx={{ color: "black", border: "1px solid black", backgroundColor: "white" }}
           > Create
           </Button>
         </Box>

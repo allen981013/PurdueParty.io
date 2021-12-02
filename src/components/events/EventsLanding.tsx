@@ -196,7 +196,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
             component={Link}
             to="/events/create/"
             variant="outlined"
-            sx={{ color: "black", border: "1px solid black" }}
+            sx={{ color: "black", border: "1px solid black", backgroundColor: "white" }}
           > Create
           </Button>
         </Box>
