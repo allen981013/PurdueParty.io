@@ -35,110 +35,76 @@ import DiningInfo from './components/dining/DiningInfo';
 import BusInfo from './components/transportation/BusInfo';
 import Gym from './components/gym/Gym';
 
-
 import SearchProfiles from './components/profile/SearchProfiles';
 import Classes from './components/forum/Classes';
 
-import * as themeConf from './theme';
-import { useTheme } from './ThemeManager';
-import styled, { ThemeProvider } from 'styled-components';
-
-
-
 function App() {
-
-  const theme = useTheme();
-
-  const Wrapper = styled.div`
-    background-color: ${themeConf.backgroundColor};
-    color: ${themeConf.textColor};
-    overflow: scroll;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  `;
-
-  const Button = styled.button`
-  color: ${themeConf.buttonTextColor};
-  background: ${themeConf.buttonBackgroundColor};
-  border: none;
-`;
 
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
   return (
-    <ThemeProvider theme={{ mode: theme.mode }}>
-      <Wrapper>
-        <Button
-          onClick={() => theme.toggle()}>
-          {theme.mode === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        </Button>
+    <BrowserRouter>
+      <div className="App">
+        <NavBar />
+        <Switch>
+          <Route exact path='/' component={Landing} />
+          <Route path='/signin' component={SignIn} />
+          <Route path='/createaccount' component={CreateAccount} />
+          <Route path='/changePassword' component={ChangePassword} />
+          <Route path='/resetPasswordRequest' component={ResetPasswordRequest} />
+          <Route exact path='/marketplace' component={MarketPlace} />
+          <Route path='/marketplace/create-listing' component={createSellListing} />
+          <Route path='/sellListing/:itemID' component={GenericSellListing} />
+          <Route path='/gym' component={Gym} />
+          <Route path='/events/create' component={CreateEvent} />
+          <Route path='/events/:eventID' render={({ match }) => {
+            return <EventInfo eventID={match.params.eventID} />
+          }} />
+          <Route path='/events' component={EventsLanding} />
+          <Route exact path='/clubs' component={Clubs} />
+          <Route path='/clubs/create-club' component={CreateClub} />
+          <Route path='/clubs/:clubID' render={({ match }) => {
+            return <ClubInfo clubID={match.params.clubID} />
+          }} />
+          <Route path='/edit-club/:clubID' component={EditClub} />
 
-        <BrowserRouter>
-          <div className="App">
-            <NavBar />
-            <Switch>
-              <Route exact path='/' component={Landing} />
-              <Route path='/signin' component={SignIn} />
-              <Route path='/createaccount' component={CreateAccount} />
-              <Route path='/changePassword' component={ChangePassword} />
-              <Route path='/resetPasswordRequest' component={ResetPasswordRequest} />
-              <Route exact path='/marketplace' component={MarketPlace} />
-              <Route path='/marketplace/create-listing' component={createSellListing} />
-              <Route path='/sellListing/:itemID' component={GenericSellListing} />
-              <Route path='/gym' component={Gym} />
-              <Route path='/events/create' component={CreateEvent} />
-              <Route path='/events/:eventID' render={({ match }) => {
-                return <EventInfo eventID={match.params.eventID} />
-              }} />
-              <Route path='/events' component={EventsLanding} />
-              <Route exact path='/clubs' component={Clubs} />
-              <Route path='/clubs/create-club' component={CreateClub} />
-              <Route path='/clubs/:clubID' render={({ match }) => {
-                return <ClubInfo clubID={match.params.clubID} />
-              }} />
-              <Route path='/edit-club/:clubID' component={EditClub} />
+          <Route path='/profile' component={Profile} />
+          <Route path='/edit-profile' component={EditProfile} />
+          <Route exact path='/forum' component={ForumMainPage} />
+          <Route path='/forum/create-post' component={CreatePost} />
+          <Route path='/forum/all' component={Classes} />
+          <Route path='/forum/:classID/:postID/:commentID/edit' component={EditComment} />
+          <Route path='/forum/:classID/:postID' render={({ match }) => {
+            return <ThreadPage classID={match.params.classID} postID={match.params.postID} />
+          }} />
+          <Route path='/forum/:classID' render={({ match }) => {
+            return <ClassPage classID={match.params.classID} />
+          }} />
+          <Route path='/forum/create-post' component={CreatePost} />
+          <Route path='/createComment/:classID/:postID' component={createComment} />
+          <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} />
+          <Route path='/edit-post/:classID/:postID' component={EditPost} />
 
-              <Route path='/profile' component={Profile} />
-              <Route path='/edit-profile' component={EditProfile} />
-              <Route exact path='/forum' component={ForumMainPage} />
-              <Route path='/forum/create-post' component={CreatePost} />
-              <Route path='/forum/all' component={Classes} />
-              <Route path='/forum/:classID/:postID/:commentID/edit' component={EditComment} />
-              <Route path='/forum/:classID/:postID' render={({ match }) => {
-                return <ThreadPage classID={match.params.classID} postID={match.params.postID} />
-              }} />
-              <Route path='/forum/:classID' render={({ match }) => {
-                return <ClassPage classID={match.params.classID} />
-              }} />
-              <Route path='/forum/create-post' component={CreatePost} />
-              <Route path='/createComment/:classID/:postID' component={createComment} />
-              <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} />
-              <Route path='/edit-post/:classID/:postID' component={EditPost} />
+          <Route path='/edit-event/:eventID' component={EditEvent} />
+          <Route path='/create-class' component={CreateClass} />
+          <Route path='/create-post/:classID' component={CreatePost} />
 
-              <Route path='/edit-event/:eventID' component={EditEvent} />
-              <Route path='/create-class' component={CreateClass} />
-              <Route path='/create-post/:classID' component={CreatePost} />
+          <Route path='/search-profiles' component={SearchProfiles} />
+          <Route path='/profile-messages' component={ProfileMessages} />
 
-              <Route path='/search-profiles' component={SearchProfiles} />
-              <Route path='/profile-messages' component={ProfileMessages} />
-
-              <Route path='/create-post/:classID' component={CreatePost} />
-              <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
-              <Route exact path='/dining' component={DiningLanding} />
-              <Route path='/dining/:diningName' render={({ match }) => {
-                return <DiningInfo diningName={match.params.diningName} />
-              }} />
-              <Route path='/transportation' component={BusInfo} />
-            </Switch>
-            <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
-            <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
-              Purdue University, 100 North University Street, West Lafayette, IN, 47907
-            </div>
-          </div>
-        </BrowserRouter >
-      </Wrapper>
-    </ThemeProvider >
-
+          <Route path='/create-post/:classID' component={CreatePost} />
+          <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
+          <Route exact path='/dining' component={DiningLanding} />
+          <Route path='/dining/:diningName' render={({ match }) => {
+            return <DiningInfo diningName={match.params.diningName} />
+          }} />
+          <Route path='/transportation' component={BusInfo} />
+        </Switch>
+        <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
+        <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
+          Purdue University, 100 North University Street, West Lafayette, IN, 47907
+        </div>
+      </div>
+    </BrowserRouter >
   );
 }
 
