@@ -62,7 +62,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
             <Chip
               label={text}
               variant="outlined"
-              sx={{ marginRight: "8px" }}
+              sx={{ marginRight: "8px", backgroundColor: "white" }}
             />
           )
         }
@@ -174,7 +174,7 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
                   component={Link}
                   to={"/edit-club/" + this.props.clubID}
                   variant="outlined"
-                  sx={{ color: "black", height: "32px" }}
+                  sx={{ color: "black", height: "32px", backgroundColor: "white", border: "1px solid black" }}
                 >
                   <EditOutlined sx={{ fontSize: "16px", paddingRight: "4px" }} />
                   {/* Edit Club */}

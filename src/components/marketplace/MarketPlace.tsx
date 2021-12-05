@@ -109,7 +109,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
             component={Link}
             to="marketplace/create-listing/"
             variant="outlined"
-            sx={{ color: "black", border: "1px solid black" }}
+            sx={{ color: "black", border: "1px solid black", backgroundColor: "white" }}
           > Create
           </Button>
         </Box>
@@ -123,12 +123,12 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
             md={3}
           >
             <Box display="flex" flexDirection="column">
-              <Typography 
-                style={{ color: "#00000099", alignSelf: "flex-start", padding: "0px 0px 12px" }}
+              <Typography
+                style={{ alignSelf: "flex-start", padding: "0px 0px 12px" }}
               >
                 Filter by type
               </Typography>
-              <FormControl sx={{ width: "100%"}}>
+              <FormControl sx={{ width: "100%" }}>
                 <InputLabel id="demo-simple-select-label">Type</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"

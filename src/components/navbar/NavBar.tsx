@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { Box, Button, Collapse, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { Menu } from '@mui/icons-material'
 
+
 interface NavBarProps {
   auth: FirebaseReducer.AuthState;
   username: string;
@@ -65,6 +66,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
   }
 
   render() {
+
     return (
       <div id='topbar'>
         <div id='topbar__gold'>

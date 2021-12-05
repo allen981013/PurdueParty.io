@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Grid, styled, Typography } from "@mui/material"
+import { Button, Box, CircularProgress, Grid, styled, Typography } from "@mui/material"
 import React from "react"
 import { connect } from "react-redux"
 import { AppDispatch, RootState } from '../../store'
@@ -93,7 +93,6 @@ class Gym extends React.Component<GymProps, GymStates> {
         </h1>
         <Typography
           variant="subtitle2"
-          sx={{ color: "#00000099" }}
         >
           Last updated: {this.props.lastUpdatedTime}
         </Typography>
@@ -128,4 +127,4 @@ const mapDispatchToProps = ((dispatch: any) => {
   }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Gym) 
+export default connect(mapStateToProps, mapDispatchToProps)(Gym)

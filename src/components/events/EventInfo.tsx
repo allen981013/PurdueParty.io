@@ -44,9 +44,8 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
           texts.map((text) =>
             <Chip
               label={text}
-              // color="primary"
               variant="outlined"
-              sx={{ marginRight: "8px" }}
+              sx={{ marginRight: "8px", backgroundColor: "white" }}
             />
           )
         }
@@ -100,23 +99,23 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
         <Box pt="32px">Event not found</Box>
       )
     var rsvpCode: any = <div></div>;
-    if (this.props.event.attendees.indexOf(auth.uid) < 0){
-      rsvpCode = <Button 
-      // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-      onClick={this.handleRSVP}
+    if (this.props.event.attendees.indexOf(auth.uid) < 0) {
+      rsvpCode = <Button
+        // variant="outlined"
+        sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%", backgroundColor: "white" }}
+        onClick={this.handleRSVP}
       >
-    RSVP
-    </Button>
+        RSVP
+      </Button>
     }
     else {
-      rsvpCode = <Button 
-      // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-      onClick={this.handleRemoveRSVP}
+      rsvpCode = <Button
+        // variant="outlined"
+        sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%" }}
+        onClick={this.handleRemoveRSVP}
       >
-    Remove RSVP
-    </Button>
+        Remove RSVP
+      </Button>
     }
     return (
       <Box
@@ -174,7 +173,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                     component={Link}
                     to={"/edit-event/" + this.props.eventID}
                     // variant="outlined"
-                    sx={{ color: "black", height: "32px", width: "32px", margin: "0px" }}
+                    sx={{ color: "black", height: "32px", width: "32px", margin: "0px", backgroundColor: "white" }}
                   >
                     <EditOutlined sx={{ fontSize: "16px" }} />
                     {/* Edit */}
@@ -182,7 +181,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 {this.props.event.ownerID === this.props.auth.uid &&
                   <IconButton
                     // variant="outlined"
-                    sx={{ color: "black", height: "32px", width: "32px" }}
+                    sx={{ color: "black", height: "32px", width: "32px", backgroundColor: "white" }}
                     onClick={this.handleDelete}
                   >
                     <DeleteOutlined sx={{ fontSize: "16px" }} />
@@ -258,7 +257,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
           to={this.props.host.href}
           sx={{
             width: "100%", maxWidth: "95vw", height: "92px", color: "black", boxShadow: 3,
-            justifyContent: "flex-start", paddingLeft: "24px"
+            justifyContent: "flex-start", paddingLeft: "24px", backgroundColor: "white"
           }}
         >
           <h2 style={{ fontWeight: 300, textTransform: "none" }}>{this.props.host.name}</h2>

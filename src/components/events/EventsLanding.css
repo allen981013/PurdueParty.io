@@ -1,13 +1,13 @@
-
 .custom-datetime-picker {
   display: block !important;
   position: relative !important;
   width: 100% !important;
   max-width: 100% !important;
   border: 1px solid #d3d3d3;
+  color: black
 }
 
-.custom-datetime-picker > div {
+.custom-datetime-picker>div {
   overflow: hidden;
 }
 
@@ -21,7 +21,7 @@
   font-family: 'Roboto';
   margin-right: -32px;
   font-size: 14px;
-  color: grey;
+
 }
 
 .custom-datetime-picker input:focus-visible {

@@ -127,7 +127,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                             component={Link}
                             to="profile-messages"
                             variant="outlined"
-                            sx={{ color: "black", border: "1px solid black" }}
+                            sx={{ color: "black", border: "1px solid black", backgroundColor: "white" }}
                         > Marketplace Messages
                         </Button>
 
@@ -135,7 +135,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                             component={Link}
                             to="search-profiles"
                             variant="outlined"
-                            sx={{ color: "black", border: "1px solid black" }}
+                            sx={{ color: "black", border: "1px solid black", backgroundColor: "white" }}
                         > Search For Other Profiles
                         </Button>
 
@@ -143,7 +143,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                             component={Link}
                             to="edit-profile"
                             variant="outlined"
-                            sx={{ color: "black", border: "1px solid black" }}
+                            sx={{ color: "black", border: "1px solid black", backgroundColor: "white" }}
                         > Edit Profile
                         </Button>
                     </Stack>

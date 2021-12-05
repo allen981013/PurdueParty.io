@@ -1,13 +1,12 @@
 import './Landing.css'
 import { Component } from 'react'
-import { Box, Grid } from '@mui/material'
+import { Box, Button, Grid } from '@mui/material'
 import { LandingStatesRedux, loadLandingPageContent } from './LandingSlice'
 import { AppDispatch, RootState } from '../../store'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { Button, IconButton } from '@mui/material'
+import { IconButton } from '@mui/material'
 import { ArrowForwardOutlined } from "@mui/icons-material"
-import { Redirect } from 'react-router-dom';
 import { toast } from 'react-toastify'
 
 interface LandingProps {
@@ -45,13 +44,14 @@ class Landing extends Component<LandingProps, LandingStates> {
   }
 
   getItemCard(title: string, href: string, detail?: string) {
+
     return (
       <Button
         component={Link}
         to={href}
         title={detail ? title + ", " + detail : title}
         className="item-card"
-        sx={{ color: "black", fontWeight: "light", textTransform: "unset" }}
+        sx={{ fontWeight: "light", textTransform: "unset", background: "white", color: "black" }}
       >
         <div className="item-card__stripe" />
         <div className="item-card__body">
@@ -63,13 +63,14 @@ class Landing extends Component<LandingProps, LandingStates> {
   }
 
   getSectionCard(title: string, href: string, items?: JSX.Element[]) {
+
     return (
       <Grid item xs={12} sm={6} md={4}>
-        <div className="section-card">
+        <div className="section-card" style={{ background: "white" }}>
           <div className="section-card__stripe" />
           <div className="section-card__body">
-            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
-              <h3 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "larger" }}>{title} </h3>
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+              <h3 style={{ fontFamily: "Open Sans", fontWeight: "lighter", fontSize: "larger", color: "black" }}>{title} </h3>
               <IconButton
                 component={Link}
                 to={href}
@@ -92,9 +93,8 @@ class Landing extends Component<LandingProps, LandingStates> {
   }
 
   render() {
-
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, marginTop: "-5px" }}>
         <Box id="cropped-purdue-img" sx={{ height: { xs: "250px", sm: "400px" } }} />
         <Grid container className="sections" spacing={2} sx={{ padding: "32px 24px" }}>
           {
