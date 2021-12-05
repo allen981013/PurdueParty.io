@@ -94,7 +94,7 @@ class Landing extends Component<LandingProps, LandingStates> {
 
   render() {
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, marginTop: "-5px" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, marginTop: "4px", width:"100%"}}>
         <Box id="cropped-purdue-img" sx={{ height: { xs: "250px", sm: "400px" } }} />
         <Grid container className="sections" spacing={2} sx={{ padding: "32px 24px" }}>
           {

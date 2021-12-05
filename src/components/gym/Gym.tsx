@@ -4,6 +4,7 @@ import { connect } from "react-redux"
 import { AppDispatch, RootState } from '../../store'
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { fetchFacilityInfos } from "./GymSlice";
+import useTheme from '@material-ui/core/styles/useTheme';
 
 export interface FacilityInfo {
   name: string;
@@ -36,6 +37,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }));
 
 class Gym extends React.Component<GymProps, GymStates> {
+
 
   constructor(props: GymProps) {
     super(props)

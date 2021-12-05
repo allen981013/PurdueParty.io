@@ -61,8 +61,13 @@ function App() {
       <Theme />
       <BrowserRouter>
         <Box className="App" onClick={() => toast.dismiss()}>
-          <NavBar />
-          <Box display="flex" justifyContent="center" alignItems="center">
+          <Box 
+            display="flex" 
+            flexDirection="column" 
+            justifyContent="center" 
+            alignItems="center" 
+            width="100%"
+          >
             <ToastContainer
               style={{ marginTop: "24px", width: "380px" }}
               pauseOnFocusLoss
@@ -88,7 +93,7 @@ function App() {
               <Route exact path='/marketplace' component={MarketPlace} />
               <Route path='/marketplace/create-listing' component={createSellListing} />
               <Route path='/sellListing/:itemID' component={GenericSellListing} />
-              <Route path='/gym' component={Gym} />
+              <Route path='/gym' render={() => <Gym/>}/>
               <Route path='/events/create' component={CreateEvent} />
               <Route path='/events/:eventID' render={({ match }) => {
                 return <EventInfo eventID={match.params.eventID} />
