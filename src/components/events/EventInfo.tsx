@@ -10,7 +10,7 @@ import { EventInfoStatesRedux, fetchEventInfo } from './EventInfoSlice'
 import { deleteEvent, removeRSVPEvent, rsvpEvent } from '../../store/actions/eventActions'
 import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
 import { toast } from 'react-toastify';
-import { EVENTINFO_PAGE_TEXT_1, EVENTINFO_PAGE_TEXT_2, EVENTINFO_PAGE_TEXT_3} from '../tutorial/Constants'
+import { EVENTINFO_TUTORIAL_1, EVENTINFO_TUTORIAL_2, EVENTINFO_TUTORIAL_3} from '../tutorial/Constants'
 
 
 interface EventInfoProps {
@@ -102,9 +102,9 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
       && !this.props.pageVisitInfo.eventInfoPage
       && !this.isTutorialRendered
       ) {
-      toast.info(EVENTINFO_PAGE_TEXT_1)
-      toast.info(EVENTINFO_PAGE_TEXT_2)
-      toast.info(EVENTINFO_PAGE_TEXT_3)
+      toast.info(EVENTINFO_TUTORIAL_1)
+      toast.info(EVENTINFO_TUTORIAL_2)
+      toast.info(EVENTINFO_TUTORIAL_3)
       let newPageVisitInfo: PageVisitInfo = {
         ...this.props.pageVisitInfo,
         eventInfoPage: true,

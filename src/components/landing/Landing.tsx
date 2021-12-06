@@ -9,7 +9,7 @@ import { IconButton } from '@mui/material'
 import { ArrowForwardOutlined } from "@mui/icons-material"
 import { toast } from 'react-toastify'
 import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice'
-import { HOMEPAGE_TEXT_1, HOMEPAGE_TEXT_2 } from '../tutorial/Constants'
+import { HOMEPAGE_TUTORIAL_1, HOMEPAGE_TUTORIAL_2, HOMEPAGE_TUTORIAL_3 } from '../tutorial/Constants'
 
 interface LandingProps {
   events: LandingStatesRedux["events"];
@@ -96,8 +96,9 @@ class Landing extends Component<LandingProps, LandingStates> {
       && !this.props.pageVisitInfo.homePage
       && !this.isTutorialRendered
       ) {
-      toast.info(HOMEPAGE_TEXT_1)
-      toast.info(HOMEPAGE_TEXT_2)
+      toast.info(HOMEPAGE_TUTORIAL_1)
+      toast.info(HOMEPAGE_TUTORIAL_2)
+      toast.info(HOMEPAGE_TUTORIAL_3)
       let newPageVisitInfo: PageVisitInfo = {
         ...this.props.pageVisitInfo,
         homePage: true,

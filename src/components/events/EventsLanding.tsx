@@ -16,7 +16,7 @@ import moment from 'moment'
 import { Redirect } from 'react-router-dom';
 import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
 import { toast } from 'react-toastify';
-import { EVENTS_PAGE_TEXT_1, EVENTS_PAGE_TEXT_2, EVENTS_PAGE_TEXT_3} from '../tutorial/Constants'
+import { EVENTS_TEXT_1, EVENTS_TEXT_2, EVENTS_TEXT_3} from '../tutorial/Constants'
 
 interface EventsLandingProps {
   auth: any
@@ -181,9 +181,9 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
       && !this.props.pageVisitInfo.eventsPage
       && !this.isTutorialRendered
       ) {
-      toast.info(EVENTS_PAGE_TEXT_1)
-      toast.info(EVENTS_PAGE_TEXT_2)
-      toast.info(EVENTS_PAGE_TEXT_3)
+      toast.info(EVENTS_TEXT_1)
+      toast.info(EVENTS_TEXT_2)
+      toast.info(EVENTS_TEXT_3)
       let newPageVisitInfo: PageVisitInfo = {
         ...this.props.pageVisitInfo,
         eventsPage: true,
