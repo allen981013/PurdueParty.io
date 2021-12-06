@@ -8,12 +8,16 @@ import { Link } from 'react-router-dom'
 import { IconButton } from '@mui/material'
 import { ArrowForwardOutlined } from "@mui/icons-material"
 import { toast } from 'react-toastify'
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice'
+import { HOMEPAGE_TEXT_1, HOMEPAGE_TEXT_2 } from '../tutorial/Constants'
 
 interface LandingProps {
   events: LandingStatesRedux["events"];
   saleItems: LandingStatesRedux["saleItems"];
   classes: LandingStatesRedux["classes"];
   clubs: LandingStatesRedux["clubs"];
+  pageVisitInfo: PageVisitInfo;
+  updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
   loadLandingPageContent: () => void;
   auth: any
 }
@@ -25,6 +29,7 @@ interface LandingStates {
 
 class Landing extends Component<LandingProps, LandingStates> {
 
+  isTutorialRendered = false
   livingPageItems = [
     { title: "Gym", href: "/gym" },
     { title: "Laundry", href: "/laundry" },
@@ -35,12 +40,6 @@ class Landing extends Component<LandingProps, LandingStates> {
   constructor(props: LandingProps) {
     super(props);
     this.props.loadLandingPageContent()
-  }
-
-  componentDidMount() {
-
-    toast.info("Welcome to PurdueParty.io!")
-    toast.info("To get started, navigate to any page from our wide array of options, which pertain to the events, marketplace, forums, clubs, and various facilities at Purdue!")
   }
 
   getItemCard(title: string, href: string, detail?: string) {
@@ -93,8 +92,22 @@ class Landing extends Component<LandingProps, LandingStates> {
   }
 
   render() {
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.homePage
+      && !this.isTutorialRendered
+      ) {
+        console.log(this.props.pageVisitInfo)
+      toast.info(HOMEPAGE_TEXT_1)
+      toast.info(HOMEPAGE_TEXT_2)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        homePage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, marginTop: "4px", width:"100%"}}>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, marginTop: "4px", width: "100%" }}>
         <Box id="cropped-purdue-img" sx={{ height: { xs: "250px", sm: "400px" } }} />
         <Grid container className="sections" spacing={2} sx={{ padding: "32px 24px" }}>
           {
@@ -125,6 +138,7 @@ class Landing extends Component<LandingProps, LandingStates> {
 
 const mapStateToProps = (state: RootState) => {
   return {
+    pageVisitInfo: state.tutorial.pageVisitInfo,
     events: state.landing.events,
     saleItems: state.landing.saleItems,
     classes: state.landing.classes,
@@ -136,6 +150,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
     loadLandingPageContent: () => dispatch(loadLandingPageContent()),
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
   }
 }
 

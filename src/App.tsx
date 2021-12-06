@@ -45,6 +45,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import ThemeProvider from './components/UI/ThemeProvider';
 import { createTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { setPageVisitInfo } from './components/tutorial/TutorialSlice';
+import { store } from '.';
+import { useEffect } from 'react';
+import { refreshUserData } from './store/actions/authActions';
 
 function App() {
 
@@ -53,6 +57,12 @@ function App() {
       type: 'light'
     }
   });
+
+  useEffect(() => {
+    store.dispatch(refreshUserData())
+    // TODO: Replace this with fetchPageVisitInfo() once the feature is finished
+    store.dispatch(setPageVisitInfo())
+  }, [])
 
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
   return (
