@@ -86,6 +86,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             <Button component={Link} to="/forum">Forum</Button>
             <Button component={Link} to="/gym">Gym</Button>
             <Button component={Link} to="/dining">Dining</Button>
+            <Button component={Link} to="/laundry">Laundry</Button>
             <Button component={Link} to="/transportation">Bus</Button>
             <Button component={Link} to="/clubs">Clubs</Button>
           </Box>
