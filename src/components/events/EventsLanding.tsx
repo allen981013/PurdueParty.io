@@ -177,6 +177,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
 
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
+    // Render tutorial
     if (this.props.pageVisitInfo 
       && !this.props.pageVisitInfo.eventsPage
       && !this.isTutorialRendered
