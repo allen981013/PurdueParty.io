@@ -117,7 +117,6 @@ export const fetchEventInfo = (eventID: string) => {
         var description = doc.data().description
         var categories = doc.data().categories
         var perks = doc.data().perks
-        var ownerID = doc.data().ownerID
         var orgID = doc.data().orgID
         var imageUrl = doc.data().image
         var attendees = doc.data().attendees
