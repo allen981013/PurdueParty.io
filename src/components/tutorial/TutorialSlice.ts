@@ -24,6 +24,26 @@ export interface PageVisitInfo {
   transportationPage: boolean;
 }
 
+const initialPageVisitInfo: PageVisitInfo = {
+  classPage: false,
+  classesPage: false,
+  clubInfoPage: false,
+  clubsPage: false,
+  diningInfopage: false,
+  diningsPage: false,
+  eventInfoPage: false,
+  eventsPage: false,
+  forumHomePage: false,
+  gymPage: false,
+  homePage: false,
+  marketplaceItemPage: false,
+  marketplacePage: false,
+  profilePage: false,
+  threadPage: false,
+  transportationPage: false,
+}
+
+
 // type for states returned by reducer
 export interface TutorialReduxState {
   pageVisitInfo: PageVisitInfo,
@@ -52,6 +72,12 @@ export const tutorialSlice = createSlice({
       }
     },
     updatePageVisitInfoSuccess: (state: TutorialReduxState, action): TutorialReduxState => {
+      return {
+        ...state,
+        pageVisitInfo: action.payload
+      }
+    },
+    resetPageVisitInfoSuccess: (state: TutorialReduxState, action): TutorialReduxState => {
       return {
         ...state,
         pageVisitInfo: action.payload
@@ -93,7 +119,6 @@ export const fetchPageVisitInfo = () => {
           threadPage: rawInfo.threadPage,
           transportationPage: rawInfo.transportationPage,
         }
-        console.log({ rawInfo })
         dispatch(tutorialSlice.actions.fetchPageVisitInfoSuccess(pageVisitInfo))
       }).catch((error: any) => {
         toast.error(error.message)
@@ -105,30 +130,30 @@ export const setPageVisitInfo = () => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     const db = getFirestore()
     const state = getState()
-    let pageVisitInfo: PageVisitInfo = {
-      classPage: false,
-      classesPage: false,
-      clubInfoPage: false,
-      clubsPage: false,
-      diningInfopage: false,
-      diningsPage: false,
-      eventInfoPage: false,
-      eventsPage: false,
-      forumHomePage: false,
-      gymPage: false,
-      homePage: false,
-      marketplaceItemPage: false,
-      marketplacePage: false,
-      profilePage: false,
-      threadPage: false,
-      transportationPage: false,
-    }
     db.collection("pageVisitInfo")
       .doc(state.firebase.auth.uid)
       .set(
-        pageVisitInfo
+        initialPageVisitInfo
       ).then(() => {
-        dispatch(tutorialSlice.actions.setPageVisitInfoSuccess(pageVisitInfo))
+        dispatch(tutorialSlice.actions.setPageVisitInfoSuccess(initialPageVisitInfo))
+      }
+      ).catch(() => {
+        toast.error("Error when setting the user's page visit info")
+      })
+  }
+}
+
+export const resetPageVisitInfo = () => {
+  return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
+    const db = getFirestore()
+    const state = getState()
+    db.collection("pageVisitInfo")
+      .doc(state.firebase.auth.uid)
+      .set(
+        initialPageVisitInfo
+      ).then(() => {
+        dispatch(tutorialSlice.actions.resetPageVisitInfoSuccess(initialPageVisitInfo))
+        toast.success("Successfully resetted tutorial steps!")
       }
       ).catch(() => {
         toast.error("Error when setting the user's page visit info")
