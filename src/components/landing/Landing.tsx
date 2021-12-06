@@ -96,7 +96,6 @@ class Landing extends Component<LandingProps, LandingStates> {
       && !this.props.pageVisitInfo.homePage
       && !this.isTutorialRendered
       ) {
-        console.log(this.props.pageVisitInfo)
       toast.info(HOMEPAGE_TEXT_1)
       toast.info(HOMEPAGE_TEXT_2)
       let newPageVisitInfo: PageVisitInfo = {

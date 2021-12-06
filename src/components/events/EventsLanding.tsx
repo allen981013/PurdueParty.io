@@ -14,14 +14,18 @@ import Checkbox from '@mui/material/Checkbox';
 import Datetime from 'react-datetime'
 import moment from 'moment'
 import { Redirect } from 'react-router-dom';
-
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { EVENTS_PAGE_TEXT_1, EVENTS_PAGE_TEXT_2, EVENTS_PAGE_TEXT_3} from '../tutorial/Constants'
 
 interface EventsLandingProps {
+  auth: any
   events: EventsLandingStatesRedux["events"];
   isEventsFetched: boolean;
   isLastPage: boolean;
+  pageVisitInfo: PageVisitInfo;
+  updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
   fetchEvents: (fetchParameter: EventsFetchParameter) => void;
-  auth: any
 }
 
 interface EventsLandingStates {
@@ -52,6 +56,7 @@ export interface EventsFetchParameter {
 
 class EventsLanding extends React.Component<EventsLandingProps, EventsLandingStates> {
 
+  isTutorialRendered = false
   fetchParameter: EventsFetchParameter = {
     furthestPage: 1,
     searchKeyword: "",
@@ -172,6 +177,20 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
 
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.eventsPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(EVENTS_PAGE_TEXT_1)
+      toast.info(EVENTS_PAGE_TEXT_2)
+      toast.info(EVENTS_PAGE_TEXT_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        eventsPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     return (
       <Box
         display="flex"
@@ -313,6 +332,7 @@ class EventsLanding extends React.Component<EventsLandingProps, EventsLandingSta
 
 const mapStateToProps = ((state: RootState) => {
   return {
+    pageVisitInfo: state.tutorial.pageVisitInfo,
     events: state.eventsLanding.events,
     isEventsFetched: state.eventsLanding.isEventsFetched,
     isLastPage: state.eventsLanding.isLastPage,
@@ -323,6 +343,7 @@ const mapStateToProps = ((state: RootState) => {
 const mapDispatchToProps = ((dispatch: AppDispatch) => {
   return {
     fetchEvents: (fetchParameter: EventsFetchParameter) => dispatch(fetchEvents(fetchParameter)),
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
   }
 })
 

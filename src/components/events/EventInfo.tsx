@@ -8,6 +8,10 @@ import { firebaseStorageRef } from '../..'
 import { AppDispatch, RootState } from '../../store'
 import { EventInfoStatesRedux, fetchEventInfo } from './EventInfoSlice'
 import { deleteEvent, removeRSVPEvent, rsvpEvent } from '../../store/actions/eventActions'
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { EVENTINFO_PAGE_TEXT_1, EVENTINFO_PAGE_TEXT_2, EVENTINFO_PAGE_TEXT_3} from '../tutorial/Constants'
+
 
 interface EventInfoProps {
   eventID: string;
@@ -17,6 +21,8 @@ interface EventInfoProps {
   event: EventInfoStatesRedux["event"],
   host: EventInfoStatesRedux["host"],
   auth: any,
+  pageVisitInfo: PageVisitInfo;
+  updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
   fetchEventInfo: (eventID: string) => void,
   deleteEvent: (eventID: string) => void,
   rsvpEvent: (eventID: string) => void,
@@ -28,6 +34,8 @@ interface EventInfoStates {
 }
 
 class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
+
+  isTutorialRendered = false
 
   constructor(props: EventInfoProps) {
     super(props)
@@ -90,6 +98,20 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
   render() {
     const { auth } = this.props;
     if (!auth.uid) return <Redirect to='/signin' />
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.eventInfoPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(EVENTINFO_PAGE_TEXT_1)
+      toast.info(EVENTINFO_PAGE_TEXT_2)
+      toast.info(EVENTINFO_PAGE_TEXT_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        eventInfoPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     if (!this.props.hasInfoFetched)
       return (
         <Box pt="32px"><CircularProgress /></Box>
@@ -273,7 +295,8 @@ const mapStateToProps = (state: RootState) => {
     eventNotFound: state.eventInfo.eventNotFound,
     event: state.eventInfo.event,
     host: state.eventInfo.host,
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
   }
 }
 
@@ -282,7 +305,8 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
     fetchEventInfo: (eventID: string) => dispatch(fetchEventInfo(eventID)),
     deleteEvent: (eventID: string) => dispatch(deleteEvent(eventID)),
     rsvpEvent: (eventID: string) => dispatch(rsvpEvent(eventID)),
-    removeRSVPEvent: (eventID: string) => dispatch(removeRSVPEvent(eventID))
+    removeRSVPEvent: (eventID: string) => dispatch(removeRSVPEvent(eventID)),
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
   }
 }
 
