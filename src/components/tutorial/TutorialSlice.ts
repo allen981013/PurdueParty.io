@@ -153,7 +153,7 @@ export const resetPageVisitInfo = () => {
         initialPageVisitInfo
       ).then(() => {
         dispatch(tutorialSlice.actions.resetPageVisitInfoSuccess(initialPageVisitInfo))
-        toast.success("Successfully resetted tutorial steps!")
+        toast.success("Successfully reset tutorial steps!")
       }
       ).catch(() => {
         toast.error("Error when setting the user's page visit info")
