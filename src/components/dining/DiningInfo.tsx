@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import Moment from 'moment';
 import { deleteStaleData, submitSurveyData } from '../../store/actions/diningActions';
 import { firestoreConnect } from 'react-redux-firebase';
+import {toast} from "react-toastify";
 import {
     Box, Button, CircularProgress, Grid, Card, CardActionArea,
     CardMedia, CardContent, Typography
@@ -118,10 +119,10 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
 
     handleSubmit = (event : any) => {
         event.preventDefault();
-
         if (this.state.surveyResult == null) {
             window.alert("Please select an option before submitting!")
         } else {
+            toast.success("Status Update Submitted!");
             this.props.submitSurveyData(this.state);
             this.setState({
                 needUpdate: true
