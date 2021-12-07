@@ -1,12 +1,15 @@
+import { PostAdd } from '@mui/icons-material'
 import { createSlice } from '@reduxjs/toolkit'
+import { getDocs } from 'firebase/firestore'
 import moment from 'moment'
+import { useState } from 'react'
 import { Action, Dispatch } from 'redux'
 import { RootState } from '../../store'
 import { Post } from './ClassPage'
 import { Class } from './ForumMainPage'
 
 export interface FetchCriteria {
-  sortBy: "RECENCY" | "POPULARITY";
+  sortBy: "RECENCY" | "POPULARITY" | "HOT";
 }
 
 // type for states returned by reducer
@@ -104,17 +107,31 @@ export const fetchJoinedClasses = () => {
 export const fetchAllClassesPosts = (fetchCriteria: FetchCriteria) => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     // Build queries
+    let map: string[];
+    var index = 0;
+    map = (map != null) ? map : []
     const db = getFirestore();
-    var postsQueryPromise = db.collection("posts")
+    var posts = new Array<Post>();
+    //const [posts, setPosts] = useState(new Array<Post>());
+    var postsQueryPromise = fetchCriteria.sortBy == "POPULARITY"
+      ? db.collection("posts")
       .where("ancestorsIDs", "==", [])
-    postsQueryPromise = fetchCriteria.sortBy == "POPULARITY"
-      ? postsQueryPromise.orderBy("numComments", "desc").orderBy("postedDateTime", "desc")
-      : postsQueryPromise.orderBy("postedDateTime", "desc")
-    var postsDocSnapshots = await postsQueryPromise.get()
+      .orderBy("numComments", "desc")
+      .orderBy("postedDateTime", "desc")
+      :fetchCriteria.sortBy == "HOT" 
+      ? db.collection("posts")
+      .where("ancestorsIDs", "==", [])
+      .orderBy("voteCount", "desc")
+      .orderBy("postedDateTime", "desc")
+      : db.collection("posts")
+      .where("ancestorsIDs", "==", [])
+      .orderBy("postedDateTime", "desc")
+    await postsQueryPromise.get().then((postsDocSnapshots: any[]) => {
     // Transform posts into the correct schema
-    var posts: Post[] = postsDocSnapshots.docs.map((docSnapshot: any): Post => {
+    console.log(postsDocSnapshots);
+    postsDocSnapshots.forEach((docSnapshot) => {
       let post = docSnapshot.data()
-      return {
+      const p: Post = {
         title: post.title,
         content: post.content,
         poster: post.owner, // store poster's UID first
@@ -123,6 +140,11 @@ export const fetchAllClassesPosts = (fetchCriteria: FetchCriteria) => {
         timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
         classID: post.classID,
       }
+      if(p != null) {
+        posts.push(p)
+        //setPosts(posts => [...posts, p])
+      }
+      })
     })
     // Build set of user IDs
     var uids: Set<string> = posts.reduce((prevSet, curNode) => {
@@ -169,6 +191,13 @@ export const fetchJoinedClassesPosts = (fetchCriteria: FetchCriteria) => {
       .where("classID", "==", id_)
       .where("ancestorsIDs", "==", [])
       .orderBy("numComments", "desc")
+      .orderBy("postedDateTime", "desc")
+      .get())
+    : fetchCriteria.sortBy == "HOT"
+    ? classIDs.map(id_ => db.collection("posts")
+      .where("classID", "==", id_)
+      .where("ancestorsIDs", "==", [])
+      .orderBy("voteCount", "desc")
       .orderBy("postedDateTime", "desc")
       .get())
     : classIDs.map(id_ => db.collection("posts")
@@ -228,26 +257,37 @@ export const fetchCurUserPosts = (fetchCriteria: FetchCriteria) => {
     // Build queries
     const state = getState()
     const db = getFirestore();
+    //console.log(state.firebase.auth.uid);
+    const user = state.firebase.auth.uid;
+    var posts = new Array<Post>();
     var postsQueryPromise = db.collection("posts")
+      .where("owner", "==", user)
       .where("ancestorsIDs", "==", [])
-      .where("owner", "==", state.firebase.auth.uid)
     postsQueryPromise = fetchCriteria.sortBy == "POPULARITY"
       ? postsQueryPromise.orderBy("numComments", "desc").orderBy("postedDateTime", "desc")
+      :postsQueryPromise = fetchCriteria.sortBy == "HOT" 
+      ? postsQueryPromise.orderBy("voteCount", "desc").orderBy("postedDateTime", "desc")
       : postsQueryPromise.orderBy("postedDateTime", "desc")
-    var postsDocSnapshots = await postsQueryPromise.get()
-    // Transform posts into the correct schema
-    var posts: Post[] = postsDocSnapshots.docs.map((docSnapshot: any): Post => {
-      let post = docSnapshot.data()
-      return {
-        title: post.title,
-        content: post.content,
-        poster: post.owner, // store poster's UID first
-        numComments: post.numComments,
-        href: "/forum/" + post.classID + "/" + post.postId,
-        timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
-        classID: post.classID,
-      }
-    })
+      await postsQueryPromise.get().then((postsDocSnapshots: any[]) => {
+        // Transform posts into the correct schema
+        console.log(postsDocSnapshots);
+        postsDocSnapshots.forEach((docSnapshot) => {
+          let post = docSnapshot.data()
+          const p: Post = {
+            title: post.title,
+            content: post.content,
+            poster: post.owner, // store poster's UID first
+            numComments: post.numComments,
+            href: "/forum/" + post.classID + "/" + post.postId,
+            timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
+            classID: post.classID,
+          }
+          if(p != null) {
+            posts.push(p)
+            //setPosts(posts => [...posts, p])
+          }
+          })
+        })
     // Build set of user IDs
     var uids: Set<string> = posts.reduce((prevSet, curNode) => {
       prevSet.add(curNode.poster)

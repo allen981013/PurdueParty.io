@@ -41,10 +41,10 @@ import SearchProfiles from './components/profile/SearchProfiles';
 import Classes from './components/forum/Classes';
 
 import ThemeProvider from './components/UI/ThemeProvider';
-import { createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-//import { createTheme } from '@material-ui/core/styles';
-//import CssBaseline from '@material-ui/core/CssBaseline';
+//import { createTheme } from '@mui/material/styles';
+//import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 function App() {
 

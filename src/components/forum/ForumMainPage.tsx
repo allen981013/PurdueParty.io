@@ -3,12 +3,15 @@ import { connect } from "react-redux"
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
 import { compose } from "redux"
 import { AppDispatch, RootState } from '../../store';
-import { Box, Button, Card, CardActionArea, CardContent, CircularProgress, Grid, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Button, Card, CardActionArea, CardContent, CircularProgress, Grid, styled, Tab, Tabs, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import { Link, Redirect } from "react-router-dom";
 import { fetchAllClassesPosts, fetchCurUserPosts, fetchJoinedClasses, fetchJoinedClassesPosts, FetchCriteria } from "./ForumMainPageSlice";
 import { Post } from "./ClassPage";
+import WhatshotIcon from '@mui/icons-material/Whatshot';
+import StarRateIcon from '@mui/icons-material/StarRate';
+import ThumbsUpIcon from '@mui/icons-material/ThumbUp';
 
 export interface Class {
   title: string;
@@ -29,6 +32,7 @@ interface ForumMainPageProps {
 
 interface ForumMainPageStates {
   currentTabIndex: number;
+  sortBy: FetchCriteria["sortBy"];
 }
 
 class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageStates> {
@@ -38,6 +42,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
   constructor(props: ForumMainPageProps) {
     super(props)
     this.state = {
+      sortBy: "RECENCY",
       currentTabIndex: 0,
     }
   }
@@ -45,8 +50,8 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
   componentDidMount() {
     this.props.fetchJoinedClasses();
     this.props.fetchAllClassesPosts(this.fetchCriteria);
-    this.props.fetchJoinedClassesPosts(this.fetchCriteria);
     this.props.fetchCurUserPosts(this.fetchCriteria);
+    this.props.fetchJoinedClassesPosts(this.fetchCriteria);
   }
 
   getPostComponent(post: Post) {
@@ -120,6 +125,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
   }
 
   getSubPageForPosts(posts?: Post[]) {
+    console.log(posts)
     if (posts == null)
       return (
         <Box pt="192px"><CircularProgress /></Box>
@@ -190,6 +196,157 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
     )
   }
 
+  getSortingBar() {
+    // Create a mui theme
+    const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+      '& .MuiToggleButtonGroup-grouped': {
+        margin: "12px",
+        padding: "8px 16px",
+        border: 0,
+        display: "flex",
+        alignItems: "center",
+        '&:not(:first-of-type)': {
+          borderRadius: "20px",
+        },
+        '&:first-of-type': {
+          borderRadius: "20px",
+        },
+      },
+    }));
+    // Return the sorting bar
+    return (
+      <Box display="flex" mb="16px" width="100%">
+        <Card sx={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
+          <StyledToggleButtonGroup
+            size="small"
+            value={this.state.sortBy}
+            exclusive
+            onChange={(_, newVal: FetchCriteria["sortBy"]) => {
+              if (newVal === null) return
+              this.setState({ sortBy: newVal })
+              this.fetchCriteria.sortBy = newVal
+              this.props.fetchCurUserPosts(this.fetchCriteria)
+            }}
+          >
+            <ToggleButton value={"RECENCY"}>
+              <StarRateIcon sx={{ paddingRight: "4px" }} />
+              New
+            </ToggleButton>
+            <ToggleButton value={"POPULARITY"}>
+              <WhatshotIcon sx={{ paddingRight: "4px" }} />
+              Popular
+            </ToggleButton>
+            <ToggleButton value={"HOT"}>
+              <ThumbsUpIcon sx={{ paddingRight: "4px" }} />
+              Hot
+            </ToggleButton>
+          </StyledToggleButtonGroup>
+        </Card>
+      </Box >
+    )
+  }
+
+  getSortingBarAll() {
+    // Create a mui theme
+    const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+      '& .MuiToggleButtonGroup-grouped': {
+        margin: "12px",
+        padding: "8px 16px",
+        border: 0,
+        display: "flex",
+        alignItems: "center",
+        '&:not(:first-of-type)': {
+          borderRadius: "20px",
+        },
+        '&:first-of-type': {
+          borderRadius: "20px",
+        },
+      },
+    }));
+    // Return the sorting bar
+    console.log(this.fetchCriteria);
+    return (
+      <Box display="flex" mb="16px" width="100%">
+        <Card sx={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
+          <StyledToggleButtonGroup
+            size="small"
+            value={this.state.sortBy}
+            exclusive
+            onChange={(_, newVal: FetchCriteria["sortBy"]) => {
+              if (newVal === null) return
+              this.setState({ sortBy: newVal })
+              this.fetchCriteria.sortBy = newVal
+              this.props.fetchAllClassesPosts(this.fetchCriteria)
+            }}
+          >
+            <ToggleButton value={"RECENCY"}>
+              <StarRateIcon sx={{ paddingRight: "4px" }} />
+              New
+            </ToggleButton>
+            <ToggleButton value={"POPULARITY"}>
+              <WhatshotIcon sx={{ paddingRight: "4px" }} />
+              Popular
+            </ToggleButton>
+            <ToggleButton value={"HOT"}>
+              <ThumbsUpIcon sx={{ paddingRight: "4px" }} />
+              Hot
+            </ToggleButton>
+          </StyledToggleButtonGroup>
+        </Card>
+      </Box >
+    )
+  }
+
+  getSortingBarJoined() {
+    // Create a mui theme
+    const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+      '& .MuiToggleButtonGroup-grouped': {
+        margin: "12px",
+        padding: "8px 16px",
+        border: 0,
+        display: "flex",
+        alignItems: "center",
+        '&:not(:first-of-type)': {
+          borderRadius: "20px",
+        },
+        '&:first-of-type': {
+          borderRadius: "20px",
+        },
+      },
+    }));
+    // Return the sorting bar
+    return (
+      <Box display="flex" mb="16px" width="100%">
+        <Card sx={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
+          <StyledToggleButtonGroup
+            size="small"
+            value={this.state.sortBy}
+            exclusive
+            onChange={(_, newVal: FetchCriteria["sortBy"]) => {
+              if (newVal === null) return
+              this.setState({ sortBy: newVal })
+              this.fetchCriteria.sortBy = newVal
+              this.props.fetchJoinedClassesPosts(this.fetchCriteria)
+            }}
+          >
+            <ToggleButton value={"RECENCY"}>
+              <StarRateIcon sx={{ paddingRight: "4px" }} />
+              New
+            </ToggleButton>
+            <ToggleButton value={"POPULARITY"}>
+              <WhatshotIcon sx={{ paddingRight: "4px" }} />
+              Popular
+            </ToggleButton>
+            <ToggleButton value={"HOT"}>
+              <ThumbsUpIcon sx={{ paddingRight: "4px" }} />
+              Hot
+            </ToggleButton>
+          </StyledToggleButtonGroup>
+        </Card>
+      </Box >
+    )
+  }
+
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     return (
@@ -202,11 +359,15 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
                 value={this.state.currentTabIndex}
                 onChange={(e: any, newIndex: number) => this.setState({ currentTabIndex: newIndex })}
               >
-                <Tab label="Followed" />
-                <Tab label="Global" />
-                <Tab label="My Posts" />
+                <Tab label="Followed" onClick={() => this.props.fetchJoinedClassesPosts(this.fetchCriteria)}/>
+                <Tab label="Global" onClick={() => this.props.fetchAllClassesPosts(this.fetchCriteria)}/>
+                <Tab label="My Posts" onClick={() => this.props.fetchCurUserPosts(this.fetchCriteria)}/>
               </Tabs>
             </Box>
+            {console.log(this.state.currentTabIndex)}
+            {this.state.currentTabIndex == 0 && this.getSortingBarJoined()}
+            {this.state.currentTabIndex == 1 && this.getSortingBarAll()}
+            {this.state.currentTabIndex == 2 && this.getSortingBar()}
             {this.state.currentTabIndex == 0 && this.getSubPageForPosts(this.props.joinedClassesPosts)}
             {this.state.currentTabIndex == 1 && this.getSubPageForPosts(this.props.allClassesPosts)}
             {this.state.currentTabIndex == 2 && this.getSubPageForPosts(this.props.curUserPosts)}
