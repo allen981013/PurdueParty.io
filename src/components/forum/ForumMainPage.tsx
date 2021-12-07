@@ -7,7 +7,7 @@ import { Box, Button, Card, CardActionArea, CardContent, CircularProgress, Grid,
 import SearchIcon from '@mui/icons-material/Search';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import { Link, Redirect } from "react-router-dom";
-import { fetchAllClassesPosts, fetchCurUserPosts, fetchJoinedClasses, fetchJoinedClassesPosts } from "./ForumMainPageSlice";
+import { fetchAllClassesPosts, fetchCurUserPosts, fetchJoinedClasses, fetchJoinedClassesPosts, FetchCriteria } from "./ForumMainPageSlice";
 import { Post } from "./ClassPage";
 
 export interface Class {
@@ -22,9 +22,9 @@ interface ForumMainPageProps {
   curUserPosts: Post[];
   joinedClasses: Class[];
   fetchJoinedClasses: () => void;
-  fetchAllClassesPosts: () => void;
-  fetchJoinedClassesPosts: () => void;
-  fetchCurUserPosts: () => void;
+  fetchAllClassesPosts: (fetchCriteria: FetchCriteria) => void;
+  fetchJoinedClassesPosts: (fetchCriteria: FetchCriteria) => void;
+  fetchCurUserPosts: (fetchCriteria: FetchCriteria) => void;
 }
 
 interface ForumMainPageStates {
@@ -32,6 +32,8 @@ interface ForumMainPageStates {
 }
 
 class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageStates> {
+
+  fetchCriteria: FetchCriteria = { sortBy: "RECENCY" }
 
   constructor(props: ForumMainPageProps) {
     super(props)
@@ -41,10 +43,10 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
   }
 
   componentDidMount() {
-    this.props.fetchJoinedClasses()
-    this.props.fetchAllClassesPosts();
-    this.props.fetchJoinedClassesPosts();
-    this.props.fetchCurUserPosts();
+    this.props.fetchJoinedClasses();
+    this.props.fetchAllClassesPosts(this.fetchCriteria);
+    this.props.fetchJoinedClassesPosts(this.fetchCriteria);
+    this.props.fetchCurUserPosts(this.fetchCriteria);
   }
 
   getPostComponent(post: Post) {
@@ -228,12 +230,12 @@ const mapStateToProps = (state: RootState) => {
   }
 }
 
-const mapDispatchToProps = (dispatch: AppDispatch) => {
+const mapDispatchToProps = (dispatch: AppDispatch, props: ForumMainPageProps) => {
   return {
     fetchJoinedClasses: () => dispatch(fetchJoinedClasses()),
-    fetchAllClassesPosts: () => dispatch(fetchAllClassesPosts()),
-    fetchJoinedClassesPosts: () => dispatch(fetchJoinedClassesPosts()),
-    fetchCurUserPosts: () => dispatch(fetchCurUserPosts()),
+    fetchAllClassesPosts: (fetchCriteria: FetchCriteria) => dispatch(fetchAllClassesPosts(fetchCriteria)),
+    fetchJoinedClassesPosts: (fetchCriteria: FetchCriteria) => dispatch(fetchJoinedClassesPosts(fetchCriteria)),
+    fetchCurUserPosts: (fetchCriteria: FetchCriteria) => dispatch(fetchCurUserPosts(fetchCriteria)),
   }
 }
 

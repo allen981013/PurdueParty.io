@@ -35,13 +35,16 @@ import DiningInfo from './components/dining/DiningInfo';
 import BusInfo from './components/transportation/BusInfo';
 import Gym from './components/gym/Gym';
 import Theme from './Theme';
+import Saved from './components/saved/Saved';
 
 import SearchProfiles from './components/profile/SearchProfiles';
 import Classes from './components/forum/Classes';
 
 import ThemeProvider from './components/UI/ThemeProvider';
-import { createTheme } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+//import { createTheme } from '@material-ui/core/styles';
+//import CssBaseline from '@material-ui/core/CssBaseline';
 
 function App() {
 
@@ -88,7 +91,11 @@ function App() {
             <Route path='/forum/all' component={Classes} />
             <Route path='/forum/:classID/:postID/:commentID/edit' component={EditComment} />
             <Route path='/forum/:classID/:postID' render={({ match }) => {
-              return <ThreadPage classID={match.params.classID} postID={match.params.postID} />
+              return <ThreadPage classID={match.params.classID} postID={match.params.postID} savePost={function (postID: string): void {
+                throw new Error('Function not implemented.');
+              } } removeSavePost={function (postID: string): void {
+                throw new Error('Function not implemented.');
+              } } />
             }} />
             <Route path='/forum/:classID' render={({ match }) => {
               return <ClassPage classID={match.params.classID} />

@@ -1,6 +1,7 @@
 import { Dispatch, Action } from 'redux';
 import { addDoc, Timestamp } from '@firebase/firestore';
 import { firebaseStorageRef } from '../..';
+import { arrayRemove, arrayUnion } from 'firebase/firestore';
 
 
 export const messageListingOwner = (senderID: string, receiverID: string, listingID: string, message: string) => {
@@ -295,5 +296,43 @@ export const deleteSellListing = (listing: any) => {
         }).catch((err: any) => {
             dispatch({ type: 'DELETE_LISTING_ERR', err });
         });
+    }
+}
+
+export const saveListing = (event: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        const firebase = getFirebase();
+        console.log(event);
+        const user = firebase.auth().currentUser;
+        var docref = db.collection('users').doc(user.uid);
+
+        docref.update({
+            savedListings: arrayUnion(event),
+        }).then(() => {
+            dispatch({ type: 'SAVE_LISTING_SUCCESS' })
+            window.alert("Listing Saved Successfully!")
+        }).catch((err: any) => {
+            dispatch({ type: 'SAVE_LISTING_ERROR', err })
+        });;
+    }
+}
+
+export const removeSaveListing = (event: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        const firebase = getFirebase();
+        console.log(event);
+        const user = firebase.auth().currentUser;
+        var docref = db.collection('users').doc(user.uid);
+
+        docref.update({
+            savedListings: arrayRemove(event),
+        }).then(() => {
+            dispatch({ type: 'SAVE_REMOVE_LISTING_SUCCESS' })
+            window.alert("Listing Removed From Saved Successfully!")
+        }).catch((err: any) => {
+            dispatch({ type: 'SAVE_REMOVE_LISTING_ERROR', err })
+        });;
     }
 }

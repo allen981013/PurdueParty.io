@@ -5,6 +5,10 @@ import { RootState } from '../../store'
 import { Post } from './ClassPage'
 import { Class } from './ForumMainPage'
 
+export interface FetchCriteria {
+  sortBy: "RECENCY" | "POPULARITY";
+}
+
 // type for states returned by reducer
 export interface ForumMainPageReduxState {
   allClassesPosts: Post[];
@@ -97,12 +101,15 @@ export const fetchJoinedClasses = () => {
 }
 
 
-export const fetchAllClassesPosts = () => {
+export const fetchAllClassesPosts = (fetchCriteria: FetchCriteria) => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     // Build queries
     const db = getFirestore();
     var postsQueryPromise = db.collection("posts")
       .where("ancestorsIDs", "==", [])
+    postsQueryPromise = fetchCriteria.sortBy == "POPULARITY"
+      ? postsQueryPromise.orderBy("numComments", "desc").orderBy("postedDateTime", "desc")
+      : postsQueryPromise.orderBy("postedDateTime", "desc")
     var postsDocSnapshots = await postsQueryPromise.get()
     // Transform posts into the correct schema
     var posts: Post[] = postsDocSnapshots.docs.map((docSnapshot: any): Post => {
@@ -149,7 +156,7 @@ export const fetchAllClassesPosts = () => {
 }
 
 
-export const fetchJoinedClassesPosts = () => {
+export const fetchJoinedClassesPosts = (fetchCriteria: FetchCriteria) => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     // TODO: Get class IDs
     let classIDs: string[] = getState().auth.lastCheckedJoinedClassIDs
@@ -157,9 +164,17 @@ export const fetchJoinedClassesPosts = () => {
     classIDs = (classIDs != null) ? classIDs : []
     // Build queries
     const db = getFirestore();
-    var postsQueryPromises = classIDs.map(id_ => db.collection("posts")
+    var postsQueryPromises = fetchCriteria.sortBy == "POPULARITY"
+    ? classIDs.map(id_ => db.collection("posts")
       .where("classID", "==", id_)
       .where("ancestorsIDs", "==", [])
+      .orderBy("numComments", "desc")
+      .orderBy("postedDateTime", "desc")
+      .get())
+    : classIDs.map(id_ => db.collection("posts")
+      .where("classID", "==", id_)
+      .where("ancestorsIDs", "==", [])
+      .orderBy("postedDateTime", "desc")
       .get())
     var postsQuerySnapshots = (await Promise.all(postsQueryPromises))
     var postsDocSnapshots = postsQuerySnapshots.map(querySnapshot => querySnapshot.docs).flat()
@@ -208,7 +223,7 @@ export const fetchJoinedClassesPosts = () => {
 }
 
 
-export const fetchCurUserPosts = () => {
+export const fetchCurUserPosts = (fetchCriteria: FetchCriteria) => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     // Build queries
     const state = getState()
@@ -216,6 +231,9 @@ export const fetchCurUserPosts = () => {
     var postsQueryPromise = db.collection("posts")
       .where("ancestorsIDs", "==", [])
       .where("owner", "==", state.firebase.auth.uid)
+    postsQueryPromise = fetchCriteria.sortBy == "POPULARITY"
+      ? postsQueryPromise.orderBy("numComments", "desc").orderBy("postedDateTime", "desc")
+      : postsQueryPromise.orderBy("postedDateTime", "desc")
     var postsDocSnapshots = await postsQueryPromise.get()
     // Transform posts into the correct schema
     var posts: Post[] = postsDocSnapshots.docs.map((docSnapshot: any): Post => {

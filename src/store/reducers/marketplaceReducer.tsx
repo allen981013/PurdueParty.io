@@ -25,6 +25,18 @@ const marketplaceReducer = (state = initState, action: Action) => {
         case 'DELETE_LISTING_ERR':
             console.log("err deleting listing");
             return state;
+        case 'SAVE_LISTING_SUCCESS':
+            console.log('saved listing');
+            return state;
+        case 'SAVE_LISTING_ERROR':
+            console.log('error saving listing');
+            return state;
+        case 'SAVE_REMOVE_LISTING_SUCCESS':
+            console.log('removed saved listing');
+            return state;
+        case 'SAVE_REMOVE_LISTING_ERROR':
+            console.log('error removing saved listing');
+            return state;
         case 'CREATE_MESSAGE_SUCCESS':
             console.log("success creating message");
             return state;

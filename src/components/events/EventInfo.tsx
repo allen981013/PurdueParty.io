@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 import { firebaseStorageRef } from '../..'
 import { AppDispatch, RootState } from '../../store'
 import { EventInfoStatesRedux, fetchEventInfo } from './EventInfoSlice'
-import { deleteEvent, removeRSVPEvent, rsvpEvent } from '../../store/actions/eventActions'
+import { deleteEvent, removeRSVPEvent, removeSaveEvent, rsvpEvent, saveEvent } from '../../store/actions/eventActions'
 
 interface EventInfoProps {
   eventID: string;
@@ -21,6 +21,8 @@ interface EventInfoProps {
   deleteEvent: (eventID: string) => void,
   rsvpEvent: (eventID: string) => void,
   removeRSVPEvent: (eventID: string) => void,
+  saveEvent: (eventID: string) => void,
+  removeSaveEvent: (eventID: string) => void,
 }
 
 interface EventInfoStates {
@@ -83,12 +85,27 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
     //window.location.reload();
   }
 
+  handleSave = (event: any) => {
+    event.preventDefault();
+    console.log("SAVE EVENT");
+    this.props.saveEvent(this.props.eventID);
+    //window.location.reload();
+  }
+
+  handleRemoveSave = (event: any) => {
+    event.preventDefault();
+    console.log("REMOVE EVENT FROM SAVED");
+    this.props.removeSaveEvent(this.props.eventID);
+    //window.location.reload();
+  }
+
   componentDidMount() {
     this.props.fetchEventInfo(this.props.eventID)
   }
 
   render() {
     const { auth } = this.props;
+    console.log(this.props);
     if (!auth.uid) return <Redirect to='/signin' />
     if (!this.props.hasInfoFetched)
       return (
@@ -116,6 +133,25 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
       >
         Remove RSVP
       </Button>
+    }
+    var saveCode: any = <div></div>;
+    if (this.props.event.attendees.indexOf(auth.uid) < 0){
+      saveCode = <Button 
+      // variant="outlined"
+      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      onClick={this.handleSave}
+      >
+    Save
+    </Button>
+    }
+    else {
+      saveCode = <Button 
+      // variant="outlined"
+      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      onClick={this.handleRemoveSave}
+      >
+    Remove From Saved
+    </Button>
     }
     return (
       <Box
@@ -282,7 +318,9 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
     fetchEventInfo: (eventID: string) => dispatch(fetchEventInfo(eventID)),
     deleteEvent: (eventID: string) => dispatch(deleteEvent(eventID)),
     rsvpEvent: (eventID: string) => dispatch(rsvpEvent(eventID)),
-    removeRSVPEvent: (eventID: string) => dispatch(removeRSVPEvent(eventID))
+    removeRSVPEvent: (eventID: string) => dispatch(removeRSVPEvent(eventID)),
+    saveEvent: (eventID: string) => dispatch(saveEvent(eventID)),
+    removeSaveEvent: (eventID: string) => dispatch(removeSaveEvent(eventID))
   }
 }
 

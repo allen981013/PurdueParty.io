@@ -10,7 +10,7 @@ import { Link, Redirect } from 'react-router-dom'
 import { EditOutlined } from '@mui/icons-material';
 import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
-import { addComment, addCommentOnComment, deletePost, deleteComment, addOrRemovePostVotes, addOrRemoveUserVotes } from '../../store/actions/postActions';
+import { addComment, addCommentOnComment, deletePost, deleteComment, addOrRemovePostVotes, addOrRemoveUserVotes, savePost, removeSavePost } from '../../store/actions/postActions';
 
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -55,6 +55,8 @@ interface ThreadPageProps {
   addComment?: (comment: any) => void;
   addCommentOnComment?: (comment: any) => void
   deleteComment?: (commentID: string) => void;           //DELETE??????????????????
+  savePost: (postID: string) => void,
+  removeSavePost: (postID: string) => void
 }
 
 interface ThreadPageStates {
@@ -282,6 +284,20 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     })
   }
 
+  handleSave = (event: any) => {
+    event.preventDefault();
+    console.log("SAVE POST");
+    this.props.savePost(this.props.postID);
+    //window.location.reload();
+  }
+
+  handleRemoveSave = (event: any) => {
+    event.preventDefault();
+    console.log("REMOVE POST FROM SAVED");
+    this.props.removeSavePost(this.props.postID);
+    //window.location.reload();
+  }
+
   getPost = (post: ThreadNode) => {
     let index = this.state.voteStates.findIndex(element => element.ID === post.ID)
     if (index == -1) {
@@ -289,6 +305,25 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     }
     index = this.state.voteStates.findIndex(element => element.ID === post.ID)
     var editCode: any = <div></div>;
+    var saveCode: any = <div></div>;
+    if (this){
+      saveCode = <Button 
+      // variant="outlined"
+      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      onClick={this.handleSave}
+      >
+    Save
+    </Button>
+    }
+    else {
+      saveCode = <Button 
+      // variant="outlined"
+      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      onClick={this.handleRemoveSave}
+      >
+      Remove From Saved
+      </Button>
+    }
     var commentCode: any = <div id="myComment" hidden>
       <input type="text" value={this.state.description} placeholder="Tell us more!" id="myComment"
         onChange={this.handleChangeDescription} />
@@ -705,6 +740,8 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
     addCommentOnComment: (post: any) => dispatch(addCommentOnComment(post)),
     addOrRemoveUserVotes: (userID: string, postOrCommentID: string, upvoted: boolean, downvoted: boolean) => dispatch(addOrRemoveUserVotes(userID, postOrCommentID, upvoted, downvoted)),
     addOrRemovePostVotes: (postOrCommentID: string, numVotesChanged: any) => dispatch(addOrRemovePostVotes(postOrCommentID, numVotesChanged)),
+    savePost: (postID: string) => dispatch(savePost(postID)),
+    removeSavePost: (postID: string) => dispatch(removeSavePost(postID)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         reduxDispatch(threadPageSlice.actions.fetchPostBegin())

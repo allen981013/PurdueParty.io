@@ -1,6 +1,6 @@
 import { Dispatch, Action } from 'redux';
 import { Timestamp } from '@firebase/firestore';
-import { arrayUnion, increment } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, increment } from 'firebase/firestore';
 import { RootState } from '..';
 
 // Need to explicitly define these types at some point
@@ -329,5 +329,43 @@ export const updateUserClass = (userClass: any) => {
         lastCheckedJoinedClassIDs: userClass.classJoin
       }
     })
+  }
+}
+
+export const savePost = (event: any) => {
+  return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+      const db = getFirestore();
+      const firebase = getFirebase();
+      console.log(event);
+      const user = firebase.auth().currentUser;
+      var docref = db.collection('users').doc(user.uid);
+
+      docref.update({
+          savedPosts: arrayUnion(event),
+      }).then(() => {
+          dispatch({ type: 'SAVE_POST_SUCCESS' })
+          window.alert("Post Saved Successfully!")
+      }).catch((err: any) => {
+          dispatch({ type: 'SAVE_POST_ERROR', err })
+      });;
+  }
+}
+
+export const removeSavePost = (event: any) => {
+  return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+      const db = getFirestore();
+      const firebase = getFirebase();
+      console.log(event);
+      const user = firebase.auth().currentUser;
+      var docref = db.collection('users').doc(user.uid);
+
+      docref.update({
+          savedPosts: arrayRemove(event),
+      }).then(() => {
+          dispatch({ type: 'SAVE_REMOVE_POST_SUCCESS' })
+          window.alert("Post Removed From Saved Successfully!")
+      }).catch((err: any) => {
+          dispatch({ type: 'SAVE_REMOVE_POST_ERROR', err })
+      });;
   }
 }
