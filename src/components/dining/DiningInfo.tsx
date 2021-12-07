@@ -20,7 +20,8 @@ interface DiningInfoState {
     surveyResult: any,
     diningCourt: string,
     needUpdate: boolean,
-    diningStatus: string
+    diningStatus: string,
+    lastData: string
 }
 
 interface DiningInfoProps {
@@ -44,7 +45,8 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
             surveyResult: null,
             diningCourt: this.props.diningName,
             needUpdate: true,
-            diningStatus: ""
+            diningStatus: "",
+            lastData: null
         };
     }
 
@@ -135,7 +137,7 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
         if (!auth.uid) return <Redirect to='/signin' />
 
         var status = "";
-        if (this.props.diningCourt != undefined && this.state.needUpdate) {
+        if ((this.props.diningCourt != undefined) && (this.state.needUpdate || (this.state.lastData !== JSON.stringify(this.props.diningCourt)))) {
             const surveyInfo = this.props.diningCourt;
             if (surveyInfo.length < 4) {
                 status = "Not Enough Data"
@@ -159,7 +161,8 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
 
             this.setState({
                 needUpdate: false,
-                diningStatus: status
+                diningStatus: status,
+                lastData: JSON.stringify(this.props.diningCourt)
             })
         }
         console.log(status);

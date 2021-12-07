@@ -281,3 +281,41 @@ export const removeRSVPEvent = (event: any) => {
         });;
     }
 }
+
+export const saveEvent = (event: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        const firebase = getFirebase();
+        console.log(event);
+        const user = firebase.auth().currentUser;
+        var docref = db.collection('users').doc(user.uid);
+
+        docref.update({
+            savedEvents: arrayUnion(event),
+        }).then(() => {
+            dispatch({ type: 'SAVE_EVENT_SUCCESS' })
+            window.alert("Event Saved Successfully!")
+        }).catch((err: any) => {
+            dispatch({ type: 'SAVE_EVENT_ERROR', err })
+        });;
+    }
+}
+
+export const removeSaveEvent = (event: any) => {
+    return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
+        const db = getFirestore();
+        const firebase = getFirebase();
+        console.log(event);
+        const user = firebase.auth().currentUser;
+        var docref = db.collection('users').doc(user.uid);
+
+        docref.update({
+            savedEvents: arrayRemove(event),
+        }).then(() => {
+            dispatch({ type: 'SAVE_REMOVE_EVENT_SUCCESS' })
+            window.alert("Event Removed From Saved Successfully!")
+        }).catch((err: any) => {
+            dispatch({ type: 'SAVE_REMOVE_EVENT_ERROR', err })
+        });;
+    }
+}

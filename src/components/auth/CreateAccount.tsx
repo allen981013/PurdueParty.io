@@ -18,6 +18,9 @@ interface CreateAccountState {
   profilePic: File,
   redirect: boolean,
   errormsg: string,
+  savedEvents: string[],
+  savedListings: string[],
+  savedPosts: string[],
 }
 
 // Interface/type for create account Props
@@ -42,7 +45,10 @@ class CreateAccount extends Component<CreateAccountProps, CreateAccountState> {
       canEditClubs: [],
       profilePic: null as any,
       redirect: false,
-      errormsg: ""
+      errormsg: "",
+      savedEvents: [],
+      savedListings: [],
+      savedPosts: []
     };
   }
 

@@ -9,7 +9,7 @@ import { Button } from '@mui/material';
 import { EditOutlined } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import './MarketPlace.css';
-import { messageListingOwner } from '../../store/actions/sellListingActions';
+import { messageListingOwner, removeSaveListing, saveListing } from '../../store/actions/sellListingActions';
 
 // Interface/type for Events State
 interface genericSelllistingState {
@@ -35,7 +35,9 @@ interface genericSelllistingProps {
   users: {
     bio: string,
     userName: string
-  }[]
+  }[],
+  saveListing: (listingID: string) => void,
+  removeSaveListing: (listingID: string) => void
 }
 
 const boldText = {
@@ -83,6 +85,20 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
     })
   }
 
+  handleSave = (event: any) => {
+    event.preventDefault();
+    console.log("SAVE LISTING");
+    this.props.saveListing(this.props.match.params.itemID);
+    //window.location.reload();
+  }
+
+  handleRemoveSave = (event: any) => {
+    event.preventDefault();
+    console.log("REMOVE LISTING FROM SAVED");
+    this.props.removeSaveListing(this.props.match.params.itemID);
+    //window.location.reload();
+  }
+
   render() {
     const { auth } = this.props;
     if (!auth.uid) return <Redirect to='/signin' />
@@ -103,6 +119,25 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
     }
 
     var editCode: any = <div></div>;
+    var saveCode: any = <div></div>;
+    if (this){
+      saveCode = <Button 
+      // variant="outlined"
+      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      onClick={this.handleSave}
+      >
+    Save
+    </Button>
+    }
+    else {
+      saveCode = <Button 
+      // variant="outlined"
+      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      onClick={this.handleRemoveSave}
+      >
+      Remove From Saved
+      </Button>
+    }
     var messageField: any = <div></div>;
     var messagingSection: any = <div></div>;
     if (userOnlyRender) {
@@ -198,7 +233,9 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Return functions for signIn
   return {
-    messageListingOwner: (senderID: string, receiverID: string, listingID: string, message: string) => dispatch(messageListingOwner(senderID, receiverID, listingID, message))
+    messageListingOwner: (senderID: string, receiverID: string, listingID: string, message: string) => dispatch(messageListingOwner(senderID, receiverID, listingID, message)),
+    saveListing: (listingID: string) => dispatch(saveListing(listingID)),
+    removeSaveListing: (listingID: string) => dispatch(removeSaveListing(listingID))
   }
 }
 

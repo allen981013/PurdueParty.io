@@ -89,6 +89,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             <Button component={Link} to="/laundry">Laundry</Button>
             <Button component={Link} to="/transportation">Bus</Button>
             <Button component={Link} to="/clubs">Clubs</Button>
+            <Button component={Link} to="/saved">Saved</Button>
           </Box>
           <List
             sx={{
@@ -132,6 +133,9 @@ class NavBar extends Component<NavBarProps, NavBarState> {
               </ListItemButton>
               <ListItemButton alignItems={"center"} component={Link} to="/clubs">
                 <ListItemText>Clubs</ListItemText>
+              </ListItemButton>
+              <ListItemButton alignItems={"center"} component={Link} to="/saved">
+                <ListItemText>Saved</ListItemText>
               </ListItemButton>
             </Collapse>
           </List>

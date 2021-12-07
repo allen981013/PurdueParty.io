@@ -76,7 +76,18 @@ const postReducer = (state = initState, action: Action) => {
         case 'ADD_CLASS_ERR':
             console.log('error adding new class');
             return state;
-
+        case 'SAVE_POST_SUCCESS':
+            console.log('saved post');
+            return state;
+        case 'SAVE_POST_ERROR':
+            console.log('error saving post');
+            return state;
+        case 'SAVE_REMOVE_POST_SUCCESS':
+            console.log('removed saved post');
+            return state;
+        case 'SAVE_REMOVE_LISTING_ERROR':
+            console.log('error removing saved listing');
+            return state;
         default:
             return state;
     }

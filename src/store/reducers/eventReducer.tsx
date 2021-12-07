@@ -55,6 +55,18 @@ const eventReducer = (state = initState, action: Action) => {
                 ...state,
                 deleteEventError: false,
             }
+        case 'SAVE_EVENT_SUCCESS':
+            console.log('saved event');
+            return state;
+        case 'SAVE_EVENT_ERROR':
+            console.log('error saving event');
+            return state;
+        case 'SAVE_REMOVE_EVENT_SUCCESS':
+            console.log('removed saved event');
+            return state;
+        case 'SAVE_REMOVE_EVENT_ERROR':
+            console.log('error removing saved event');
+            return state;
         default:
             return state;
     }
