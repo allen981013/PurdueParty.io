@@ -31,7 +31,8 @@ interface LaundryInfoState {
     status: string,
     avgScore: number,
     washers: number,
-    dryers: number
+    dryers: number,
+    lastData: string
 }
 
 interface LaundryInfoProps {
@@ -109,7 +110,8 @@ class LaundryInfo extends Component<LaundryInfoProps, LaundryInfoState> {
             status: "",
             avgScore: 0,
             washers: washers,
-            dryers: dryers
+            dryers: dryers,
+            lastData: null
         };
     }
 
@@ -169,7 +171,7 @@ class LaundryInfo extends Component<LaundryInfoProps, LaundryInfoState> {
         } else {
             this.props.submitSurveyData(this.state);
             this.setState({
-                needUpdate: true
+                needUpdate: true,
             })
             window.alert("Status of laundry location submitted.")
         }
@@ -197,7 +199,7 @@ class LaundryInfo extends Component<LaundryInfoProps, LaundryInfoState> {
         /* Check if state / props are loaded properly */
         var status = "";
 
-        if (this.props.laundryLocation != undefined && this.state.needUpdate) {
+        if (this.props.laundryLocation != undefined && (this.state.needUpdate || this.state.lastData !== this.props.laundryLocation)) {
             const surveyInfo = this.props.laundryLocation;
             if (surveyInfo.length < 4) {
                 status = "Not Enough Recent Data"
@@ -222,7 +224,8 @@ class LaundryInfo extends Component<LaundryInfoProps, LaundryInfoState> {
             this.setState({
                 needUpdate: false,
                 status: status,
-                avgScore: avgScore
+                avgScore: avgScore,
+                lastData: this.props.laundryLocation 
             })
         }
         console.log("HERE NOW")
