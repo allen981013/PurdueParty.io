@@ -35,7 +35,12 @@ import DiningInfo from './components/dining/DiningInfo';
 import BusInfo from './components/transportation/BusInfo';
 import Gym from './components/gym/Gym';
 import Theme from './Theme';
+
+import LaundryLanding from './components/laundry/LaundryLanding';
+import LaundryInfo from './components/laundry/LaundryInfo';
+
 import Saved from './components/saved/Saved';
+
 
 import SearchProfiles from './components/profile/SearchProfiles';
 import Classes from './components/forum/Classes';
@@ -119,6 +124,12 @@ function App() {
               return <DiningInfo diningName={match.params.diningName} />
             }} />
             <Route path='/transportation' component={BusInfo} />
+            
+            <Route exact path='/laundry' component={LaundryLanding} />
+            <Route path='/laundry/:laundryName' render={({ match }) => {
+              return <LaundryInfo laundryName={match.params.laundryName} />
+            }} />
+            
           </Switch>
           <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
           <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
