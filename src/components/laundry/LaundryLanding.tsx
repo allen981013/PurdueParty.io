@@ -10,9 +10,11 @@ import {
   Box, Button, CircularProgress, Grid, Card, CardActionArea,
   CardMedia, CardContent, Typography
 } from '@mui/material';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { LAUNDRIES_TUTORIAL_1, LAUNDRIES_TUTORIAL_2, LAUNDRIES_TUTORIAL_3} from '../tutorial/Constants'
 
 interface LaundryLandingState {
-
 }
 
 interface LaundryLandingProps {
@@ -21,25 +23,19 @@ interface LaundryLandingProps {
   }[],
   auth: any,
   firebase: any,
+  pageVisitInfo: PageVisitInfo;
+  updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
   placeDownloadURLS: () => void
 }
 
 class LaundryLanding extends Component<LaundryLandingProps, LaundryLandingState> {
 
   readonly laundryLocations = ["Wiley", "Ford", "Hillenbrad", "Earhart", "Windsor"];
-
-  // Note : Uncomment this whenever we want to update the dining court photos.
-  // Note : Must have already updated the photos manually in Firebase Storage
-  // Note : This only needs to run once. After you re-render, re-comment this out until next update.
-  //   componentDidMount() {
-  //       this.props.placeDownloadURLS();
-  //   }
-    
+  isTutorialRendered = false
 
   constructor(props: LaundryLandingProps) {
     super(props);
     this.state = {
-
     }
   }
 
@@ -88,6 +84,20 @@ class LaundryLanding extends Component<LaundryLandingProps, LaundryLandingState>
     
     FOLLOW UP COMMENT: If this is still needed, change the 'md' props value in getCard to 6 - Raziq
     */
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.laundriesPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(LAUNDRIES_TUTORIAL_1)
+      toast.info(LAUNDRIES_TUTORIAL_2)
+      toast.info(LAUNDRIES_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        laundriesPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     return (
       <Box
         display="flex"
@@ -123,13 +133,15 @@ class LaundryLanding extends Component<LaundryLandingProps, LaundryLandingState>
 const mapStateToProps = (state: RootState) => {
   return {
     auth: state.firebase.auth,
-    laundry: state.firestore.ordered.laundry
+    laundry: state.firestore.ordered.laundry,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     placeDownloadURLS: () => dispatch(placeDownloadURLS())
   }
 }

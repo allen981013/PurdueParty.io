@@ -59,6 +59,7 @@ export const fetchClassPosts = (classID: string, fetchCriteria: FetchCriteria) =
         content: post.content,
         poster: post.owner, // store poster's UID first
         numComments: post.numComments,
+        numUpvotes: post.voteCount,
         href: "/forum/" + post.classID + "/" + post.postId,
         timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
         classID: post.classID,

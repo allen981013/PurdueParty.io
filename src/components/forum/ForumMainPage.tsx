@@ -11,7 +11,11 @@ import { fetchAllClassesPosts, fetchCurUserPosts, fetchJoinedClasses, fetchJoine
 import { Post } from "./ClassPage";
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import StarRateIcon from '@mui/icons-material/StarRate';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ThumbsUpIcon from '@mui/icons-material/ThumbUp';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { FORUM_TUTORIAL_1, FORUM_TUTORIAL_2, FORUM_TUTORIAL_3} from '../tutorial/Constants'
 
 export interface Class {
   title: string;
@@ -24,6 +28,8 @@ interface ForumMainPageProps {
   joinedClassesPosts: Post[];
   curUserPosts: Post[];
   joinedClasses: Class[];
+  pageVisitInfo: PageVisitInfo;
+  updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
   fetchJoinedClasses: () => void;
   fetchAllClassesPosts: (fetchCriteria: FetchCriteria) => void;
   fetchJoinedClassesPosts: (fetchCriteria: FetchCriteria) => void;
@@ -38,6 +44,7 @@ interface ForumMainPageStates {
 class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageStates> {
 
   fetchCriteria: FetchCriteria = { sortBy: "RECENCY" }
+  isTutorialRendered = false
 
   constructor(props: ForumMainPageProps) {
     super(props)
@@ -116,6 +123,15 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
                   />
                   {post.numComments} Comments
                 </Button>
+                <Button
+                  onClick={e => { e.stopPropagation(); e.preventDefault() }}
+                  sx={{ textTransform: "none", color: "#787c7e", fontWeight: "bold", fontSize: "12px" }}
+                >
+                  <ArrowUpwardIcon
+                    sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
+                  />
+                  {post.numUpvotes} upvotes
+                </Button>
               </Box>
             </CardContent>
           </CardActionArea>
@@ -131,7 +147,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
         <Box pt="192px"><CircularProgress /></Box>
       )
     return (
-      <Box pt="32px">
+      <Box pt="16px">
         {posts.length == 0
           && <Box pt="192px">No posts have been created yet</Box>}
         {posts.length != 0
@@ -142,7 +158,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
 
   getClassesSidebar() {
     return (
-      <Box mt="80px">
+      <Box mt="72px">
         {/* <Box> */}
         <Card>
           <Box
@@ -158,7 +174,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
               alignItems: this.props.joinedClasses && this.props.joinedClasses.length > 0 ?
                 "flex-start" :
                 "center",
-
+              padding: "24px 24px 32px",
             }}
           >
             {!this.props.joinedClasses
@@ -171,13 +187,19 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
             {this.props.joinedClasses
               && this.props.joinedClasses.length != 0
               && this.props.joinedClasses.map(class_ =>
+                // <Card sx={{ width: "100%" }}>
+                //   <CardActionArea component={Link} to={class_.href}>
+                //     <CardContent>{class_.title}</CardContent>
+                //   </CardActionArea>
+                // </Card>
                 <Typography
                   component={Link}
                   to={class_.href}
                   variant="body2"
                   sx={{ color: "#00000099", padding: "8px 4px" }}
                 >{class_.title}
-                </Typography>)
+                </Typography>
+              )
             }
           </CardContent>
         </Card>
@@ -215,7 +237,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
     }));
     // Return the sorting bar
     return (
-      <Box display="flex" mb="16px" width="100%">
+      <Box display="flex" mt="24px" width="100%">
         <Card sx={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
           <StyledToggleButtonGroup
             size="small"
@@ -266,7 +288,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
     // Return the sorting bar
     console.log(this.fetchCriteria);
     return (
-      <Box display="flex" mb="16px" width="100%">
+      <Box display="flex" mt="24px" width="100%">
         <Card sx={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
           <StyledToggleButtonGroup
             size="small"
@@ -316,7 +338,7 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
     }));
     // Return the sorting bar
     return (
-      <Box display="flex" mb="16px" width="100%">
+      <Box display="flex" mt="24px" width="100%">
         <Card sx={{ width: "100%", display: "flex", justifyContent: "flex-start" }}>
           <StyledToggleButtonGroup
             size="small"
@@ -349,6 +371,20 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
 
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.forumHomePage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(FORUM_TUTORIAL_1)
+      toast.info(FORUM_TUTORIAL_2)
+      toast.info(FORUM_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        forumHomePage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     return (
       <Box width="1200px" p="40px 0px 40px" display="flex" flexDirection="column" alignSelf="center">
         <Grid container spacing={2}>
@@ -364,7 +400,6 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
                 <Tab label="My Posts" onClick={() => this.props.fetchCurUserPosts(this.fetchCriteria)}/>
               </Tabs>
             </Box>
-            {console.log(this.state.currentTabIndex)}
             {this.state.currentTabIndex == 0 && this.getSortingBarJoined()}
             {this.state.currentTabIndex == 1 && this.getSortingBarAll()}
             {this.state.currentTabIndex == 2 && this.getSortingBar()}
@@ -388,11 +423,14 @@ const mapStateToProps = (state: RootState) => {
     allClassesPosts: state.forumMainPage.allClassesPosts,
     curUserPosts: state.forumMainPage.curUserPosts,
     joinedClasses: state.forumMainPage.joinedClasses,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
   }
+
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ForumMainPageProps) => {
   return {
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     fetchJoinedClasses: () => dispatch(fetchJoinedClasses()),
     fetchAllClassesPosts: (fetchCriteria: FetchCriteria) => dispatch(fetchAllClassesPosts(fetchCriteria)),
     fetchJoinedClassesPosts: (fetchCriteria: FetchCriteria) => dispatch(fetchJoinedClassesPosts(fetchCriteria)),

@@ -17,6 +17,8 @@ export interface PageVisitInfo {
   forumHomePage: boolean;
   gymPage: boolean;
   homePage: boolean;
+  laundriesPage: boolean,
+  laundryInfoPage: boolean,
   marketplaceItemPage: boolean;
   marketplacePage: boolean;
   profilePage: boolean;
@@ -36,6 +38,8 @@ const initialPageVisitInfo: PageVisitInfo = {
   forumHomePage: false,
   gymPage: false,
   homePage: false,
+  laundriesPage: false,
+  laundryInfoPage: false,
   marketplaceItemPage: false,
   marketplacePage: false,
   profilePage: false,
@@ -113,6 +117,8 @@ export const fetchPageVisitInfo = () => {
           forumHomePage: rawInfo.forumHomePage,
           gymPage: rawInfo.gymPage,
           homePage: rawInfo.homePage,
+          laundriesPage: rawInfo.laundriesPage,
+          laundryInfoPage: rawInfo.laundryInfoPage,
           marketplaceItemPage: rawInfo.marketplaceItemPage,
           marketplacePage: rawInfo.marketplacePage,
           profilePage: rawInfo.profilePage,

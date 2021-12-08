@@ -11,6 +11,9 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { ClubsFetchParameter } from './ClubsPageSlice';
 import { fetchClubs } from './ClubsPageSlice';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { CLUBS_TUTORIAL_1, CLUBS_TUTORIAL_2, CLUBS_TUTORIAL_3} from '../tutorial/Constants'
 
 // Interface/type for Clubs State
 interface ClubsState {
@@ -26,6 +29,8 @@ export interface ClubsProps {
   }[];
   auth: any;
   firebase: any;
+  pageVisitInfo: PageVisitInfo;
+  updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
   fetchClubs: (fetchParameter: ClubsFetchParameter) => void;
 }
 
@@ -35,6 +40,8 @@ class Clubs extends Component<ClubsProps, ClubsState> {
   fetchParameter: ClubsFetchParameter = {
     searchKeyword: "",
   }
+
+  isTutorialRendered = false
 
   // Initialize state
   constructor(props: ClubsProps) {
@@ -125,8 +132,21 @@ class Clubs extends Component<ClubsProps, ClubsState> {
 
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
-
-    console.log(this.props.clubs)
+    
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.clubsPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(CLUBS_TUTORIAL_1)
+      toast.info(CLUBS_TUTORIAL_2)
+      toast.info(CLUBS_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        clubsPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
 
     return (
       <Box
@@ -171,6 +191,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     clubs: state.clubsPage.clubs,
     auth: state.firebase.auth,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
   }
 }
 
@@ -178,6 +199,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
     fetchClubs: (fetchParameter: ClubsFetchParameter) => dispatch(fetchClubs(fetchParameter)),
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     updateFetchParameter: (fetchParameter: any) => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any
       ) => {

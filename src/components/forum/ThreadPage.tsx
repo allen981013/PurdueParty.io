@@ -11,16 +11,16 @@ import { EditOutlined } from '@mui/icons-material';
 import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
 import { addComment, addCommentOnComment, deletePost, deleteComment, addOrRemovePostVotes, addOrRemoveUserVotes, savePost, removeSavePost } from '../../store/actions/postActions';
-
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-
 import ToggleButton from '@mui/material/ToggleButton';
-
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { THREAD_TUTORIAL_1, THREAD_TUTORIAL_2, THREAD_TUTORIAL_3} from '../tutorial/Constants'
 
 export interface ThreadNode { // Refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
@@ -47,6 +47,8 @@ interface ThreadPageProps {
   auth?: FirebaseReducer.AuthState;
   currentUsername?: string;
   isDataFetched?: boolean;
+  pageVisitInfo?: PageVisitInfo;
+  updatePageVisitInfo?: (newPageVisitInfo: PageVisitInfo) => void;
   addOrRemoveUserVotes?: (userID: string, postOrCommentID: string, upvoted: boolean, downvoted: boolean) => void
   addOrRemovePostVotes?: (postOrCommentID: string, numVotesChanged: any) => void
   clearFetchedDocs?: () => void;
@@ -74,6 +76,9 @@ interface ThreadPageStates {
 }
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
+
+  isTutorialRendered = false
+ 
   // Initialize state
   constructor(props: ThreadPageProps) {
     super(props);
@@ -306,22 +311,22 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     index = this.state.voteStates.findIndex(element => element.ID === post.ID)
     var editCode: any = <div></div>;
     var saveCode: any = <div></div>;
-    if (this){
-      saveCode = <Button 
-      // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-      onClick={this.handleSave}
+    if (this) {
+      saveCode = <Button
+        // variant="outlined"
+        sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%" }}
+        onClick={this.handleSave}
       >
-    Save
-    </Button>
+        Save
+      </Button>
     }
     else {
-      saveCode = <Button 
-      // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-      onClick={this.handleRemoveSave}
+      saveCode = <Button
+        // variant="outlined"
+        sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%" }}
+        onClick={this.handleRemoveSave}
       >
-      Remove From Saved
+        Remove From Saved
       </Button>
     }
     var commentCode: any = <div id="myComment" hidden>
@@ -405,7 +410,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         >
           {post.content}
         </Typography>
-        <Box pt="8px">
+        <Box pt="8px" display="flex" alignItems="center">
           <Button
             onClick={this.showComment}
             /*component={Link}
@@ -420,27 +425,27 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             />
             Reply ({post.numComments} Comments)
           </Button>
-          {commentCode}
-
-
           <ToggleButton
             value="thumbup"
             selected={this.state.voteStates[index].upvoted}
             onChange={() => this.changeUpvoteState(index, post.ID)}
+            sx={{ padding: "4px 4px", border: "none", background: "transparent !important" }}
           >
             <ThumbUpIcon sx={{ fontSize: "16px" }} />
           </ToggleButton>
-          <Box component="span" sx={{ p: 1.5 }}>
+          <Box component="span" sx={{ p: "4px", color: "#787c7e"}}>
             {this.state.voteStates[index].voteCount}
           </Box>
           <ToggleButton
             value="thumbdown"
             selected={this.state.voteStates[index].downvoted}
             onChange={() => this.changeDownvoteState(index, post.ID)}
+            sx={{ padding: "4px 4px", border: "none", background: "transparent !important" }}
           >
             <ThumbDownIcon sx={{ fontSize: "16px" }} />
           </ToggleButton>
         </Box>
+        {commentCode}
       </Box>
     )
   }
@@ -573,7 +578,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                       {reply.content}
                     </Typography>
                     {/* Interaction widgets */}
-                    <Box pt="8px" display="flex" flexDirection="row">
+                    <Box pt="8px" display="flex" alignItems="center">
                       <Button
                         /*component={Link}
                         to={"/createCommentOnComment/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID}*/
@@ -588,31 +593,28 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                         />
                         Reply
                       </Button>
-                      {commentCode}
-
                       <ToggleButton
                         value="thumbup"
                         selected={this.state.voteStates[index].upvoted}
                         onChange={() => this.changeUpvoteState(index, reply.ID)}
+                        sx={{ padding: "4px 4px", border: "none", background: "transparent !important" }}
                       >
                         <ThumbUpIcon sx={{ fontSize: "16px" }} />
                       </ToggleButton>
-                      <Box component="span" sx={{ p: 1.5 }}>
+                      <Box component="span" sx={{ p: "4px", color: "#787c7e", verticalAlign: "center"}}>
                         {this.state.voteStates[index].voteCount}
                       </Box>
                       <ToggleButton
                         value="thumbdown"
                         selected={this.state.voteStates[index].downvoted}
                         onChange={() => this.changeDownvoteState(index, reply.ID)}
+                        sx={{ padding: "4px 4px", border: "none", background: "transparent !important" }}
                       >
                         <ThumbDownIcon sx={{ fontSize: "16px" }} />
                       </ToggleButton>
-
                       {dropdownMenu}
-
-
-
                     </Box >
+                    {commentCode}
                   </Box >
 
                 )
@@ -661,6 +663,20 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   render() {
     if (this.props.auth && !this.props.auth.uid) return <Redirect to='/signin' />
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.threadPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(THREAD_TUTORIAL_1)
+      toast.info(THREAD_TUTORIAL_2)
+      toast.info(THREAD_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        threadPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     if (!this.props.isDataFetched)
       return (
         <Box pt="32px"><CircularProgress /></Box>
@@ -728,6 +744,7 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
     classInfo: classInfo,
     isDataFetched: classes != undefined && state.threadPage.isPostFetched,
     currentUsername: state.auth.lastCheckedUsername,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
   }
 }
 
@@ -742,6 +759,7 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
     addOrRemovePostVotes: (postOrCommentID: string, numVotesChanged: any) => dispatch(addOrRemovePostVotes(postOrCommentID, numVotesChanged)),
     savePost: (postID: string) => dispatch(savePost(postID)),
     removeSavePost: (postID: string) => dispatch(removeSavePost(postID)),
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         reduxDispatch(threadPageSlice.actions.fetchPostBegin())

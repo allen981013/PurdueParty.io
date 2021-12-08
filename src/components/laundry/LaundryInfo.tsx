@@ -12,6 +12,9 @@ import {
     CardMedia, CardContent, Typography, styled
 } from '@mui/material';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { LAUNDRYINFO_TUTORIAL_1, LAUNDRYINFO_TUTORIAL_2, LAUNDRYINFO_TUTORIAL_3 } from '../tutorial/Constants'
 
 
 export interface FacilityInfo {
@@ -41,6 +44,8 @@ interface LaundryInfoProps {
     laundryErr?: string;
     laundryLocation?: any;
     laundryObject?: any;
+    pageVisitInfo?: PageVisitInfo;
+    updatePageVisitInfo?: (newPageVisitInfo: PageVisitInfo) => void;
     deleteStaleData?: (laundryLocation: string) => void;
     submitSurveyData?: (laundryInfo: any) => void;
 }
@@ -59,6 +64,8 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }));
 
 class LaundryInfo extends Component<LaundryInfoProps, LaundryInfoState> {
+
+    isTutorialRendered = false
 
     constructor(props: LaundryInfoProps) {
         super(props);
@@ -146,7 +153,6 @@ class LaundryInfo extends Component<LaundryInfoProps, LaundryInfoState> {
         )
     }
 
-
     componentDidMount() {
         //Delete stale data
         this.props.deleteStaleData(this.props.laundryName);
@@ -195,6 +201,20 @@ class LaundryInfo extends Component<LaundryInfoProps, LaundryInfoState> {
         const { auth } = this.props;
         const { error, isLoaded } = this.state;
         if (!auth.uid) return <Redirect to='/signin' />
+        if (this.props.pageVisitInfo 
+          && !this.props.pageVisitInfo.laundryInfoPage
+          && !this.isTutorialRendered
+          ) {
+          toast.info(LAUNDRYINFO_TUTORIAL_1)
+          toast.info(LAUNDRYINFO_TUTORIAL_2)
+          toast.info(LAUNDRYINFO_TUTORIAL_3)
+          let newPageVisitInfo: PageVisitInfo = {
+            ...this.props.pageVisitInfo,
+            laundryInfoPage: true,
+          }
+          this.props.updatePageVisitInfo(newPageVisitInfo)
+          this.isTutorialRendered = true
+        }
 
         /* Check if state / props are loaded properly */
         var status = "";
@@ -336,12 +356,14 @@ const mapStateToProps = (state: RootState) => {
     return {
         auth: state.firebase.auth,
         laundryLocation: state.firestore.ordered.laundryInfo,
+        pageVisitInfo: state.tutorial.pageVisitInfo,
         //laundryErr: state.laundry.laundryErr
     }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
     return {
+        updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
         deleteStaleData: (laundryLocation: string) => dispatch(deleteStaleData(laundryLocation)),
         submitSurveyData: (laundryInfo: any) => dispatch(submitSurveyData(laundryInfo))
     }

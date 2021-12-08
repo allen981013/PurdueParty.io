@@ -7,6 +7,9 @@ import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Box, Button, Grid, Card, CardContent, Typography, Stack } from '@mui/material';
 import { EditOutlined } from '@mui/icons-material';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { PROFILE_TUTORIAL_1, PROFILE_TUTORIAL_2, PROFILE_TUTORIAL_3} from '../tutorial/Constants'
 
 // Interface/type for Profile State
 interface ProfileState {
@@ -22,12 +25,16 @@ interface ProfileProps {
         email: string,
         image: string
     },
-    currentUser: string,
-    auth: any,
-    firebase: any
+    currentUser: string;
+    auth: any;
+    firebase: any;
+    pageVisitInfo: PageVisitInfo;
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
 }
 
 class Profile extends Component<ProfileProps, ProfileState> {
+  
+    isTutorialRendered = false
 
     constructor(props: ProfileProps) {
         super(props);
@@ -156,6 +163,21 @@ class Profile extends Component<ProfileProps, ProfileState> {
         const { auth } = this.props;
 
         if (!auth.uid) return <Redirect to='/signin' />
+        
+        if (this.props.pageVisitInfo 
+          && !this.props.pageVisitInfo.profilePage
+          && !this.isTutorialRendered
+          ) {
+          toast.info(PROFILE_TUTORIAL_1)
+          toast.info(PROFILE_TUTORIAL_2)
+          toast.info(PROFILE_TUTORIAL_3)
+          let newPageVisitInfo: PageVisitInfo = {
+            ...this.props.pageVisitInfo,
+            profilePage: true,
+          }
+          this.props.updatePageVisitInfo(newPageVisitInfo)
+          this.isTutorialRendered = true
+        }
 
         return (
             <div>
@@ -177,12 +199,14 @@ const mapStateToProps = (state: RootState) => {
     return {
         profile: state.firestore.ordered.authUserInfo !== undefined ? state.firestore.ordered.authUserInfo[0] : undefined,
         auth: state.firebase.auth,
-        currentUser: state.auth.lastCheckedUsername
+        currentUser: state.auth.lastCheckedUsername,
+        pageVisitInfo: state.tutorial.pageVisitInfo,
     }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
     return {
+        updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     }
 }
 

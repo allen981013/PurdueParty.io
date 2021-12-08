@@ -15,7 +15,6 @@ import { toast } from 'react-toastify';
 import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
 import { MARKETPLACE_TUTORIAL_1, MARKETPLACE_TUTORIAL_2, MARKETPLACE_TUTORIAL_3 } from '../tutorial/Constants'
 
-
 // Interface/type for Marketplace State
 interface MarketPlaceState {
   imageURL: string,
@@ -126,7 +125,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
           width="100%"
           pb="32px"
         >
-          <h1 style={{ fontWeight: 300, margin: "0px" }}>MarketPlace</h1>
+          <h1 style={{ fontWeight: 300, margin: "0px" }}>Marketplace</h1>
           <Button
             component={Link}
             to="marketplace/create-listing/"

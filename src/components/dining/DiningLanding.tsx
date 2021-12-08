@@ -10,9 +10,11 @@ import {
   Box, Button, CircularProgress, Grid, Card, CardActionArea,
   CardMedia, CardContent, Typography
 } from '@mui/material';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { DININGS_TUTORIAL_1, DININGS_TUTORIAL_2, DININGS_TUTORIAL_3} from '../tutorial/Constants'
 
 interface DiningLandingState {
-
 }
 
 interface DiningLandingProps {
@@ -21,21 +23,15 @@ interface DiningLandingProps {
   }[],
   auth: any,
   firebase: any,
+  pageVisitInfo: PageVisitInfo;
+  updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
   placeDownloadURLS: () => void
 }
 
 class DiningLanding extends Component<DiningLandingProps, DiningLandingState> {
 
   readonly diningCourts = ["Wiley", "Ford", "Hillenbrad", "Earhart", "Windsor"];
-
-  // Note : Uncomment this whenever we want to update the dining court photos.
-  // Note : Must have already updated the photos manually in Firebase Storage
-  // Note : This only needs to run once. After you re-render, re-comment this out until next update.
-  /*
-  componentDidMount() {
-      this.props.placeDownloadURLS();
-  }
-  */
+  isTutorialRendered = false;
 
   constructor(props: DiningLandingProps) {
     super(props);
@@ -74,9 +70,22 @@ class DiningLanding extends Component<DiningLandingProps, DiningLandingState> {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
     /* 
     Convert this to 2 vertical cols 
-    
     FOLLOW UP COMMENT: If this is still needed, change the 'md' props value in getCard to 6 - Raziq
     */
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.diningsPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(DININGS_TUTORIAL_1)
+      toast.info(DININGS_TUTORIAL_2)
+      toast.info(DININGS_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        diningsPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     return (
       <Box
         display="flex"
@@ -112,13 +121,15 @@ class DiningLanding extends Component<DiningLandingProps, DiningLandingState> {
 const mapStateToProps = (state: RootState) => {
   return {
     auth: state.firebase.auth,
-    diningCourts: state.firestore.ordered.diningCourts
+    diningCourts: state.firestore.ordered.diningCourts,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     placeDownloadURLS: () => dispatch(placeDownloadURLS())
   }
 }
