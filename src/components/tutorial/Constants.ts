@@ -40,9 +40,9 @@ export const GYM_TUTORIAL_1 = "Gym page tutorial"
 export const GYM_TUTORIAL_2: string = null
 export const GYM_TUTORIAL_3: string = null
 
-export const DINING_TUTORIAL_1 = "Dining page tutorial"
-export const DINING_TUTORIAL_2: string = null
-export const DINING_TUTORIAL_3: string = null
+export const DININGS_TUTORIAL_1 = "Dining page tutorial"
+export const DININGS_TUTORIAL_2: string = null
+export const DININGS_TUTORIAL_3: string = null
 
 export const DININGINFO_TUTORIAL_1 = "Dining info page tutorial"
 export const DININGINFO_TUTORIAL_2: string = null

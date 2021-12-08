@@ -1,10 +1,12 @@
 import { Button, Box, CircularProgress, Grid, styled, Typography } from "@mui/material"
 import React from "react"
 import { connect } from "react-redux"
-import { AppDispatch, RootState } from '../../store'
+import { RootState } from '../../store'
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { fetchFacilityInfos } from "./GymSlice";
-import useTheme from '@material-ui/core/styles/useTheme';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { GYM_TUTORIAL_1, GYM_TUTORIAL_2, GYM_TUTORIAL_3} from '../tutorial/Constants'
 
 export interface FacilityInfo {
   name: string;
@@ -17,7 +19,9 @@ interface GymProps {
   errorMessage?: string;
   lastUpdatedTime?: string;
   facilityInfos?: FacilityInfo[];
-  fetchFacilityInfos: () => void;
+  pageVisitInfo?: PageVisitInfo;
+  updatePageVisitInfo?: (newPageVisitInfo: PageVisitInfo) => void;
+  fetchFacilityInfos?: () => void;
 }
 
 interface GymStates {
@@ -38,6 +42,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 
 class Gym extends React.Component<GymProps, GymStates> {
 
+  isTutorialRendered = false
 
   constructor(props: GymProps) {
     super(props)
@@ -70,6 +75,20 @@ class Gym extends React.Component<GymProps, GymStates> {
   }
 
   render() {
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.gymPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(GYM_TUTORIAL_1)
+      toast.info(GYM_TUTORIAL_2)
+      toast.info(GYM_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        gymPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     return <Box
       display="flex"
       alignSelf="center"
@@ -112,11 +131,11 @@ class Gym extends React.Component<GymProps, GymStates> {
       }
     </Box>
   }
-
 }
 
 const mapStateToProps = ((state: RootState) => {
   return {
+    pageVisitInfo: state.tutorial.pageVisitInfo,
     lastUpdatedTime: state.gym.lastUpdatedTime,
     facilityInfos: state.gym.facilityInfos,
     errorMessage: state.gym.errorMessage,
@@ -125,6 +144,7 @@ const mapStateToProps = ((state: RootState) => {
 
 const mapDispatchToProps = ((dispatch: any) => {
   return {
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     fetchFacilityInfos: () => dispatch(fetchFacilityInfos()),
   }
 })
