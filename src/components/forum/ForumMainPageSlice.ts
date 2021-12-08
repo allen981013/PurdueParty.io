@@ -136,6 +136,7 @@ export const fetchAllClassesPosts = (fetchCriteria: FetchCriteria) => {
         content: post.content,
         poster: post.owner, // store poster's UID first
         numComments: post.numComments,
+        numUpvotes: post.voteCount,
         href: "/forum/" + post.classID + "/" + post.postId,
         timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
         classID: post.classID,
@@ -210,11 +211,13 @@ export const fetchJoinedClassesPosts = (fetchCriteria: FetchCriteria) => {
     // Transform posts into the correct schema
     var posts: Post[] = postsDocSnapshots.map((docSnapshot: any): Post => {
       let post = docSnapshot.data()
+      console.log({post})
       return {
         title: post.title,
         content: post.content,
         poster: post.owner, // store poster's UID first
         numComments: post.numComments,
+        numUpvotes: post.voteCount,
         href: "/forum/" + post.classID + "/" + post.postId,
         timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
         classID: post.classID,
@@ -278,6 +281,7 @@ export const fetchCurUserPosts = (fetchCriteria: FetchCriteria) => {
             content: post.content,
             poster: post.owner, // store poster's UID first
             numComments: post.numComments,
+            numUpvotes: post.voteCount,
             href: "/forum/" + post.classID + "/" + post.postId,
             timeSincePosted: moment(post.postedDateTime.toDate()).fromNow(),
             classID: post.classID,
