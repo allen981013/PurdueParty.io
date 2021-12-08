@@ -13,7 +13,6 @@ import {
     CardMedia, CardContent, Typography
 } from '@mui/material';
 import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
-import { toast } from 'react-toastify';
 import { DININGINFO_TUTORIAL_1, DININGINFO_TUTORIAL_2, DININGINFO_TUTORIAL_3} from '../tutorial/Constants'
 
 interface DiningInfoState {
