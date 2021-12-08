@@ -35,6 +35,9 @@ import DiningInfo from './components/dining/DiningInfo';
 import BusInfo from './components/transportation/BusInfo';
 import Gym from './components/gym/Gym';
 import Theme from './Theme';
+import LaundryLanding from './components/laundry/LaundryLanding';
+import LaundryInfo from './components/laundry/LaundryInfo';
+import Saved from './components/saved/Saved';
 import SearchProfiles from './components/profile/SearchProfiles';
 import Classes from './components/forum/Classes';
 import { ToastContainer, toast } from 'react-toastify';
@@ -43,6 +46,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 import ThemeProvider from './components/UI/ThemeProvider';
+//import { createTheme } from '@mui/material/styles';
+//import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { setPageVisitInfo } from './components/tutorial/TutorialSlice';
@@ -71,12 +76,13 @@ function App() {
       <Theme />
       <BrowserRouter>
         <Box className="App" onClick={() => toast.dismiss()}>
-          <Box 
-            display="flex" 
-            flexDirection="column" 
-            justifyContent="center" 
-            alignItems="center" 
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
             width="100%"
+            flexGrow={1}
           >
             <ToastContainer
               style={{ marginTop: "24px", width: "380px" }}
@@ -103,7 +109,7 @@ function App() {
               <Route exact path='/marketplace' component={MarketPlace} />
               <Route path='/marketplace/create-listing' component={createSellListing} />
               <Route path='/sellListing/:itemID' component={GenericSellListing} />
-              <Route path='/gym' render={() => <Gym/>}/>
+              <Route path='/gym' render={() => <Gym />} />
               <Route path='/events/create' component={CreateEvent} />
               <Route path='/events/:eventID' render={({ match }) => {
                 return <EventInfo eventID={match.params.eventID} />
@@ -132,14 +138,11 @@ function App() {
               <Route path='/createComment/:classID/:postID' component={createComment} />
               <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} />
               <Route path='/edit-post/:classID/:postID' component={EditPost} />
-
               <Route path='/edit-event/:eventID' component={EditEvent} />
               <Route path='/create-class' component={CreateClass} />
               <Route path='/create-post/:classID' component={CreatePost} />
-
               <Route path='/search-profiles' component={SearchProfiles} />
               <Route path='/profile-messages' component={ProfileMessages} />
-
               <Route path='/create-post/:classID' component={CreatePost} />
               <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
               <Route exact path='/dining' component={DiningLanding} />
@@ -147,12 +150,16 @@ function App() {
                 return <DiningInfo diningName={match.params.diningName} />
               }} />
               <Route path='/transportation' component={BusInfo} />
+              <Route exact path='/laundry' component={LaundryLanding} />
+              <Route path='/laundry/:laundryName' render={({ match }) => {
+                return <LaundryInfo laundryName={match.params.laundryName} />
+              }} />
             </Switch>
+            <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
+            <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
+              Purdue University, 100 North University Street, West Lafayette, IN, 47907
+            </div>
           </Box>
-          <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
-          <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
-            Purdue University, 100 North University Street, West Lafayette, IN, 47907
-          </div>
         </Box>
       </BrowserRouter >
     </ThemeProvider >
