@@ -306,22 +306,22 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     index = this.state.voteStates.findIndex(element => element.ID === post.ID)
     var editCode: any = <div></div>;
     var saveCode: any = <div></div>;
-    if (this){
-      saveCode = <Button 
-      // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-      onClick={this.handleSave}
+    if (this) {
+      saveCode = <Button
+        // variant="outlined"
+        sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%" }}
+        onClick={this.handleSave}
       >
-    Save
-    </Button>
+        Save
+      </Button>
     }
     else {
-      saveCode = <Button 
-      // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
-      onClick={this.handleRemoveSave}
+      saveCode = <Button
+        // variant="outlined"
+        sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%" }}
+        onClick={this.handleRemoveSave}
       >
-      Remove From Saved
+        Remove From Saved
       </Button>
     }
     var commentCode: any = <div id="myComment" hidden>
@@ -405,7 +405,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
         >
           {post.content}
         </Typography>
-        <Box pt="8px">
+        <Box pt="8px" display="flex" alignItems="center">
           <Button
             onClick={this.showComment}
             /*component={Link}
@@ -420,27 +420,27 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
             />
             Reply ({post.numComments} Comments)
           </Button>
-          {commentCode}
-
-
           <ToggleButton
             value="thumbup"
             selected={this.state.voteStates[index].upvoted}
             onChange={() => this.changeUpvoteState(index, post.ID)}
+            sx={{ padding: "4px 4px", border: "none", background: "transparent !important" }}
           >
             <ThumbUpIcon sx={{ fontSize: "16px" }} />
           </ToggleButton>
-          <Box component="span" sx={{ p: 1.5 }}>
+          <Box component="span" sx={{ p: "4px", color: "#787c7e"}}>
             {this.state.voteStates[index].voteCount}
           </Box>
           <ToggleButton
             value="thumbdown"
             selected={this.state.voteStates[index].downvoted}
             onChange={() => this.changeDownvoteState(index, post.ID)}
+            sx={{ padding: "4px 4px", border: "none", background: "transparent !important" }}
           >
             <ThumbDownIcon sx={{ fontSize: "16px" }} />
           </ToggleButton>
         </Box>
+        {commentCode}
       </Box>
     )
   }
@@ -573,7 +573,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                       {reply.content}
                     </Typography>
                     {/* Interaction widgets */}
-                    <Box pt="8px" display="flex" flexDirection="row">
+                    <Box pt="8px" display="flex" alignItems="center">
                       <Button
                         /*component={Link}
                         to={"/createCommentOnComment/" + this.props.classID + "/" + this.props.postID + "/" + reply.ID}*/
@@ -588,31 +588,28 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
                         />
                         Reply
                       </Button>
-                      {commentCode}
-
                       <ToggleButton
                         value="thumbup"
                         selected={this.state.voteStates[index].upvoted}
                         onChange={() => this.changeUpvoteState(index, reply.ID)}
+                        sx={{ padding: "4px 4px", border: "none", background: "transparent !important" }}
                       >
                         <ThumbUpIcon sx={{ fontSize: "16px" }} />
                       </ToggleButton>
-                      <Box component="span" sx={{ p: 1.5 }}>
+                      <Box component="span" sx={{ p: "4px", color: "#787c7e", verticalAlign: "center"}}>
                         {this.state.voteStates[index].voteCount}
                       </Box>
                       <ToggleButton
                         value="thumbdown"
                         selected={this.state.voteStates[index].downvoted}
                         onChange={() => this.changeDownvoteState(index, reply.ID)}
+                        sx={{ padding: "4px 4px", border: "none", background: "transparent !important" }}
                       >
                         <ThumbDownIcon sx={{ fontSize: "16px" }} />
                       </ToggleButton>
-
                       {dropdownMenu}
-
-
-
                     </Box >
+                    {commentCode}
                   </Box >
 
                 )
