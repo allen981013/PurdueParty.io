@@ -256,7 +256,7 @@ export const rsvpEvent = (event: any) => {
         }).then(() => {
             dispatch({ type: 'RSVP_EVENT_SUCCESS' })
             window.alert("RSVP Added Successfully!")
-            // store.dispatch(fetchEventInfo(event)) -- force fetch data
+            // store.dispatch(fetchEventInfo(event)) 
             dispatch(eventInfoSlice.actions.rsvpSuccess(uid))
         }).catch((err: any) => {
             dispatch({ type: 'RSVP_EVENT_ERROR', err })

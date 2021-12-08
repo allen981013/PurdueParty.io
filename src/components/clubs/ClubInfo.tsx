@@ -8,6 +8,9 @@ import { actionTypes } from 'redux-firestore';
 import { Action, compose, Dispatch } from 'redux';
 import { FirebaseReducer, firestoreConnect } from 'react-redux-firebase';
 import { Timestamp } from 'firebase/firestore';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { CLUBINFO_TUTORIAL_1, CLUBINFO_TUTORIAL_2, CLUBINFO_TUTORIAL_3 } from '../tutorial/Constants'
 
 interface ClubInfoProps {
   auth?: FirebaseReducer.AuthState;
@@ -33,12 +36,16 @@ interface ClubInfoProps {
     location: string,
     id: string
   }[];
+  pageVisitInfo?: PageVisitInfo;
+  updatePageVisitInfo?: (newPageVisitInfo: PageVisitInfo) => void;
 }
 
 interface ClubInfoStates {
 };
 
 class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
+
+  isTutorialRendered = false
 
   constructor(props: ClubInfoProps) {
     super(props);
@@ -222,6 +229,21 @@ class ClubInfo extends Component<ClubInfoProps, ClubInfoStates> {
     if (!this.props.auth.uid)
       return <Redirect to='/signin' />
 
+    if (this.props.pageVisitInfo
+      && !this.props.pageVisitInfo.clubInfoPage
+      && !this.isTutorialRendered
+    ) {
+      toast.info(CLUBINFO_TUTORIAL_1)
+      toast.info(CLUBINFO_TUTORIAL_2)
+      toast.info(CLUBINFO_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        clubInfoPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
+
     var holdUser: any = undefined;
     if (this.props.users) {
       holdUser = this.props.users.find(this.isHolder);
@@ -281,6 +303,7 @@ const mapStateToProps = (state: RootState) => {
 
   return {
     auth: state.firebase.auth,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
     users: state.firestore.ordered.users,
     events: events,
     clubInfo: clubInfo,
@@ -289,6 +312,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch, props: ClubInfoProps) => {
   return {
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         reduxDispatch({
