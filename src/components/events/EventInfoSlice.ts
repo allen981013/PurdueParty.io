@@ -82,6 +82,29 @@ export const eventInfoSlice = createSlice({
         hasInfoFetched: true,
         eventNotFound: true,
       }
+    },
+    rsvpSuccess: (state: EventInfoStatesRedux, action): EventInfoStatesRedux => {
+      let uid = action.payload
+      console.log("rsvp", uid)
+      console.log("attendees", state.event.attendees)
+      return {
+        ...state,
+        event: {
+          ...state.event,
+          attendees: state.event.attendees.concat([uid])
+        }
+      }
+    },
+    rsvpRemoveSuccess: (state: EventInfoStatesRedux, action): EventInfoStatesRedux => {
+      let uid = action.payload
+      console.log({uid})
+      return {
+        ...state,
+        event: {
+          ...state.event,
+          attendees: state.event.attendees.filter(attendee => attendee != uid)
+        }
+      }
     }
   },
 })
