@@ -11,16 +11,16 @@ import { EditOutlined } from '@mui/icons-material';
 import { ClassPageProps } from './ClassPage';
 import { fetchPost, threadPageSlice } from './ThreadPageSlice';
 import { addComment, addCommentOnComment, deletePost, deleteComment, addOrRemovePostVotes, addOrRemoveUserVotes, savePost, removeSavePost } from '../../store/actions/postActions';
-
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-
 import ToggleButton from '@mui/material/ToggleButton';
-
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { THREAD_TUTORIAL_1, THREAD_TUTORIAL_2, THREAD_TUTORIAL_3} from '../tutorial/Constants'
 
 export interface ThreadNode { // Refers to a post or a reply
   // Metadata to track relation between post/replies/nested replies
@@ -47,6 +47,8 @@ interface ThreadPageProps {
   auth?: FirebaseReducer.AuthState;
   currentUsername?: string;
   isDataFetched?: boolean;
+  pageVisitInfo?: PageVisitInfo;
+  updatePageVisitInfo?: (newPageVisitInfo: PageVisitInfo) => void;
   addOrRemoveUserVotes?: (userID: string, postOrCommentID: string, upvoted: boolean, downvoted: boolean) => void
   addOrRemovePostVotes?: (postOrCommentID: string, numVotesChanged: any) => void
   clearFetchedDocs?: () => void;
@@ -74,6 +76,9 @@ interface ThreadPageStates {
 }
 
 class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
+
+  isTutorialRendered = false
+ 
   // Initialize state
   constructor(props: ThreadPageProps) {
     super(props);
@@ -658,6 +663,20 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
 
   render() {
     if (this.props.auth && !this.props.auth.uid) return <Redirect to='/signin' />
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.threadPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(THREAD_TUTORIAL_1)
+      toast.info(THREAD_TUTORIAL_2)
+      toast.info(THREAD_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        threadPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     if (!this.props.isDataFetched)
       return (
         <Box pt="32px"><CircularProgress /></Box>
@@ -725,6 +744,7 @@ const mapStateToProps = (state: RootState, props: ThreadPageProps) => {
     classInfo: classInfo,
     isDataFetched: classes != undefined && state.threadPage.isPostFetched,
     currentUsername: state.auth.lastCheckedUsername,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
   }
 }
 
@@ -739,6 +759,7 @@ const mapDispatchToProps = (dispatch: AppDispatch, props: ThreadPageProps) => {
     addOrRemovePostVotes: (postOrCommentID: string, numVotesChanged: any) => dispatch(addOrRemovePostVotes(postOrCommentID, numVotesChanged)),
     savePost: (postID: string) => dispatch(savePost(postID)),
     removeSavePost: (postID: string) => dispatch(removeSavePost(postID)),
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     clearFetchedDocs: () => dispatch(
       (reduxDispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         reduxDispatch(threadPageSlice.actions.fetchPostBegin())

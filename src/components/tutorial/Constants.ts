@@ -1,4 +1,3 @@
-
 // Tutorial texts
 export const BUS_TUTORIAL_1 = "Bus page tutorial"
 export const BUS_TUTORIAL_2: string = null
@@ -68,6 +67,6 @@ export const PROFILE_TUTORIAL_1 = "Profile page tutorial"
 export const PROFILE_TUTORIAL_2: string = null
 export const PROFILE_TUTORIAL_3: string = null
 
-export const THREAD_TUTORIAL_1 = "Class page tutorial"
+export const THREAD_TUTORIAL_1 = "Thread page tutorial"
 export const THREAD_TUTORIAL_2: string = null
 export const THREAD_TUTORIAL_3: string = null
