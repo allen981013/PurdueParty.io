@@ -4,6 +4,7 @@ import { connect } from "react-redux"
 import { AppDispatch, RootState } from '../../store'
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { fetchFacilityInfos } from "./GymSlice";
+import useTheme from '@material-ui/core/styles/useTheme';
 
 export interface FacilityInfo {
   name: string;
@@ -22,7 +23,6 @@ interface GymProps {
 interface GymStates {
 }
 
-
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 12,
   borderRadius: 7,
@@ -36,9 +36,8 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
-// TODO: Fix my classes in forum
-
 class Gym extends React.Component<GymProps, GymStates> {
+
 
   constructor(props: GymProps) {
     super(props)
@@ -56,12 +55,12 @@ class Gym extends React.Component<GymProps, GymStates> {
           <Typography variant="h6">{info.name}</Typography>
           <BorderLinearProgress variant="determinate" value={percentage} />
           {!info.isClosed &&
-            <Typography variant="body2" >
+            <Typography variant="body2" sx={{ color: "#00000099" }}>
               Capacity: {info.lastParticipantCount}/{info.totalCapacity}  ({percentage}%)
             </Typography>
           }
           {info.isClosed &&
-            <Typography variant="body2">
+            <Typography variant="body2" sx={{ color: "#00000099" }}>
               Closed Now
             </Typography>
           }

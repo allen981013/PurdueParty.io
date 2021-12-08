@@ -35,21 +35,25 @@ import DiningInfo from './components/dining/DiningInfo';
 import BusInfo from './components/transportation/BusInfo';
 import Gym from './components/gym/Gym';
 import Theme from './Theme';
-
 import LaundryLanding from './components/laundry/LaundryLanding';
 import LaundryInfo from './components/laundry/LaundryInfo';
-
 import Saved from './components/saved/Saved';
-
-
 import SearchProfiles from './components/profile/SearchProfiles';
 import Classes from './components/forum/Classes';
+import { ToastContainer, toast } from 'react-toastify';
+import { Box } from "@mui/material"
+import 'react-toastify/dist/ReactToastify.css';
+
 
 import ThemeProvider from './components/UI/ThemeProvider';
 //import { createTheme } from '@mui/material/styles';
 //import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { setPageVisitInfo } from './components/tutorial/TutorialSlice';
+import { store } from '.';
+import { useEffect } from 'react';
+import { refreshUserData } from './store/actions/authActions';
 
 function App() {
 
@@ -59,83 +63,104 @@ function App() {
     }
   });
 
+  useEffect(() => {
+    store.dispatch(refreshUserData())
+    // TODO: Replace this with fetchPageVisitInfo() once the feature is finished
+    store.dispatch(setPageVisitInfo())
+  }, [])
+
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Theme />
       <BrowserRouter>
-        <div className="App">
-          <NavBar />
-          <Switch>
-            <Route exact path='/' component={Landing} />
-            <Route path='/signin' component={SignIn} />
-            <Route path='/createaccount' component={CreateAccount} />
-            <Route path='/changePassword' component={ChangePassword} />
-            <Route path='/resetPasswordRequest' component={ResetPasswordRequest} />
-            <Route exact path='/marketplace' component={MarketPlace} />
-            <Route path='/marketplace/create-listing' component={createSellListing} />
-            <Route path='/sellListing/:itemID' component={GenericSellListing} />
-            <Route path='/gym' component={Gym} />
-            <Route path='/events/create' component={CreateEvent} />
-            <Route path='/events/:eventID' render={({ match }) => {
-              return <EventInfo eventID={match.params.eventID} />
-            }} />
-            <Route path='/events' component={EventsLanding} />
-            <Route exact path='/clubs' component={Clubs} />
-            <Route path='/clubs/create-club' component={CreateClub} />
-            <Route path='/clubs/:clubID' render={({ match }) => {
-              return <ClubInfo clubID={match.params.clubID} />
-            }} />
-            <Route path='/edit-club/:clubID' component={EditClub} />
+        <Box className="App" onClick={() => toast.dismiss()}>
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            width="100%"
+            flexGrow={1}
+          >
+            <ToastContainer
+              style={{ marginTop: "24px", width: "380px" }}
+              pauseOnFocusLoss
+              // className="toast-component"
+              // toastClassName="toast-component"
+              bodyClassName="toast-component"
+              position="top-right"
+              autoClose={false}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              draggable
+              pauseOnHover
+            />
+            <NavBar />
+            <Switch>
+              <Route exact path='/' component={Landing} />
+              <Route path='/signin' component={SignIn} />
+              <Route path='/createaccount' component={CreateAccount} />
+              <Route path='/changePassword' component={ChangePassword} />
+              <Route path='/resetPasswordRequest' component={ResetPasswordRequest} />
+              <Route exact path='/marketplace' component={MarketPlace} />
+              <Route path='/marketplace/create-listing' component={createSellListing} />
+              <Route path='/sellListing/:itemID' component={GenericSellListing} />
+              <Route path='/gym' render={() => <Gym />} />
+              <Route path='/events/create' component={CreateEvent} />
+              <Route path='/events/:eventID' render={({ match }) => {
+                return <EventInfo eventID={match.params.eventID} />
+              }} />
+              <Route path='/events' component={EventsLanding} />
+              <Route exact path='/clubs' component={Clubs} />
+              <Route path='/clubs/create-club' component={CreateClub} />
+              <Route path='/clubs/:clubID' render={({ match }) => {
+                return <ClubInfo clubID={match.params.clubID} />
+              }} />
+              <Route path='/edit-club/:clubID' component={EditClub} />
 
-            <Route path='/profile' component={Profile} />
-            <Route path='/edit-profile' component={EditProfile} />
-            <Route exact path='/forum' component={ForumMainPage} />
-            <Route path='/forum/create-post' component={CreatePost} />
-            <Route path='/forum/all' component={Classes} />
-            <Route path='/forum/:classID/:postID/:commentID/edit' component={EditComment} />
-            <Route path='/forum/:classID/:postID' render={({ match }) => {
-              return <ThreadPage classID={match.params.classID} postID={match.params.postID} savePost={function (postID: string): void {
-                throw new Error('Function not implemented.');
-              } } removeSavePost={function (postID: string): void {
-                throw new Error('Function not implemented.');
-              } } />
-            }} />
-            <Route path='/forum/:classID' render={({ match }) => {
-              return <ClassPage classID={match.params.classID} />
-            }} />
-            <Route path='/forum/create-post' component={CreatePost} />
-            <Route path='/createComment/:classID/:postID' component={createComment} />
-            <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} />
-            <Route path='/edit-post/:classID/:postID' component={EditPost} />
-
-            <Route path='/edit-event/:eventID' component={EditEvent} />
-            <Route path='/create-class' component={CreateClass} />
-            <Route path='/create-post/:classID' component={CreatePost} />
-
-            <Route path='/search-profiles' component={SearchProfiles} />
-            <Route path='/profile-messages' component={ProfileMessages} />
-
-            <Route path='/create-post/:classID' component={CreatePost} />
-            <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
-            <Route exact path='/dining' component={DiningLanding} />
-            <Route path='/dining/:diningName' render={({ match }) => {
-              return <DiningInfo diningName={match.params.diningName} />
-            }} />
-            <Route path='/transportation' component={BusInfo} />
-            
-            <Route exact path='/laundry' component={LaundryLanding} />
-            <Route path='/laundry/:laundryName' render={({ match }) => {
-              return <LaundryInfo laundryName={match.params.laundryName} />
-            }} />
-            
-          </Switch>
-          <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
-          <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
-            Purdue University, 100 North University Street, West Lafayette, IN, 47907
-          </div>
-        </div>
+              <Route path='/profile' component={Profile} />
+              <Route path='/edit-profile' component={EditProfile} />
+              <Route exact path='/forum' component={ForumMainPage} />
+              <Route path='/forum/create-post' component={CreatePost} />
+              <Route path='/forum/all' component={Classes} />
+              <Route path='/forum/:classID/:postID/:commentID/edit' component={EditComment} />
+              <Route path='/forum/:classID/:postID' render={({ match }) => {
+                return <ThreadPage classID={match.params.classID} postID={match.params.postID} />
+              }} />
+              <Route path='/forum/:classID' render={({ match }) => {
+                return <ClassPage classID={match.params.classID} />
+              }} />
+              <Route path='/forum/create-post' component={CreatePost} />
+              <Route path='/createComment/:classID/:postID' component={createComment} />
+              <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} />
+              <Route path='/edit-post/:classID/:postID' component={EditPost} />
+              <Route path='/edit-event/:eventID' component={EditEvent} />
+              <Route path='/create-class' component={CreateClass} />
+              <Route path='/create-post/:classID' component={CreatePost} />
+              <Route path='/search-profiles' component={SearchProfiles} />
+              <Route path='/profile-messages' component={ProfileMessages} />
+              <Route path='/create-post/:classID' component={CreatePost} />
+              <Route path='/edit-sellListing/:userID/:listingID' component={EditSellListing} />
+              <Route exact path='/dining' component={DiningLanding} />
+              <Route path='/dining/:diningName' render={({ match }) => {
+                return <DiningInfo diningName={match.params.diningName} />
+              }} />
+              <Route path='/transportation' component={BusInfo} />
+              <Route exact path='/laundry' component={LaundryLanding} />
+              <Route path='/laundry/:laundryName' render={({ match }) => {
+                return <LaundryInfo laundryName={match.params.laundryName} />
+              }} />
+            </Switch>
+            <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
+            <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
+              Purdue University, 100 North University Street, West Lafayette, IN, 47907
+            </div>
+          </Box>
+        </Box>
       </BrowserRouter >
     </ThemeProvider >
   );

@@ -70,7 +70,6 @@ export const fetchFacilityInfos = () => {
           return 0
         return 1
       })
-      console.log({ facilityInfos })
       let payload = {
         facilityInfos: facilityInfos,
         lastUpdatedTime: lastUpdatedTime,

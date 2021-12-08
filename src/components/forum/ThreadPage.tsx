@@ -55,8 +55,8 @@ interface ThreadPageProps {
   addComment?: (comment: any) => void;
   addCommentOnComment?: (comment: any) => void
   deleteComment?: (commentID: string) => void;           //DELETE??????????????????
-  savePost: (postID: string) => void,
-  removeSavePost: (postID: string) => void
+  savePost?: (postID: string) => void,
+  removeSavePost?: (postID: string) => void
 }
 
 interface ThreadPageStates {

@@ -8,6 +8,9 @@ import { Redirect } from 'react-router-dom';
 import { Button } from '@mui/material';
 import { EditOutlined } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { MARKETPLACE_ITEM_TUTORIAL_1, MARKETPLACE_ITEM_TUTORIAL_2, MARKETPLACE_ITEM_TUTORIAL_3 } from '../tutorial/Constants'
 import './MarketPlace.css';
 import { messageListingOwner, removeSaveListing, saveListing } from '../../store/actions/sellListingActions';
 
@@ -35,7 +38,9 @@ interface genericSelllistingProps {
   users: {
     bio: string,
     userName: string
-  }[],
+  }[];
+  pageVisitInfo: PageVisitInfo;
+  updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
   saveListing: (listingID: string) => void,
   removeSaveListing: (listingID: string) => void
 }
@@ -45,6 +50,9 @@ const boldText = {
 }
 
 class GenericSellListing extends Component<genericSelllistingProps, genericSelllistingState> {
+  
+  isTutorialRendered = false;
+
   // Initialize state
   constructor(props: genericSelllistingProps) {
     super(props);
@@ -53,9 +61,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
     };
   }
 
-
   showUser(curUser: any) {
-
   }
 
   isOwner = (user: any) => {
@@ -102,6 +108,21 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
   render() {
     const { auth } = this.props;
     if (!auth.uid) return <Redirect to='/signin' />
+    // Render tutorial
+    if (this.props.pageVisitInfo
+      && !this.props.pageVisitInfo.marketplaceItemPage
+      && !this.isTutorialRendered
+    ) {
+      toast.info(MARKETPLACE_ITEM_TUTORIAL_1)
+      toast.info(MARKETPLACE_ITEM_TUTORIAL_2)
+      toast.info(MARKETPLACE_ITEM_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        marketplaceItemPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
 
     var postDate: any = Date.now();
     if (this.props.marketplace) {
@@ -226,13 +247,15 @@ const mapStateToProps = (state: RootState) => {
   return {
     auth: state.firebase.auth,
     marketplace: state.firestore.ordered.sellListings,
-    users: state.firestore.ordered.users
+    users: state.firestore.ordered.users,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Return functions for signIn
   return {
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     messageListingOwner: (senderID: string, receiverID: string, listingID: string, message: string) => dispatch(messageListingOwner(senderID, receiverID, listingID, message)),
     saveListing: (listingID: string) => dispatch(saveListing(listingID)),
     removeSaveListing: (listingID: string) => dispatch(removeSaveListing(listingID))
