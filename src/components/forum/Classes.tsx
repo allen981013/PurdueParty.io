@@ -9,10 +9,12 @@ import {
   Box, Button, CircularProgress, Grid, Card, CardActionArea,
   CardMedia, CardContent, Typography
 } from '@mui/material'
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { CLASSES_TUTORIAL_1, CLASSES_TUTORIAL_2, CLASSES_TUTORIAL_3} from '../tutorial/Constants'
 
 // Interface/type for Classes State
 interface ClassesState {
-
 }
 
 // Interface/type for Clubs Props
@@ -22,10 +24,15 @@ interface ClassesProps {
     courseID: string
   }[],
   auth?: any,
-  firebase?: any
+  firebase?: any,
+  pageVisitInfo?: PageVisitInfo;
+  updatePageVisitInfo?: (newPageVisitInfo: PageVisitInfo) => void;
 }
 
 class Classes extends Component<ClassesProps, ClassesState> {
+  
+  isTutorialRendered = false
+ 
   // Initialize state
   constructor(props: ClassesProps) {
     super(props);
@@ -58,6 +65,20 @@ class Classes extends Component<ClassesProps, ClassesState> {
 
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.classesPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(CLASSES_TUTORIAL_1)
+      toast.info(CLASSES_TUTORIAL_2)
+      toast.info(CLASSES_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        classesPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     return (
       <Box
         pt="48px"
@@ -94,13 +115,15 @@ class Classes extends Component<ClassesProps, ClassesState> {
 const mapStateToProps = (state: RootState) => {
   return {
     class: state.firestore.ordered.classes,
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
   }
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
   }
 }
 
