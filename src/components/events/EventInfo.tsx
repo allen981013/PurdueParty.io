@@ -1,5 +1,7 @@
 import { Box, Button, Grid, Chip, CircularProgress, IconButton, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
+import { compose } from 'redux';
+import { firebaseConnect, firestoreConnect } from 'react-redux-firebase';
 import { EditOutlined, DeleteOutlined } from '@mui/icons-material'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -17,6 +19,12 @@ interface EventInfoProps {
   event: EventInfoStatesRedux["event"],
   host: EventInfoStatesRedux["host"],
   auth: any,
+  match: any,
+  users: {
+    bio: string,
+    savedEvents: string[],
+    userName: string
+  }[],
   fetchEventInfo: (eventID: string) => void,
   deleteEvent: (eventID: string) => void,
   rsvpEvent: (eventID: string) => void,
@@ -103,6 +111,14 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
     this.props.fetchEventInfo(this.props.eventID)
   }
 
+  showUser = (user: any) => {
+    if (this.props.users) {
+      return user.id === this.props.auth.uid
+    } else {
+      return false;
+    }
+  }
+
   render() {
     const { auth } = this.props;
     console.log(this.props);
@@ -135,7 +151,13 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
       </Button>
     }
     var saveCode: any = <div></div>;
-    if (this.props.event.attendees.indexOf(auth.uid) < 0){
+    var curUser: any = undefined;
+    console.log(this.props.eventID);
+    if (this.props.users) {
+      curUser = this.props.users.find(this.showUser);
+    }
+    console.log(curUser);
+    if (curUser == null || curUser.savedEvents == null || !curUser.savedEvents.includes(this.props.eventID)){
       saveCode = <Button 
       // variant="outlined"
       sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
@@ -150,8 +172,8 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
       sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
       onClick={this.handleRemoveSave}
       >
-    Remove From Saved
-    </Button>
+      Remove From Saved
+      </Button>
     }
     return (
       <Box
@@ -255,6 +277,7 @@ class EventInfo extends React.Component<EventInfoProps, EventInfoStates> {
                 </Box>
               </Box>
               {rsvpCode}
+              {saveCode}
               <Box
                 display="flex"
                 flexDirection="column"
@@ -309,7 +332,8 @@ const mapStateToProps = (state: RootState) => {
     eventNotFound: state.eventInfo.eventNotFound,
     event: state.eventInfo.event,
     host: state.eventInfo.host,
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
+    users: state.firestore.ordered.users
   }
 }
 
@@ -324,4 +348,12 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EventInfo);
+export default compose<React.ComponentType<EventInfoProps>>(
+  connect(mapStateToProps, mapDispatchToProps),
+  firestoreConnect([
+      {
+        collection: 'users'
+      }
+    ])
+)(EventInfo)
+//export default connect(mapStateToProps, mapDispatchToProps)(EventInfo);

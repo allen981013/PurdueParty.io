@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { firestoreConnect } from 'react-redux-firebase';
+import { firebaseConnect, firestoreConnect } from 'react-redux-firebase';
 import { RootState, AppDispatch } from '../../store';
 import { Timestamp } from 'firebase/firestore';
 import { Redirect } from 'react-router-dom';
@@ -34,6 +34,7 @@ interface genericSelllistingProps {
   }[],
   users: {
     bio: string,
+    savedListings: string[],
     userName: string
   }[],
   saveListing: (listingID: string) => void,
@@ -53,9 +54,12 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
     };
   }
 
-
-  showUser(curUser: any) {
-
+  showUser = (user: any) => {
+    if (this.props.users) {
+      return user.id === this.props.auth.uid
+    } else {
+      return false;
+    }
   }
 
   isOwner = (user: any) => {
@@ -120,7 +124,10 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
 
     var editCode: any = <div></div>;
     var saveCode: any = <div></div>;
-    if (this){
+    if (this.props.users) {
+      curUser = this.props.users.find(this.showUser);
+    }
+    if (curUser == null || curUser.savedListings == null || !curUser.savedListings.includes(this.props.match.params.itemID)){
       saveCode = <Button 
       // variant="outlined"
       sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
@@ -209,6 +216,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
                 <img src={this.props.marketplace[0].image} style={{ width: "95%" }} />
               </div>
               {editCode}
+              {saveCode}
               <div className="container-card__dateTime">
                 <p>Posted On: {postDate.toString()}</p>
               </div>

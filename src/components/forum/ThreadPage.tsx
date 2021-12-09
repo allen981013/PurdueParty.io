@@ -306,10 +306,14 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     index = this.state.voteStates.findIndex(element => element.ID === post.ID)
     var editCode: any = <div></div>;
     var saveCode: any = <div></div>;
-    if (this){
+    var curUser: any = undefined;
+    if (this.props.authUserInfo) {
+      curUser = this.props.authUserInfo;
+    }
+    if (curUser == null || curUser.savedPosts == null || !curUser.savedPosts.includes(post.ID)){
       saveCode = <Button 
       // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      sx={{ color: "black", border: "1px solid black", fontSize: "16px", paddingRight: "4px"}}
       onClick={this.handleSave}
       >
     Save
@@ -318,7 +322,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
     else {
       saveCode = <Button 
       // variant="outlined"
-      sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
+      sx={{ color: "black", border: "1px solid black", fontSize: "16px", paddingRight: "4px"}}
       onClick={this.handleRemoveSave}
       >
       Remove From Saved
@@ -392,6 +396,7 @@ class ThreadPage extends React.Component<ThreadPageProps, ThreadPageStates> {
           >{post.timeSincePosted}
           </Typography>
           {editCode}
+          {saveCode}
         </Box>
         <Typography
           variant="h6"

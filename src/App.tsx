@@ -74,7 +74,36 @@ function App() {
             <Route path='/gym' component={Gym} />
             <Route path='/events/create' component={CreateEvent} />
             <Route path='/events/:eventID' render={({ match }) => {
-              return <EventInfo eventID={match.params.eventID} />
+              return <EventInfo eventID={match.params.eventID} hasInfoFetched={false} eventNotFound={false} event={{
+                id: '',
+                title: '',
+                ownerID: '',
+                editors: [],
+                startTime: '',
+                duration: '',
+                endTime: '',
+                location: '',
+                description: '',
+                categories: [],
+                perks: [],
+                imageUrl: '',
+                attendees: []
+              }} host={{
+                name: '',
+                href: ''
+              }} auth={undefined} match={undefined} users={[]} fetchEventInfo={function (eventID: string): void {
+                throw new Error('Function not implemented.');
+              } } deleteEvent={function (eventID: string): void {
+                throw new Error('Function not implemented.');
+              } } rsvpEvent={function (eventID: string): void {
+                throw new Error('Function not implemented.');
+              } } removeRSVPEvent={function (eventID: string): void {
+                throw new Error('Function not implemented.');
+              } } saveEvent={function (eventID: string): void {
+                throw new Error('Function not implemented.');
+              } } removeSaveEvent={function (eventID: string): void {
+                throw new Error('Function not implemented.');
+              } } />
             }} />
             <Route path='/events' component={EventsLanding} />
             <Route exact path='/clubs' component={Clubs} />
@@ -85,6 +114,7 @@ function App() {
             <Route path='/edit-club/:clubID' component={EditClub} />
 
             <Route path='/profile' component={Profile} />
+            <Route path='/saved' component={Saved} />
             <Route path='/edit-profile' component={EditProfile} />
             <Route exact path='/forum' component={ForumMainPage} />
             <Route path='/forum/create-post' component={CreatePost} />
