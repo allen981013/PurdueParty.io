@@ -396,6 +396,10 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
               <WhatshotIcon sx={{ paddingRight: "4px" }} />
               Popular
             </ToggleButton>
+            <ToggleButton value={"HOT"}>
+              <WhatshotIcon sx={{ paddingRight: "4px" }} />
+              HOT
+            </ToggleButton>
           </StyledToggleButtonGroup>
         </Card>
       </Box >
@@ -431,7 +435,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         display="flex"
         flexDirection="column"
         width="100%"
-        maxWidth="1200px"
+        maxWidth="1300px"
         alignSelf="center"
         p="2rem"
       >

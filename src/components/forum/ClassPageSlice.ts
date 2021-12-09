@@ -3,9 +3,10 @@ import { Action, Dispatch } from 'redux'
 import { RootState } from '../../store'
 import { Post } from './ClassPage'
 import moment from 'moment'
+import { toast } from 'react-toastify'
 
 export interface FetchCriteria {
-  sortBy: "RECENCY" | "POPULARITY";
+  sortBy: "RECENCY" | "POPULARITY" | "HOT";
 }
 
 // type for states returned by reducer
@@ -47,9 +48,13 @@ export const fetchClassPosts = (classID: string, fetchCriteria: FetchCriteria) =
     var postsQueryPromise = db.collection("posts")
       .where("classID", "==", classID)
       .where("ancestorsIDs", "==", [])
-    postsQueryPromise = fetchCriteria.sortBy == "POPULARITY"
-      ? postsQueryPromise.orderBy("numComments", "desc").orderBy("postedDateTime", "desc")
-      : postsQueryPromise.orderBy("postedDateTime", "desc")
+    if (fetchCriteria.sortBy == "POPULARITY") {
+      postsQueryPromise = postsQueryPromise.orderBy("numComments", "desc")
+    }
+    else if (fetchCriteria.sortBy == "HOT") {
+      postsQueryPromise = postsQueryPromise.orderBy("voteCount", "desc")
+    }
+    postsQueryPromise = postsQueryPromise.orderBy("postedDateTime", "desc")
     var postsDocSnapshots = await postsQueryPromise.get()
     // Transform posts into the correct schema
     var posts: Post[] = postsDocSnapshots.docs.map((docSnapshot: any): Post => {
