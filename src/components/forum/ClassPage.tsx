@@ -435,7 +435,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
         display="flex"
         flexDirection="column"
         width="100%"
-        maxWidth="1200px"
+        maxWidth="1300px"
         alignSelf="center"
         p="2rem"
       >

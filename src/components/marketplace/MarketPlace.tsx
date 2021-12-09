@@ -116,7 +116,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
         alignItems="center"
         pt="8px"
         width="100%"
-        maxWidth="1200px"
+        maxWidth="1300px"
         padding="48px 16px"
       >
         <Box
