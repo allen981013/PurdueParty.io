@@ -50,7 +50,7 @@ import ThemeProvider from './components/UI/ThemeProvider';
 //import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { setPageVisitInfo } from './components/tutorial/TutorialSlice';
+import { fetchPageVisitInfo, setPageVisitInfo } from './components/tutorial/TutorialSlice';
 import { store } from '.';
 import { useEffect } from 'react';
 import { refreshUserData } from './store/actions/authActions';
@@ -65,8 +65,8 @@ function App() {
 
   useEffect(() => {
     store.dispatch(refreshUserData())
-    // TODO: Replace this with fetchPageVisitInfo() once the feature is finished
-    store.dispatch(setPageVisitInfo())
+    // store.dispatch(setPageVisitInfo())
+    store.dispatch(fetchPageVisitInfo())
   }, [])
 
   // IMPORTANT: First route needs to be "<Route EXACT path = '/' component = {Homepage} >/

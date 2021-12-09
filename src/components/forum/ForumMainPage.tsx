@@ -395,16 +395,16 @@ class ForumMainPage extends React.Component<ForumMainPageProps, ForumMainPageSta
                 value={this.state.currentTabIndex}
                 onChange={(e: any, newIndex: number) => this.setState({ currentTabIndex: newIndex })}
               >
-                <Tab label="Followed" onClick={() => this.props.fetchJoinedClassesPosts(this.fetchCriteria)}/>
                 <Tab label="Global" onClick={() => this.props.fetchAllClassesPosts(this.fetchCriteria)}/>
+                <Tab label="Followed" onClick={() => this.props.fetchJoinedClassesPosts(this.fetchCriteria)}/>
                 <Tab label="My Posts" onClick={() => this.props.fetchCurUserPosts(this.fetchCriteria)}/>
               </Tabs>
             </Box>
-            {this.state.currentTabIndex == 0 && this.getSortingBarJoined()}
-            {this.state.currentTabIndex == 1 && this.getSortingBarAll()}
+            {this.state.currentTabIndex == 0 && this.getSortingBarAll()}
+            {this.state.currentTabIndex == 1 && this.getSortingBarJoined()}
             {this.state.currentTabIndex == 2 && this.getSortingBar()}
-            {this.state.currentTabIndex == 0 && this.getSubPageForPosts(this.props.joinedClassesPosts)}
-            {this.state.currentTabIndex == 1 && this.getSubPageForPosts(this.props.allClassesPosts)}
+            {this.state.currentTabIndex == 0 && this.getSubPageForPosts(this.props.allClassesPosts)}
+            {this.state.currentTabIndex == 1 && this.getSubPageForPosts(this.props.joinedClassesPosts)}
             {this.state.currentTabIndex == 2 && this.getSubPageForPosts(this.props.curUserPosts)}
           </Grid>
           <Grid item xs={12} md={3}>
