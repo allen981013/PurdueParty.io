@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from '../../store';
 import { refreshUserData } from '../../store/actions/authActions'
 import { Link, Redirect } from 'react-router-dom'
 import { Box, Button } from '@mui/material';
+import { resetPageVisitInfo } from '../tutorial/TutorialSlice';
 
 // Interface/type for EditProfile State
 interface EditProfileState {
@@ -23,15 +24,15 @@ interface EditProfileState {
 
 // Interface/type for EditProfile Props
 interface EditProfileProps {
-  auth: any,
-  firebase: any,
-  uid: string,
-
-  profile: any,
+  auth: any;
+  firebase: any;
+  uid: string;
+  editStatus: string;
+  profile: any;
   deleteAccount: () => void;
-  editUser: (state: EditProfileState) => void,
-  editStatus: string,
-  refreshUserData: () => void
+  editUser: (state: EditProfileState) => void;
+  refreshUserData: () => void;
+  resetPageVisitInfo: () => void;
 }
 
 class EditProfile extends Component<EditProfileProps, EditProfileState> {
@@ -202,16 +203,29 @@ class EditProfile extends Component<EditProfileProps, EditProfileState> {
           </h1>
 
           <div className="input-field">
-            <button className="button">Save</button>
+            <Button
+              sx={{ color: "black", border: "1px solid black", marginTop: "0px", width: "240px" }}
+              className="button"
+            >Save
+            </Button>
           </div>
+          <Button
+            sx={{ color: "black", border: "1px solid black", marginTop: "8px", width: "240px" }}
+            onClick={() => this.props.resetPageVisitInfo()}
+          >
+            Reset Tutorial Steps
+          </Button>
           <Button
             component={Link}
             to="/changePassword"
-            sx={{ color: "black", border: "1px solid black", margin: "8px 0px" }}
+            sx={{ color: "black", border: "1px solid black", marginTop: "8px", width: "240px" }}
           >
             Change Password
           </Button>
-          <Button sx={{ color: "black", border: "1px solid black" }} onClick={this.handleDelete}>
+          <Button
+            sx={{ color: "black", border: "1px solid black", marginTop: "8px", width: "240px" }}
+            onClick={this.handleDelete}
+          >
             Delete Account
           </Button>
 
@@ -235,7 +249,8 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
     editUser: (profile: any) => dispatch(editUser(profile)),
     deleteAccount: () => dispatch(deleteAccount()),
-    refreshUserData: () => dispatch(refreshUserData())
+    refreshUserData: () => dispatch(refreshUserData()),
+    resetPageVisitInfo: () => dispatch(resetPageVisitInfo())
   }
 }
 

@@ -1,6 +1,6 @@
 import './NavBar.css'
 import { Link } from 'react-router-dom'
-import { refreshUserData, signOut } from '../../store/actions/authActions'
+import { signOut } from '../../store/actions/authActions'
 import { FirebaseReducer } from 'react-redux-firebase';
 import { AppDispatch, RootState } from '../../store';
 import { Component } from 'react';
@@ -12,16 +12,12 @@ import { Menu } from '@mui/icons-material'
 interface NavBarProps {
   auth: FirebaseReducer.AuthState;
   username: string;
-  refreshUserData: () => void;
   signOut: () => void;
 }
 
 interface NavBarState {
   isCollapsibleMenuOpen: boolean;
 }
-
-// TODO: Check if user is logged in and update navbar accordingly
-// TODO: Collapsible menu for xs viewport
 
 class NavBar extends Component<NavBarProps, NavBarState> {
 
@@ -30,10 +26,6 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     this.state = {
       isCollapsibleMenuOpen: false,
     }
-  }
-
-  componentDidMount() {
-    this.props.refreshUserData()
   }
 
   isLoggedIn() {
@@ -86,6 +78,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
             <Button component={Link} to="/forum">Forum</Button>
             <Button component={Link} to="/gym">Gym</Button>
             <Button component={Link} to="/dining">Dining</Button>
+            <Button component={Link} to="/laundry">Laundry</Button>
             <Button component={Link} to="/transportation">Bus</Button>
             <Button component={Link} to="/clubs">Clubs</Button>
             <Button component={Link} to="/saved">Saved</Button>
@@ -153,9 +146,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
-    refreshUserData: () => dispatch(refreshUserData()),
     signOut: () => dispatch(signOut()),
-
   }
 }
 

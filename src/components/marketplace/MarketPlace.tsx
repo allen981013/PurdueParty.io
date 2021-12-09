@@ -11,7 +11,9 @@ import {
   Box, Button, CircularProgress, Grid, Card, CardActionArea,
   CardMedia, CardContent, Typography, FormControl, RadioGroup, FormControlLabel, Radio, FormGroup, Checkbox, InputLabel, Select, MenuItem
 } from '@mui/material'
-
+import { toast } from 'react-toastify';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { MARKETPLACE_TUTORIAL_1, MARKETPLACE_TUTORIAL_2, MARKETPLACE_TUTORIAL_3 } from '../tutorial/Constants'
 
 // Interface/type for Marketplace State
 interface MarketPlaceState {
@@ -34,11 +36,15 @@ interface MarketPlaceProps {
   }[],
   auth: any,
   firebase: any
+  pageVisitInfo: PageVisitInfo;
+  updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
 }
 
 class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
   types = ["Artwork", "Clothing", "Electronics", "Furniture", "Gaming", "Housing",
     "Miscellaneous", "Music/Instruments", "Services", "Vehicles"];
+
+  isTutorialRendered = false
 
   constructor(props: MarketPlaceProps) {
     super(props);
@@ -87,6 +93,21 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
 
   render() {
     if (!this.props.auth.uid) return <Redirect to='/signin' />
+    // Render tutorial
+    if (this.props.pageVisitInfo
+      && !this.props.pageVisitInfo.marketplacePage
+      && !this.isTutorialRendered
+    ) {
+      toast.info(MARKETPLACE_TUTORIAL_1)
+      toast.info(MARKETPLACE_TUTORIAL_2)
+      toast.info(MARKETPLACE_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        marketplacePage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     return (
       <Box
         display="flex"
@@ -95,7 +116,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
         alignItems="center"
         pt="8px"
         width="100%"
-        maxWidth="1200px"
+        maxWidth="1300px"
         padding="48px 16px"
       >
         <Box
@@ -104,7 +125,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
           width="100%"
           pb="32px"
         >
-          <h1 style={{ fontWeight: 300, margin: "0px" }}>MarketPlace</h1>
+          <h1 style={{ fontWeight: 300, margin: "0px" }}>Marketplace</h1>
           <Button
             component={Link}
             to="marketplace/create-listing/"
@@ -170,6 +191,7 @@ class MarketPlace extends Component<MarketPlaceProps, MarketPlaceState> {
 
 const mapStateToProps = (state: RootState) => {
   return {
+    pageVisitInfo: state.tutorial.pageVisitInfo,
     marketplace: state.firestore.ordered.sellListings,
     auth: state.firebase.auth
   }
@@ -178,7 +200,7 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   // Insert functions from actions folder in similar syntax
   return {
-
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
   }
 }
 

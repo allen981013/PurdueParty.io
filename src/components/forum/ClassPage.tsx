@@ -15,13 +15,17 @@ import StarRateIcon from '@mui/icons-material/StarRate';
 import { classPageSlice, fetchClassPosts, FetchCriteria } from '../../components/forum/ClassPageSlice';
 import { actionTypes } from 'redux-firestore';
 import { joinClass, updateUserClass } from '../../store/actions/postActions';
-import { ControlCameraSharp } from '@mui/icons-material';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { toast } from 'react-toastify';
+import { CLASS_TUTORIAL_1, CLASS_TUTORIAL_2, CLASS_TUTORIAL_3} from '../tutorial/Constants'
 
 export interface Post {
   title: string;
   content: string;
   poster: string;
   numComments: number;
+  numUpvotes: number;
   timeSincePosted: string;
   href: string;
   classID: string;
@@ -55,6 +59,8 @@ export interface ClassPageProps {
     ID: string,
     students: string[];
   };
+  pageVisitInfo?: PageVisitInfo;
+  updatePageVisitInfo?: (newPageVisitInfo: PageVisitInfo) => void;
   fetchClassPosts?: (classID: string, fetchCriteria: FetchCriteria) => void;
   clearFetchedDocs?: () => void;
   joinClass?: (state: ClassPageState) => void;
@@ -117,6 +123,15 @@ export function getPostCardComponent(post: Post) {
                 />
                 {post.numComments} Comments
               </Button>
+              <Button
+                onClick={e => { e.stopPropagation(); e.preventDefault() }}
+                sx={{ textTransform: "none", color: "#787c7e", fontWeight: "bold", fontSize: "12px" }}
+              >
+                <ArrowUpwardIcon
+                  sx={{ color: "#787c7e", marginRight: "4px", fontSize: "20px" }}
+                />
+                {post.numUpvotes} upvotes
+              </Button>
             </Box>
           </CardContent>
         </CardActionArea>
@@ -129,6 +144,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
 
   // Instance attributes
   fetchCriteria: FetchCriteria = { sortBy: "RECENCY" }
+  isTutorialRendered = false
 
   // Initialize state
   constructor(props: ClassPageProps) {
@@ -236,7 +252,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
 
   getClass(class_: ClassPageProps["classInfo"]) {
     return (
-      <Box>
+      <Box display="flex" flexDirection={"column"}>
         <Card>
           <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
             Class Info
@@ -264,23 +280,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
             </Typography>
           </CardContent>
         </Card>
-        <Button
-          onClick={this.handleJoin}
-          sx={{ color: "black", border: "1px solid black", height: "38px", marginTop: "40px" }}
-        >
-          {this.props.classInfo.students != undefined && this.props.classInfo.students.length != 0
-            ?
-            (this.props.classInfo.students.includes(this.props.auth.uid)
-              ?
-              "Leave This Class"
-              :
-              "Join This Class"
-            )
-            :
-            "Join This Class"
-          }
-        </Button>
-        <Card sx={{ marginTop: "15px" }}>
+        <Card sx={{ marginTop: "16px" }}>
           <Box p="12px 16px" sx={{ background: "#f3f4f6", color: "black" }}>
             Student
           </Box>
@@ -293,6 +293,25 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
             }
           </CardContent>
         </Card>
+        <Button
+          onClick={this.handleJoin}
+          sx={{
+            color: "black", border: "1px solid black", height: "38px", width: "100%",
+            marginTop: "16px", alignSelf: 'flex-end'
+          }}
+        >
+          {this.props.classInfo.students != undefined && this.props.classInfo.students.length != 0
+            ?
+            (this.props.classInfo.students.includes(this.props.auth.uid)
+              ?
+              "Leave class"
+              :
+              "Join class"
+            )
+            :
+            "Join This Class"
+          }
+        </Button>
       </Box >
     )
   }
@@ -377,6 +396,10 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
               <WhatshotIcon sx={{ paddingRight: "4px" }} />
               Popular
             </ToggleButton>
+            <ToggleButton value={"HOT"}>
+              <WhatshotIcon sx={{ paddingRight: "4px" }} />
+              HOT
+            </ToggleButton>
           </StyledToggleButtonGroup>
         </Card>
       </Box >
@@ -393,12 +416,26 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
       return (
         <Box pt="32px">Class not found</Box>
       )
+    if (this.props.pageVisitInfo 
+      && !this.props.pageVisitInfo.classPage
+      && !this.isTutorialRendered
+      ) {
+      toast.info(CLASS_TUTORIAL_1)
+      toast.info(CLASS_TUTORIAL_2)
+      toast.info(CLASS_TUTORIAL_3)
+      let newPageVisitInfo: PageVisitInfo = {
+        ...this.props.pageVisitInfo,
+        classPage: true,
+      }
+      this.props.updatePageVisitInfo(newPageVisitInfo)
+      this.isTutorialRendered = true
+    }
     return (
       <Box
         display="flex"
         flexDirection="column"
         width="100%"
-        maxWidth="1200px"
+        maxWidth="1300px"
         alignSelf="center"
         p="2rem"
       >
@@ -479,6 +516,7 @@ const mapStateToProps = (state: RootState) => {
     posts: state.classPage.posts,
     users: state.firestore.ordered.users,
     classInfo: classInfo,
+    pageVisitInfo: state.tutorial.pageVisitInfo,
     isDataFetched: state.classPage.posts !== undefined && classes !== undefined,
   }
 }
@@ -486,6 +524,7 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: AppDispatch, props: ClassPageProps) => {
 
   return {
+    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     joinClass: (classInfo: any) => dispatch(joinClass(classInfo)),
     updateUserClass: (classInfo: any) => dispatch(updateUserClass(classInfo)),
     fetchClassPosts: (classID: string, fetchCriteria: FetchCriteria) => dispatch(

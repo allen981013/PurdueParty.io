@@ -5,12 +5,15 @@ import { FirebaseReducer } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import Moment from 'moment';
+import { toast } from 'react-toastify';
 import { deleteStaleData, submitSurveyData } from '../../store/actions/diningActions';
 import { firestoreConnect } from 'react-redux-firebase';
 import {
     Box, Button, CircularProgress, Grid, Card, CardActionArea,
     CardMedia, CardContent, Typography
 } from '@mui/material';
+import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
+import { DININGINFO_TUTORIAL_1, DININGINFO_TUTORIAL_2, DININGINFO_TUTORIAL_3} from '../tutorial/Constants'
 
 interface DiningInfoState {
     isLoaded: boolean,
@@ -20,7 +23,8 @@ interface DiningInfoState {
     surveyResult: any,
     diningCourt: string,
     needUpdate: boolean,
-    diningStatus: string
+    diningStatus: string,
+    lastData: string
 }
 
 interface DiningInfoProps {
@@ -28,11 +32,15 @@ interface DiningInfoProps {
     diningName: string;
     diningErr?: string;
     diningCourt?: any;
+    pageVisitInfo?: PageVisitInfo;
+    updatePageVisitInfo?: (newPageVisitInfo: PageVisitInfo) => void;
     deleteStaleData?: (diningCourt: string) => void;
     submitSurveyData?: (diningInfo: any) => void;
 }
 
 class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
+  
+    isTutorialRendered = false
 
     constructor(props : DiningInfoProps) {
         super(props);
@@ -44,7 +52,8 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
             surveyResult: null,
             diningCourt: this.props.diningName,
             needUpdate: true,
-            diningStatus: ""
+            diningStatus: "",
+            lastData: null
         };
     }
 
@@ -122,6 +131,7 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
         if (this.state.surveyResult == null) {
             window.alert("Please select an option before submitting!")
         } else {
+            toast.success("Survey Data Submitted!");
             this.props.submitSurveyData(this.state);
             this.setState({
                 needUpdate: true
@@ -133,9 +143,22 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
         const { auth } = this.props;
         const { error, isLoaded, items } = this.state;
         if (!auth.uid) return <Redirect to='/signin' />
-
+        if (this.props.pageVisitInfo 
+          && !this.props.pageVisitInfo.diningInfopage
+          && !this.isTutorialRendered
+          ) {
+          toast.info(DININGINFO_TUTORIAL_1)
+          toast.info(DININGINFO_TUTORIAL_2)
+          toast.info(DININGINFO_TUTORIAL_3)
+          let newPageVisitInfo: PageVisitInfo = {
+            ...this.props.pageVisitInfo,
+            diningInfopage: true,
+          }
+          this.props.updatePageVisitInfo(newPageVisitInfo)
+          this.isTutorialRendered = true
+        }
         var status = "";
-        if (this.props.diningCourt != undefined && this.state.needUpdate) {
+        if ((this.props.diningCourt != undefined) && (this.state.needUpdate || (this.state.lastData !== JSON.stringify(this.props.diningCourt)))) {
             const surveyInfo = this.props.diningCourt;
             if (surveyInfo.length < 4) {
                 status = "Not Enough Data"
@@ -159,7 +182,8 @@ class DiningInfo extends Component<DiningInfoProps, DiningInfoState> {
 
             this.setState({
                 needUpdate: false,
-                diningStatus: status
+                diningStatus: status,
+                lastData: JSON.stringify(this.props.diningCourt)
             })
         }
         console.log(status);
@@ -259,14 +283,16 @@ const mapStateToProps = (state: RootState) => {
     return {
       auth: state.firebase.auth,
       diningCourt: state.firestore.ordered.diningCourtInfo,
-      diningErr: state.dining.diningErr
+      diningErr: state.dining.diningErr,
+      pageVisitInfo: state.tutorial.pageVisitInfo,
     }
 }
   
 const mapDispatchToProps = (dispatch: AppDispatch) => {
     return {
         deleteStaleData: (diningCourt: string) => dispatch(deleteStaleData(diningCourt)),
-        submitSurveyData: (diningInfo: any) => dispatch(submitSurveyData(diningInfo))
+        submitSurveyData: (diningInfo: any) => dispatch(submitSurveyData(diningInfo)),
+        updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => dispatch(updatePageVisitInfo(newPageVisitInfo)),
     }
 }
 

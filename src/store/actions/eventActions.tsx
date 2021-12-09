@@ -1,10 +1,11 @@
 import { Dispatch, Action } from 'redux';
 import { Timestamp } from '@firebase/firestore';
-import { firebaseStorageRef } from '../..';
+import { firebaseStorageRef, store } from '../..';
 import { authIsReady } from 'react-redux-firebase';
 import { valueContainerCSS } from 'react-select/dist/declarations/src/components/containers';
 import { deleteFromStorage } from './authActions'
 import { arrayRemove, arrayUnion } from 'firebase/firestore';
+import { eventInfoSlice, fetchEventInfo } from '../../components/events/EventInfoSlice';
 
 // Need to explicitly define these types at some point
 export const addEvent = (newEvent: any) => {
@@ -247,16 +248,16 @@ export const deleteEvent = (eventToDelete: any) => {
 export const rsvpEvent = (event: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
-        const firebase = getFirebase();
         console.log(event);
         var docref = db.collection('events').doc(event);
-        const user = firebase.auth().currentUser;
-
+        var uid = getState().firebase.auth.uid
         docref.update({
-            attendees: arrayUnion(getState().firebase.auth.uid),
+            attendees: arrayUnion(uid),
         }).then(() => {
             dispatch({ type: 'RSVP_EVENT_SUCCESS' })
             window.alert("RSVP Added Successfully!")
+            // store.dispatch(fetchEventInfo(event)) 
+            dispatch(eventInfoSlice.actions.rsvpSuccess(uid))
         }).catch((err: any) => {
             dispatch({ type: 'RSVP_EVENT_ERROR', err })
         });;
@@ -266,16 +267,16 @@ export const rsvpEvent = (event: any) => {
 export const removeRSVPEvent = (event: any) => {
     return (dispatch: Dispatch<Action>, getState: any, { getFirebase, getFirestore }: any) => {
         const db = getFirestore();
-        const firebase = getFirebase();
-        console.log(event);
         var docref = db.collection('events').doc(event);
-        const user = firebase.auth().currentUser;
+        var uid = getState().firebase.auth.uid
 
         docref.update({
             attendees: arrayRemove(getState().firebase.auth.uid),
         }).then(() => {
             dispatch({ type: 'RSVP_REMOVE_EVENT_SUCCESS' })
             window.alert("RSVP Removed Successfully!")
+            // store.dispatch(fetchEventInfo(event))
+            dispatch(eventInfoSlice.actions.rsvpRemoveSuccess(uid))
         }).catch((err: any) => {
             dispatch({ type: 'RSVP_REMOVE_EVENT_ERROR', err })
         });;

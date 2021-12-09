@@ -13,6 +13,10 @@
   height: 105vh;
 }
 
+.toast-component {
+  padding: "160px 0px",
+}
+
 /* Custom CSS classes for Purdue Party */
 
 .bg-dull-gold {
