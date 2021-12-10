@@ -96,6 +96,8 @@ export const fetchPageVisitInfo = () => {
   return async (dispatch: Dispatch<Action>, getState: () => RootState, { getFirebase, getFirestore }: any) => {
     // Build queries
     const uid = getState().firebase.auth.uid
+    if (!uid)
+      return
     const db: any = getFirestore();
     var docRef = db.collection("pageVisitInfo").doc(uid)
     docRef.get()
