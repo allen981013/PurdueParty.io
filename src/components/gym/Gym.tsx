@@ -7,6 +7,7 @@ import { fetchFacilityInfos } from "./GymSlice";
 import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
 import { toast } from 'react-toastify';
 import { GYM_TUTORIAL_1, GYM_TUTORIAL_2, GYM_TUTORIAL_3} from '../tutorial/Constants'
+import { Redirect } from "react-router-dom";
 
 export interface FacilityInfo {
   name: string;
@@ -16,6 +17,7 @@ export interface FacilityInfo {
 }
 
 interface GymProps {
+  auth?: any;
   errorMessage?: string;
   lastUpdatedTime?: string;
   facilityInfos?: FacilityInfo[];
@@ -75,6 +77,7 @@ class Gym extends React.Component<GymProps, GymStates> {
   }
 
   render() {
+    if (!this.props.auth.uid) return <Redirect to='/signin' />
     if (this.props.pageVisitInfo 
       && !this.props.pageVisitInfo.gymPage
       && !this.isTutorialRendered
@@ -139,6 +142,7 @@ const mapStateToProps = ((state: RootState) => {
     lastUpdatedTime: state.gym.lastUpdatedTime,
     facilityInfos: state.gym.facilityInfos,
     errorMessage: state.gym.errorMessage,
+    auth: state.firebase.auth,
   }
 })
 
