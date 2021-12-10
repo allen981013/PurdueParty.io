@@ -6,7 +6,7 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 import { fetchFacilityInfos } from "./GymSlice";
 import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
 import { toast } from 'react-toastify';
-import { GYM_TUTORIAL_1, GYM_TUTORIAL_2, GYM_TUTORIAL_3} from '../tutorial/Constants'
+import { GYM_TUTORIAL_1, GYM_TUTORIAL_2, GYM_TUTORIAL_3 } from '../tutorial/Constants'
 
 export interface FacilityInfo {
   name: string;
@@ -60,12 +60,12 @@ class Gym extends React.Component<GymProps, GymStates> {
           <Typography variant="h6">{info.name}</Typography>
           <BorderLinearProgress variant="determinate" value={percentage} />
           {!info.isClosed &&
-            <Typography variant="body2" sx={{ color: "#00000099" }}>
+            <Typography variant="body2">
               Capacity: {info.lastParticipantCount}/{info.totalCapacity}  ({percentage}%)
             </Typography>
           }
           {info.isClosed &&
-            <Typography variant="body2" sx={{ color: "#00000099" }}>
+            <Typography variant="body2">
               Closed Now
             </Typography>
           }
@@ -75,10 +75,10 @@ class Gym extends React.Component<GymProps, GymStates> {
   }
 
   render() {
-    if (this.props.pageVisitInfo 
+    if (this.props.pageVisitInfo
       && !this.props.pageVisitInfo.gymPage
       && !this.isTutorialRendered
-      ) {
+    ) {
       toast.info(GYM_TUTORIAL_1)
       toast.info(GYM_TUTORIAL_2)
       toast.info(GYM_TUTORIAL_3)
