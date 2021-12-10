@@ -283,6 +283,9 @@ export const signUp = (newUser: any) => {
                 userName: newUser.username,
                 bio: newUser.bio,
                 email: newUser.email,
+                savedPosts: [],
+                savedListings: [],
+                savedEvents: [],
                 canEditClubs: []
                 // profilePicURL: imageURL
             }, { merge: true })

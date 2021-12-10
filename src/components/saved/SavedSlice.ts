@@ -110,8 +110,8 @@ export const fetchSavedPosts = () => {
     //var ids = new Array<String>();
     var payload: any = { savedListings: null };
     console.log(user);
-    console.log(user == null);
-    if(user == null) {
+    console.log(user === null);
+    if(user === null) {
       dispatch(SavedPageSlice.actions.fetchSavedPostsSuccess(posts))
     }
     var userRef = db.collection("users").doc(user)
@@ -129,10 +129,12 @@ export const fetchSavedPosts = () => {
         console.log(doc)
         console.log(doc.data())
         let post = doc.data()
+        var poster = await db.collection("users").doc(post.owner).get()
+        var posterID = poster.data().userName;
         let l: Post = {
           title: post.title,
           content: post.content,
-          poster: post.owner, // store poster's UID first
+          poster: posterID, // store poster's UID first
           numComments: post.numComments,
           numUpvotes: post.voteCount,
           href: "/forum/" + post.classID + "/" + post.postId,
@@ -157,7 +159,7 @@ export const fetchSavedEvents = () => {
     const state = getState()
     const user = state.firebase.auth.uid;
     var listings = new Array<Events>();
-    if(user == null) {
+    if(user === null) {
       dispatch(SavedPageSlice.actions.fetchSavedEventsSuccess(listings))
     }
     //console.log(listings)
@@ -208,7 +210,7 @@ export const fetchSavedListings = () => {
     const state = getState()
     const user = state.firebase.auth.uid;
     var listings = new Array<listing>();
-    if(user == null) {
+    if(user === null) {
       dispatch(SavedPageSlice.actions.fetchSavedListingsSuccess(listings))
     }
     //console.log(listings)
