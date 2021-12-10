@@ -92,10 +92,10 @@ class Landing extends Component<LandingProps, LandingStates> {
   }
 
   render() {
-    if (this.props.pageVisitInfo 
+    if (this.props.pageVisitInfo
       && !this.props.pageVisitInfo.homePage
       && !this.isTutorialRendered
-      ) {
+    ) {
       toast.info(HOMEPAGE_TUTORIAL_1)
       toast.info(HOMEPAGE_TUTORIAL_2)
       toast.info(HOMEPAGE_TUTORIAL_3)
@@ -107,7 +107,7 @@ class Landing extends Component<LandingProps, LandingStates> {
       this.isTutorialRendered = true
     }
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, marginTop: "4px", width: "100%" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", flexGrow: 1, width: "100%", marginTop: "-5px" }}>
         <Box id="cropped-purdue-img" sx={{ height: { xs: "250px", sm: "400px" } }} />
         <Grid container className="sections" spacing={2} sx={{ padding: "32px 24px" }}>
           {
