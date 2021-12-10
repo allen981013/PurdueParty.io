@@ -63,7 +63,7 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
   }
 
   showUser = (user: any) => {
-    if (this.props.users) {
+    if (user) {
       return user.id === this.props.auth.uid
     } else {
       return false;
@@ -147,10 +147,12 @@ class GenericSellListing extends Component<genericSelllistingProps, genericSelll
 
     var editCode: any = <div></div>;
     var saveCode: any = <div></div>;
+    var runningUser: any = undefined;
     if (this.props.users) {
-      curUser = this.props.users.find(this.showUser);
+      runningUser = this.props.users.find(this.showUser);
+      console.log(runningUser);
     }
-    if (curUser == null || curUser.savedListings == null || !curUser.savedListings.includes(this.props.match.params.itemID)){
+    if (runningUser == null || runningUser.savedListings == null || !runningUser.savedListings.includes(this.props.match.params.itemID)){
       saveCode = <Button 
       // variant="outlined"
       sx={{ color: "black", border: "1px solid black", marginRight: "20%", marginTop: "2%"}}
