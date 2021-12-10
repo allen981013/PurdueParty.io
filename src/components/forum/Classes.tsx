@@ -130,6 +130,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
 export default compose<React.ComponentType<ClassesProps>>(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect([
-    { collection: 'classes' }
+    { collection: 'classes', orderBy: ["courseID", "asc"] }
   ])
 )(Classes)
