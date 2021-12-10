@@ -215,7 +215,6 @@ function App() {
                 return <LaundryInfo laundryName={match.params.laundryName} />
               }} />
             </Switch>
-            <Theme />
             <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
             <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
               Purdue University, 100 North University Street, West Lafayette, IN, 47907

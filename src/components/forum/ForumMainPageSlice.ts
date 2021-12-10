@@ -262,6 +262,9 @@ export const fetchCurUserPosts = (fetchCriteria: FetchCriteria) => {
     const db = getFirestore();
     //console.log(state.firebase.auth.uid);
     const user = state.firebase.auth.uid;
+    if (!user) {
+      return
+    }
     var posts = new Array<Post>();
     var postsQueryPromise = db.collection("posts")
       .where("owner", "==", user)

@@ -10,6 +10,7 @@ import { EditOutlined } from '@mui/icons-material';
 import { PageVisitInfo, updatePageVisitInfo } from '../tutorial/TutorialSlice';
 import { toast } from 'react-toastify';
 import { PROFILE_TUTORIAL_1, PROFILE_TUTORIAL_2, PROFILE_TUTORIAL_3} from '../tutorial/Constants'
+import Theme from "../../Theme"
 
 // Interface/type for Profile State
 interface ProfileState {
@@ -185,6 +186,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     {this.props.profile != undefined ?
                         <Box>
                             {this.getProfile()}
+                            <Theme/>
                         </Box>
                         :
                         <div></div>
