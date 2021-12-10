@@ -73,9 +73,8 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Theme />
       <BrowserRouter>
-      <Box className="App" onClick={() => toast.dismiss()}>
+        <Box className="App" onClick={() => toast.dismiss()}>
           <Box
             display="flex"
             flexDirection="column"
@@ -99,88 +98,88 @@ function App() {
               draggable
               pauseOnHover
             />
-          <NavBar />
-          <Switch>
-            <Route exact path='/' component={Landing} />
-            <Route path='/signin' component={SignIn} />
-            <Route path='/createaccount' component={CreateAccount} />
-            <Route path='/changePassword' component={ChangePassword} />
-            <Route path='/resetPasswordRequest' component={ResetPasswordRequest} />
-            <Route exact path='/marketplace' component={MarketPlace} />
-            <Route path='/marketplace/create-listing' component={createSellListing} />
-            <Route path='/sellListing/:itemID' component={GenericSellListing} />
-            <Route path='/gym' component={Gym} />
-            <Route path='/events/create' component={CreateEvent} />
-            <Route path='/events/:eventID' render={({ match }) => {
-              return <EventInfo eventID={match.params.eventID} hasInfoFetched={false} eventNotFound={false} event={{
-                id: '',
-                title: '',
-                ownerID: '',
-                editors: [],
-                startTime: '',
-                duration: '',
-                endTime: '',
-                location: '',
-                description: '',
-                categories: [],
-                perks: [],
-                imageUrl: '',
-                attendees: []
-              }} host={{
-                name: '',
-                href: ''
-              }} auth={undefined} match={undefined} users={[]} fetchEventInfo={function (eventID: string): void {
-                throw new Error('Function not implemented.');
-              } } deleteEvent={function (eventID: string): void {
-                throw new Error('Function not implemented.');
-              } } rsvpEvent={function (eventID: string): void {
-                throw new Error('Function not implemented.');
-              } } removeRSVPEvent={function (eventID: string): void {
-                throw new Error('Function not implemented.');
-              } } saveEvent={function (eventID: string): void {
-                throw new Error('Function not implemented.');
-              } } removeSaveEvent={function (eventID: string): void {
-                throw new Error('Function not implemented.');
-              } } pageVisitInfo={undefined} updatePageVisitInfo={function (newPageVisitInfo: PageVisitInfo): void {
-                throw new Error('Function not implemented.');
-              } } />
-            }} />
-            <Route path='/events' component={EventsLanding} />
-            <Route exact path='/clubs' component={Clubs} />
-            <Route path='/clubs/create-club' component={CreateClub} />
-            <Route path='/clubs/:clubID' render={({ match }) => {
-              return <ClubInfo clubID={match.params.clubID} />
-            }} />
-            <Route path='/edit-club/:clubID' component={EditClub} />
+            <NavBar />
+            <Switch>
+              <Route exact path='/' component={Landing} />
+              <Route path='/signin' component={SignIn} />
+              <Route path='/createaccount' component={CreateAccount} />
+              <Route path='/changePassword' component={ChangePassword} />
+              <Route path='/resetPasswordRequest' component={ResetPasswordRequest} />
+              <Route exact path='/marketplace' component={MarketPlace} />
+              <Route path='/marketplace/create-listing' component={createSellListing} />
+              <Route path='/sellListing/:itemID' component={GenericSellListing} />
+              <Route path='/gym' component={Gym} />
+              <Route path='/events/create' component={CreateEvent} />
+              <Route path='/events/:eventID' render={({ match }) => {
+                return <EventInfo eventID={match.params.eventID} hasInfoFetched={false} eventNotFound={false} event={{
+                  id: '',
+                  title: '',
+                  ownerID: '',
+                  editors: [],
+                  startTime: '',
+                  duration: '',
+                  endTime: '',
+                  location: '',
+                  description: '',
+                  categories: [],
+                  perks: [],
+                  imageUrl: '',
+                  attendees: []
+                }} host={{
+                  name: '',
+                  href: ''
+                }} auth={undefined} match={undefined} users={[]} fetchEventInfo={function (eventID: string): void {
+                  throw new Error('Function not implemented.');
+                }} deleteEvent={function (eventID: string): void {
+                  throw new Error('Function not implemented.');
+                }} rsvpEvent={function (eventID: string): void {
+                  throw new Error('Function not implemented.');
+                }} removeRSVPEvent={function (eventID: string): void {
+                  throw new Error('Function not implemented.');
+                }} saveEvent={function (eventID: string): void {
+                  throw new Error('Function not implemented.');
+                }} removeSaveEvent={function (eventID: string): void {
+                  throw new Error('Function not implemented.');
+                }} pageVisitInfo={undefined} updatePageVisitInfo={function (newPageVisitInfo: PageVisitInfo): void {
+                  throw new Error('Function not implemented.');
+                }} />
+              }} />
+              <Route path='/events' component={EventsLanding} />
+              <Route exact path='/clubs' component={Clubs} />
+              <Route path='/clubs/create-club' component={CreateClub} />
+              <Route path='/clubs/:clubID' render={({ match }) => {
+                return <ClubInfo clubID={match.params.clubID} />
+              }} />
+              <Route path='/edit-club/:clubID' component={EditClub} />
 
-            <Route path='/profile' component={Profile} />
-            <Route path='/saved' component={Saved} />
-            <Route path='/edit-profile' component={EditProfile} />
-            <Route exact path='/forum' component={ForumMainPage} />
-            <Route path='/forum/create-post' component={CreatePost} />
-            <Route path='/forum/all' component={Classes} />
-            <Route path='/forum/:classID/:postID/:commentID/edit' component={EditComment} />
-            <Route path='/forum/:classID/:postID' render={({ match }) => {
-              return <ThreadPage classID={match.params.classID} postID={match.params.postID} savePost={function (postID: string): void {
-                throw new Error('Function not implemented.');
-              } } removeSavePost={function (postID: string): void {
-                throw new Error('Function not implemented.');
-              } } />
-            }} />
-            <Route path='/forum/:classID' render={({ match }) => {
-              return <ClassPage classID={match.params.classID} />
-            }} />
-            <Route path='/forum/create-post' component={CreatePost} />
-            <Route path='/createComment/:classID/:postID' component={createComment} />
-            <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} />
-            <Route path='/edit-post/:classID/:postID' component={EditPost} />
+              <Route path='/profile' component={Profile} />
+              <Route path='/saved' component={Saved} />
+              <Route path='/edit-profile' component={EditProfile} />
+              <Route exact path='/forum' component={ForumMainPage} />
+              <Route path='/forum/create-post' component={CreatePost} />
+              <Route path='/forum/all' component={Classes} />
+              <Route path='/forum/:classID/:postID/:commentID/edit' component={EditComment} />
+              <Route path='/forum/:classID/:postID' render={({ match }) => {
+                return <ThreadPage classID={match.params.classID} postID={match.params.postID} savePost={function (postID: string): void {
+                  throw new Error('Function not implemented.');
+                }} removeSavePost={function (postID: string): void {
+                  throw new Error('Function not implemented.');
+                }} />
+              }} />
+              <Route path='/forum/:classID' render={({ match }) => {
+                return <ClassPage classID={match.params.classID} />
+              }} />
+              <Route path='/forum/create-post' component={CreatePost} />
+              <Route path='/createComment/:classID/:postID' component={createComment} />
+              <Route path='/createCommentOnComment/:classID/:postID/:commentID' component={createCommentOnComment} />
+              <Route path='/edit-post/:classID/:postID' component={EditPost} />
 
-            <Route path='/edit-event/:eventID' component={EditEvent} />
-            <Route path='/create-class' component={CreateClass} />
-            <Route path='/create-post/:classID' component={CreatePost} />
+              <Route path='/edit-event/:eventID' component={EditEvent} />
+              <Route path='/create-class' component={CreateClass} />
+              <Route path='/create-post/:classID' component={CreatePost} />
 
-            <Route path='/search-profiles' component={SearchProfiles} />
-            <Route path='/profile-messages' component={ProfileMessages} />
+              <Route path='/search-profiles' component={SearchProfiles} />
+              <Route path='/profile-messages' component={ProfileMessages} />
 
               <Route path='/edit-club/:clubID' component={EditClub} />
               <Route path='/profile' component={Profile} />
@@ -216,6 +215,7 @@ function App() {
                 return <LaundryInfo laundryName={match.params.laundryName} />
               }} />
             </Switch>
+            <Theme />
             <div style={{ flexGrow: 1 }} /> {/* hack to make footer stays at the bottom of the page */}
             <div className="w-100 bg-black" style={{ width: "100%", color: "#fff", padding: "20px 0px", textAlign: "center" }}>
               Purdue University, 100 North University Street, West Lafayette, IN, 47907

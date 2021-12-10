@@ -14,7 +14,7 @@ const Theme: React.FC = () => {
                 title="Toggle light/dark mode"
                 onClick={() => changeTheme()}
             >
-                {theme.palette.type === 'light' ? "Chaneg to Dark Mode" : "Chaneg to Light Mode"}
+                {theme.palette.type === 'light' ? "Change to Dark Mode" : "Change to Light Mode"}
             </Button>
         </div >
     )
