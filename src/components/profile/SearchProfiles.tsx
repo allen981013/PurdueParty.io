@@ -137,7 +137,7 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                     sx={{ color: "black", fontWeight: "light", textTransform: "unset" }}
                 >
                     <div className="item-card__stripe" />
-                    <div className="item-card__body">
+                    <div style={{display: "flex", flexDirection: "column"}}>
                         <p></p>
                         <p>Username: {userName}</p>
                         <p></p>

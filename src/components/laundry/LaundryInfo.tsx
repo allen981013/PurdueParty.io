@@ -173,13 +173,13 @@ class LaundryInfo extends Component<LaundryInfoProps, LaundryInfoState> {
         event.preventDefault();
 
         if (this.state.surveyResult == null) {
-            window.alert("Please select an option before submitting!")
+            toast.warning("Please select an option before submitting!")
         } else {
             this.props.submitSurveyData(this.state);
             this.setState({
                 needUpdate: true,
             })
-            window.alert("Status of laundry location submitted.")
+            toast.success("Status of laundry location submitted.")
         }
     }
 
@@ -312,7 +312,7 @@ class LaundryInfo extends Component<LaundryInfoProps, LaundryInfoState> {
                         </div>
                     </Box>
 
-                    <Grid container columnSpacing={6} rowSpacing={2} marginLeft={"130px"}>
+                    <Grid container columnSpacing={6} rowSpacing={2} marginLeft={"0px"}>
                         {this.getLaundryPercentage(this.state)}
                     </Grid>
 
