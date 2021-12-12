@@ -93,7 +93,7 @@ class Classes extends Component<ClassesProps, ClassesState> {
           <h1 style={{ fontWeight: 300, margin: "0px" }}>Class List</h1>
           <Button
             component={Link}
-            to="create-class"
+            to="/create-class"
             variant="outlined"
             sx={{ color: "black", border: "1px solid black", alignSelf: "flex-end" }}
           > Create
@@ -130,6 +130,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
 export default compose<React.ComponentType<ClassesProps>>(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect([
-    { collection: 'classes' }
+    { collection: 'classes', orderBy: ["courseID", "asc"] }
   ])
 )(Classes)

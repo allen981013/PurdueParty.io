@@ -18,7 +18,8 @@ interface ProfileState {
 
 // Interface/type for Profile Props
 interface ProfileProps {
-    profile: {
+    uid: string;
+    profile?: {
         bio: string,
         userName: string,
         major: string,
@@ -26,11 +27,11 @@ interface ProfileProps {
         email: string,
         image: string
     },
-    currentUser: string;
-    auth: any;
-    firebase: any;
-    pageVisitInfo: PageVisitInfo;
-    updatePageVisitInfo: (newPageVisitInfo: PageVisitInfo) => void;
+    currentUser?: string;
+    auth?: any;
+    firebase?: any;
+    pageVisitInfo?: PageVisitInfo;
+    updatePageVisitInfo?: (newPageVisitInfo: PageVisitInfo) => void;
 }
 
 class Profile extends Component<ProfileProps, ProfileState> {
@@ -133,7 +134,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     <Stack direction="row" spacing={2}>
                         <Button
                             component={Link}
-                            to="profile-messages"
+                            to="/profile-messages"
                             variant="outlined"
                             sx={{ color: "black", border: "1px solid black", backgroundColor: "white" }}
                         > Marketplace Messages
@@ -141,7 +142,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
 
                         <Button
                             component={Link}
-                            to="search-profiles"
+                            to="/search-profiles"
                             variant="outlined"
                             sx={{ color: "black", border: "1px solid black", backgroundColor: "white" }}
                         > Search For Other Profiles
@@ -149,7 +150,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
 
                         <Button
                             component={Link}
-                            to="edit-profile"
+                            to="/edit-profile"
                             variant="outlined"
                             sx={{ color: "black", border: "1px solid black", backgroundColor: "white" }}
                         > Edit Profile
@@ -212,14 +213,14 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
     }
 }
 
-export default compose<React.ComponentType<Profile>>(
+export default compose<React.ComponentType<ProfileProps>>(
     connect(mapStateToProps, mapDispatchToProps),
     firestoreConnect((props: ProfileProps) => {
         return [
             {
                 collection: "users",
                 where: [
-                    ["userName", "==", props.currentUser],
+                    ["userName", "==", props.uid],
                 ],
                 storeAs: "authUserInfo",
                 limit: 1,

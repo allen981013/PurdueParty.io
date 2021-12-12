@@ -134,15 +134,22 @@ class SearchProfiles extends Component<SearchProfilesProps, SearchProfilesState>
                     onClick={() => this.handleProfileClick(bio, userName, email, hide, year, major)}
                     title={email}
                     className="item-card"
-                    sx={{ color: "black", fontWeight: "light", textTransform: "unset" }}
+                    sx={{ color: "black", fontWeight: "light", textTransform: "unset", padding: "0px", height: "80px", width: "500px"}}
                 >
                     <div className="item-card__stripe" />
-                    <div className="item-card__body">
-                        <p></p>
-                        <p>Username: {userName}</p>
-                        <p></p>
-                        <p>Email: {email}</p>
-                        <p></p>
+                    <div style={{
+                      height: "100%",
+                      display: "flex", 
+                      flexDirection: "column",
+                      padding: "8px 16px", 
+                      width: "100%",
+                      // minWidth: "0",
+                      justifyContent: "center",
+                      alignItems: "flex-start",
+                      // overflow: "flex-start",
+                    }}>
+                        <p style={{padding: "0px", margin: "0px"}}>Username: {userName}</p>
+                        <p style={{padding: "0px", margin: "4px 0px 0px 0px"}}>Email: {email}</p>
                     </div>
                 </Button>
             )

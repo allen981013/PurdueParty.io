@@ -12,6 +12,7 @@ import { styled } from '@mui/material/styles';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import StarRateIcon from '@mui/icons-material/StarRate';
+import ThumbsUpIcon from '@mui/icons-material/ThumbUp';
 import { classPageSlice, fetchClassPosts, FetchCriteria } from '../../components/forum/ClassPageSlice';
 import { actionTypes } from 'redux-firestore';
 import { joinClass, updateUserClass } from '../../store/actions/postActions';
@@ -397,7 +398,7 @@ class ClassPage extends Component<ClassPageProps, ClassPageState> {
               Popular
             </ToggleButton>
             <ToggleButton value={"HOT"}>
-              <WhatshotIcon sx={{ paddingRight: "4px" }} />
+              <ThumbsUpIcon sx={{ paddingRight: "4px" }} />
               HOT
             </ToggleButton>
           </StyledToggleButtonGroup>
